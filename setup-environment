@@ -1,0 +1,33 @@
+#! /bin/bash
+
+thisdir=$(pwd)
+
+if [[ ! -d $thisdir/meta-newbs ]]; then
+    echo "meta-newbs not found!"
+    echo "please source this script from the NEWBS root"
+    return 1
+fi
+NEWBSROOT=$(readlink -f $thisdir)
+
+[[ -n $MACHINE ]] || MACHINE="raspberrypi3"
+if [[ -n $1 ]]; then
+    BUILD_DIR="$1"
+else
+    BUILD_DIR="build-$MACHINE"
+fi
+
+export TEMPLATECONF="$NEWBSROOT/meta-newbs/conf"
+echo $TEMPLATECONF
+source oe-core/oe-init-build-env $BUILD_DIR
+
+# now we're in the build directory and should have bblayers.conf.sample and local.conf.sample
+# from meta-newbs/conf
+BB_CONF="conf/bblayers.conf"
+LOCAL_CONF="conf/local.conf"
+NEWBS_MARKER="### NEWBS ###"
+
+sed -i "s|##NEWBSROOT##|$NEWBSROOT|g" $BB_CONF
+sed -i "/$NEWBS_MARKER/,\$s|^MACHINE.*|MACHINE = \"$MACHINE\"|" $LOCAL_CONF
+
+# unset unused variables
+unset thisdir TEMPLATECONF BB_CONF LOCAL_CONF NEWBS_MARKER
