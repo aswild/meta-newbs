@@ -9,11 +9,24 @@ if [[ ! -d $thisdir/meta-newbs ]]; then
 fi
 NEWBSROOT=$(readlink -f $thisdir)
 
-[[ -n $MACHINE ]] || MACHINE="raspberrypi3"
+if [[ -n $MACHINE ]]; then
+    echo "MACHINE set to $MACHINE"
+else
+    echo "No MACHINE given, defaulting to raspberrypi3"
+    export MACHINE=raspberrypi3
+fi
+
 if [[ -n $1 ]]; then
     BUILD_DIR="$1"
 else
     BUILD_DIR="build-$MACHINE"
+fi
+echo "Using BUILD_DIR $BUILD_DIR"
+
+DOWNLOAD_DIR=/var/oe-downloads
+if [[ ! -d ./downloads ]] && [[ -d $DOWNLOAD_DIR ]]; then
+    echo "symlinking downloads to $DOWNLOAD_DIR"
+    ln -s $DOWNLOAD_DIR downloads
 fi
 
 export TEMPLATECONF="$NEWBSROOT/meta-newbs/conf"
@@ -30,4 +43,4 @@ sed -i "s|##NEWBSROOT##|$NEWBSROOT|g" $BB_CONF
 sed -i "/$NEWBS_MARKER/,\$s|^MACHINE.*|MACHINE = \"$MACHINE\"|" $LOCAL_CONF
 
 # unset unused variables
-unset thisdir TEMPLATECONF BB_CONF LOCAL_CONF NEWBS_MARKER
+unset thisdir TEMPLATECONF BB_CONF LOCAL_CONF NEWBS_MARKER DOWNLOAD_DIR
