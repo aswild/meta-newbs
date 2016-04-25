@@ -25,7 +25,7 @@
 #MACHINE ?= "qemux86-64"
 #
 # This sets the default machine to be qemux86 if no other machine is selected:
-MACHINE ??= "qemux86"
+MACHINE ??= "raspberrypi3"
 
 #
 # Where to place downloads
@@ -220,7 +220,7 @@ CONF_VERSION = "1"
 ### NEWBS ###
 MACHINE = "raspberrypi3"
 
-BB_NUM_THREADS  = "${@oe.utils.cpu_count()}"
+BB_NUMBER_THREADS  = "${@oe.utils.cpu_count()}"
 PARALLEL_MAKE   = "-j ${@oe.utils.cpu_count()}"
 
 # move downloads and sstate-cache outside of build directory
