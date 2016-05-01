@@ -40,6 +40,13 @@ LOCAL_CONF="conf/local.conf"
 NEWBS_MARKER="### NEWBS ###"
 
 sed -i "s|##NEWBSROOT##|$NEWBSROOT|g" $BB_CONF
+
+if [[ -d "$NEWBSROOT/meta-python3-compat" ]]; then
+    # python3 compatibility layer for building on Arch where /usr/bin/python -> python3
+    echo "BBLAYERS += \"$NEWBSROOT/meta-python3-compat\"" >>$BB_CONF
+fi
+
+
 sed -i "/$NEWBS_MARKER/,\$s|^MACHINE.*|MACHINE = \"$MACHINE\"|" $LOCAL_CONF
 
 # unset unused variables
