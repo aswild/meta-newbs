@@ -4,6 +4,12 @@ LICENSE = "MIT"
 inherit packagegroup
 
 RDEPENDS_${PN} = " \
-    coreutils \
+    packagegroup-core-full-cmdline-libs \
+    packagegroup-core-full-cmdline-utils \
+    packagegroup-core-full-cmdline-initscripts \
+    packagegroup-core-full-cmdline-sys-services \
     dosfstools \
+    iproute2 \
+    iputils \
+    iptables \
 "
