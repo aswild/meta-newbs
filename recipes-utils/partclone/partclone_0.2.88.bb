@@ -1,18 +1,20 @@
 SUMMARY = "Utility to backup and restore partitions"
 LICENSE = "GPLv2"
 
-DEPENDS = "e2fsprogs dosfstools"
-RDEPENDS_${PN} = "e2fsprogs dosfstools"
+DEPENDS = "e2fsprogs dosfstools ncurses"
+RDEPENDS_${PN} = "e2fsprogs ncurses"
 
-SRC_URI = "https://github.com/Thomas-Tsai/partclone/archive/0.2.88.tar.gz"
-SRC_URI[md5sum] = "230ac4ab773c5c705f090d3a4f54fbd6"
+PV = "0.2.88"
+SRC_URI = "git://github.com/Thomas-Tsai/partclone.git;nobranch=1;tag=${PV}"
+
 LIC_FILES_CHKSUM = "file://COPYING;md5=8ca43cbc842c2336e835926c2166c28b"
 
-S = "${WORKDIR}/partclone-0.2.88"
+S = "${WORKDIR}/git"
 
 inherit autotools gettext
 
 EXTRA_OECONF = " \
+    --enable-ncursesw \
     --enable-extfs \
     --enable-fat \
 "
