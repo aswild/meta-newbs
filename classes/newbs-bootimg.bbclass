@@ -18,7 +18,7 @@ BOOTIMG_LABEL ?= "NEWBS"
 IMAGE_DEPENDS_newbs-bootimg = " \
     mtools-native \
     dosfstools-native \
-    virtual/kernel:do_deploy \
+    virtual/kernel:do_package \
     ${IMAGE_BOOTLOADER} \
 "
 

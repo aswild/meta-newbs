@@ -1,5 +1,8 @@
 # NEWBS kernel customizations
 
+# remove git rev from version for more readable deploy filenames
+PV = "${LINUX_VERSION}"
+
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI += " \
             file://remove-networking.cfg \
@@ -21,4 +24,4 @@ do_move_dtbs() {
     done
 }
 
-addtask move_dtbs after do_deploy
+addtask move_dtbs after do_deploy before do_package
