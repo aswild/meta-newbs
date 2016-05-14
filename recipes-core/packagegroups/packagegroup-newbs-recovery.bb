@@ -12,4 +12,6 @@ RDEPENDS_${PN} = " \
     iproute2 \
     iputils \
     iptables \
+    partclone \
+    tmux \
 "

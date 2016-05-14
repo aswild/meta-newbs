@@ -1,25 +1,24 @@
-SUMMARY = "tmux - the tmux multipliexer"
-LICENSE = "ISC"
+SUMMARY = "Utility to backup and restore partitions"
+LICENSE = "GPLv2"
 
-DEPENDS = "ncurses libevent"
+DEPENDS = "e2fsprogs dosfstools"
+RDEPENDS_${PN} = "e2fsprogs dosfstools"
 
-PV = "2.2"
+SRC_URI = "https://github.com/Thomas-Tsai/partclone/archive/0.2.88.tar.gz"
+SRC_URI[md5sum] = "230ac4ab773c5c705f090d3a4f54fbd6"
+LIC_FILES_CHKSUM = "file://COPYING;md5=8ca43cbc842c2336e835926c2166c28b"
 
-SRC_URI = "git://github.com/tmux/tmux"
-SRCREV = "9a4b45dc0fdefead3fe9d471e144da78163860d0"
-LIC_FILES_CHKSUM = "file://COPYING;md5=f7d9aab84ec6567139a4755c48d147fb"
+S = "${WORKDIR}/partclone-0.2.88"
 
-S = "${WORKDIR}/git"
+inherit autotools gettext
 
-FILES_${PN} = " \
-    ${bindir}/tmux \
-    ${mandir}/man1/tmux.1 \
+EXTRA_OECONF = " \
+    --enable-extfs \
+    --enable-fat \
 "
 
-inherit autotools
-
 # DIRTY HACK ALERT!
-# --with-libtool-sysroot is broken in tmux, so prepend staging dir
+# --with-libtool-sysroot is broken in partclone, so prepend staging dir
 # to all paths manually
 python __anonymous() {
     opts = d.getVar("CONFIGUREOPTS", True).split()
@@ -38,9 +37,6 @@ python __anonymous() {
 
 do_configure() {
     cd ${S}
-    libtoolize --automake
-    ./autogen.sh || die "autogen.sh failed"
-
     set -x
     oe_runconf
 }
