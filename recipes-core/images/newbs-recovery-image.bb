@@ -7,4 +7,6 @@ IMAGE_INSTALL = " \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
 
+IMAGE_FSTYPES = "ext4 squashfs-xz tar.xz newbs-bootimg"
+
 inherit core-image

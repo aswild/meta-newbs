@@ -7,9 +7,12 @@ SRC_URI += " \
 
 # default Linux recipes copy dtb blobs to DEPLOYDIR, which clutters it
 # archive them all to a subdirectory named DTB_DEPLOYDIR
-DTB_DEPLOYDIR ?= "dtb"
+DTB_DEPLOYDIR ?= ""
 
 do_move_dtbs() {
+    # do nothing unless DTB_DEPLOYDIR is set (in a distro conf)
+    [ x${DTB_DEPLOYDIR} = x ] && return 0
+
     cd ${DEPLOY_DIR_IMAGE}
     install -d ${DTB_DEPLOYDIR}
     for d in *.dtb; do
