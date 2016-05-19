@@ -9,7 +9,8 @@ KERNEL_INITRAMFS ?= ""
 IMAGE_BOOTLOADER ?= "bcm2835-bootfiles"
 
 # needs to be in sync with recipes-bsp/bootfiles/newbs-config.patch
-KERNEL_NAME = "kernel-newbs.img"
+#KERNEL_NAME = "kernel-newbs.img"
+KERNEL_NAME = "kernel7.img"
 
 # 100 MB default boot partition (in 1K blocks)
 BOOTIMG_SIZE ?= "102400"

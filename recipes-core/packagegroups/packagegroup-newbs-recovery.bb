@@ -11,7 +11,6 @@ RDEPENDS_${PN} = " \
     dosfstools \
     iproute2 \
     iputils \
-    iptables \
     partclone \
     tmux \
 "
