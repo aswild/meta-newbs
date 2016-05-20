@@ -1,0 +1,9 @@
+#! /bin/ash
+
+export PATH=/usr/bin:/bin:/usr/sbin:/sbin
+
+echo "*************************************"
+echo "      Welcome to NEWBS INIT!"
+echo "*************************************"
+
+exec ash

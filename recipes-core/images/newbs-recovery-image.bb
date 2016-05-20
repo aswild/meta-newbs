@@ -1,6 +1,8 @@
 SUMMARY = "NEWBS core recovery image"
 LICENSE = "MIT"
 
+DEPENDS = "${NEWBS_INIT}"
+
 IMAGE_INSTALL = " \
     packagegroup-core-boot \
     packagegroup-newbs-recovery \

@@ -8,15 +8,19 @@ inherit linux-raspberrypi-base
 KERNEL_INITRAMFS ?= ""
 IMAGE_BOOTLOADER ?= "bcm2835-bootfiles"
 
-# needs to be in sync with recipes-bsp/bootfiles/newbs-config.patch
-#KERNEL_NAME = "kernel-newbs.img"
 KERNEL_NAME = "kernel7.img"
+NEWBS_INIT_DEST ?= "newbs-init.cpio.gz"
+
+# we have to guess the symlink that gets deployed for init
+INIT_DEPLOY_SYMLINK ?= "${NEWBS_INIT}-${MACHINE}.${INITRAMFS_FSTYPES}"
+
 
 # 100 MB default boot partition (in 1K blocks)
 BOOTIMG_SIZE ?= "102400"
 BOOTIMG_LABEL ?= "NEWBS"
 
 IMAGE_DEPENDS_newbs-bootimg = " \
+    ${NEWBS_INIT}:do_image_cpio \
     mtools-native \
     dosfstools-native \
     virtual/kernel:do_package \
@@ -32,6 +36,7 @@ IMAGE_CMD_newbs-bootimg() {
     install -d $BOOT_DIR
     install ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}${KERNEL_INITRAMFS}-${MACHINE}.bin $BOOT_DIR/${KERNEL_NAME}
     install -t $BOOT_DIR ${DEPLOY_DIR_IMAGE}/${IMAGE_BOOTLOADER}/*
+    install $(readlink -f "${DEPLOY_DIR_IMAGE}/${INIT_DEPLOY_SYMLINK}") $BOOT_DIR/${NEWBS_INIT_DEST}
 
     DTS="${@get_dts(d, None)}"
     if [ -n "${DTS}" ]; then
