@@ -16,7 +16,7 @@ INIT_DEPLOY_SYMLINK ?= "${NEWBS_INIT}-${MACHINE}.${INITRAMFS_FSTYPES}"
 
 
 # 100 MB default boot partition (in 1K blocks)
-BOOTIMG_SIZE ?= "25600"
+BOOTIMG_SIZE ?= "32768"
 BOOTIMG_LABEL ?= "NEWBS"
 
 IMAGE_DEPENDS_newbs-bootimg = " \
