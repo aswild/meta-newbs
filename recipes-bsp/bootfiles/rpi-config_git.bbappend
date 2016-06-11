@@ -13,7 +13,6 @@ do_deploy_append() {
         tee $CONFIG <<EOF
 
 #### NEWBS CONFIG ####
-initramfs ${NEWBS_INIT_DEST} ${INITRAMFS_LOAD_ADDR}
 enable_uart=1
 core_freq=250
 dtoverlay=pi3-disable-bt
