@@ -31,6 +31,14 @@ COMPATIBLE_MACHINE = "raspberrypi[23]"
 LINUX_VERSION_EXTENSION = "-NEWBS"
 DTB_DEPLOYDIR ?= ""
 
+# oe-core commit 849b67b removes KERNEL_OUTPUT, put it back
+KERNEL_OUTPUT ?= "arch/${ARCH}/boot/${KERNEL_IMAGETYPE}"
+
+RPI2_DEFCONFIG = "bcm2709_defconfig"
+do_kernel_configme_prepend() {
+    cp -vf ${S}/arch/${ARCH}/configs/${RPI2_DEFCONFIG} ${WORKDIR}/defconfig
+}
+
 do_deploy_append() {
     # deploy cmdline.txt
     install -d ${DEPLOYDIR}/bcm2835-bootfiles

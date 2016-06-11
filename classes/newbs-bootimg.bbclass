@@ -9,14 +9,14 @@ KERNEL_INITRAMFS ?= ""
 IMAGE_BOOTLOADER ?= "bcm2835-bootfiles"
 
 KERNEL_NAME = "kernel7.img"
-NEWBS_INIT_DEST ?= "newbs-init.cpio.gz"
+NEWBS_INIT_DEST ?= "newbs-init.${INITRAMFS_FSTYPES}"
 
 # we have to guess the symlink that gets deployed for init
 INIT_DEPLOY_SYMLINK ?= "${NEWBS_INIT}-${MACHINE}.${INITRAMFS_FSTYPES}"
 
 
 # 100 MB default boot partition (in 1K blocks)
-BOOTIMG_SIZE ?= "102400"
+BOOTIMG_SIZE ?= "25600"
 BOOTIMG_LABEL ?= "NEWBS"
 
 IMAGE_DEPENDS_newbs-bootimg = " \
