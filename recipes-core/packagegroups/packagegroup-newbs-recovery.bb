@@ -12,5 +12,8 @@ RDEPENDS_${PN} = " \
     iproute2 \
     iputils \
     partclone \
+    git \
     tmux \
+    htop \
+    homefiles \
 "

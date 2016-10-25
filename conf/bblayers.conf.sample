@@ -7,11 +7,11 @@ BBFILES ?= ""
 
 BBLAYERS ?= " \
   ##OEROOT##/meta \
-  ##NEWBSROOT##/meta-raspberrypi \
-  ##NEWBSROOT##/meta-newbs \
-  "
+"
+
+BBLAYERS += "##NEWBSROOT##/meta-raspberrypi"
+BBLAYERS += "##NEWBSROOT##/meta-newbs"
 
 BBLAYERS_NON_REMOVABLE ?= " \
   ##OEROOT##/meta \
-  "
-
+"

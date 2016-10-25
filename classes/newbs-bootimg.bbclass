@@ -8,6 +8,16 @@ inherit linux-raspberrypi-base
 KERNEL_INITRAMFS ?= ""
 IMAGE_BOOTLOADER ?= "bcm2835-bootfiles"
 
+# strip custom linux version extension to avoid breaking linux-raspberrypi-base
+python __anonymous() {
+    import re
+    staging_dir = d.getVar("STAGING_KERNEL_BUILDDIR", True)
+    ver = get_kernelversion_file(staging_dir)
+    ver = re.sub(r"-.*$", "", ver)
+
+    d.setVar("KERNEL_VERSION_BASE", ver)
+}
+
 KERNEL_NAME = "kernel7.img"
 NEWBS_INIT_DEST ?= "newbs-init.${INITRAMFS_FSTYPES}"
 
@@ -15,43 +25,44 @@ NEWBS_INIT_DEST ?= "newbs-init.${INITRAMFS_FSTYPES}"
 INIT_DEPLOY_SYMLINK ?= "${NEWBS_INIT}-${MACHINE}.${INITRAMFS_FSTYPES}"
 
 
-# 100 MB default boot partition (in 1K blocks)
-BOOTIMG_SIZE ?= "32768"
+# 32 MB default boot partition (in 1K blocks)
+BOOTIMG_SIZE ?= "20480"
 BOOTIMG_LABEL ?= "NEWBS"
 
 IMAGE_DEPENDS_newbs-bootimg = " \
-    ${NEWBS_INIT}:do_image_cpio \
     mtools-native \
     dosfstools-native \
-    virtual/kernel:do_package \
+    xz-native \
+    virtual/kernel:do_deploy \
     ${IMAGE_BOOTLOADER} \
 "
 
 DEPLOY_BOOTIMG_NAME    = "${IMAGE_NAME}.boot.vfat"
-DEPLOY_BOOTIMG         = "${DEPLOY_DIR_IMAGE}/${DEPLOY_BOOTIMG_NAME}"
-DEPLOY_BOOTIMG_SYMLINK = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}-${MACHINE}.boot.vfat"
+DEPLOY_BOOTIMG         = "${IMGDEPLOYDIR}/${DEPLOY_BOOTIMG_NAME}"
+DEPLOY_BOOTIMG_SYMLINK = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}-${MACHINE}.boot.vfat"
 
 IMAGE_CMD_newbs-bootimg() {
     BOOT_DIR=${WORKDIR}/boot
     install -d $BOOT_DIR
-    install ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}${KERNEL_INITRAMFS}-${MACHINE}.bin $BOOT_DIR/${KERNEL_NAME}
+#    install -m 644 ${IMGDEPLOYDIR}/${KERNEL_IMAGETYPE}${KERNEL_INITRAMFS}-${MACHINE}.bin \
+#                   $BOOT_DIR/${KERNEL_NAME}
     install -t $BOOT_DIR ${DEPLOY_DIR_IMAGE}/${IMAGE_BOOTLOADER}/*
-    install $(readlink -f "${DEPLOY_DIR_IMAGE}/${INIT_DEPLOY_SYMLINK}") $BOOT_DIR/${NEWBS_INIT_DEST}
+    #install $(readlink -f "${IMGDEPLOYDIR}/${INIT_DEPLOY_SYMLINK}") $BOOT_DIR/${NEWBS_INIT_DEST}
 
-    DTS="${@get_dts(d, None)}"
-    if [ -n "${DTS}" ]; then
-        DT_OVERLAYS="${@split_overlays(d, 0)}"
-        DT_ROOT="${@split_overlays(d, 1)}"
+    DTS="${@get_dts(d, d.getVar('KERNEL_VERSION_BASE',True))}"
+    if [ -n "$DTS" ]; then
+        DT_OVERLAYS="${@split_overlays(d, 0, d.getVar('KERNEL_VERSION_BASE',True))}"
+        DT_ROOT="${@split_overlays(d, 1, d.getVar('KERNEL_VERSION_BASE',True))}"
 
         for DTB in $DT_ROOT; do
-            BASENAME=$(basename $DTB .dtb)
-            install ${DEPLOY_DIR_IMAGE}/${DTB_DEPLOYDIR}/${KERNEL_IMAGETYPE}-$BASENAME.dtb $BOOT_DIR/$BASENAME.dtb
+            dtbname=${KERNEL_IMAGETYPE}-$(basename $DTB)
+            install -m 644 ${DEPLOY_DIR_IMAGE}/${DTB_DEPLOYDIR}/$dtbname $BOOT_DIR/
         done
 
         install -d $BOOT_DIR/overlays
         for DTB in ${DT_OVERLAYS}; do
-            BASENAME=$(basename $DTB .dtb)
-            install ${DEPLOY_DIR_IMAGE}/${DTB_DEPLOYDIR}/${KERNEL_IMAGETYPE}-$BASENAME.dtb $BOOT_DIR/overlays/$BASENAME.dtb
+            dtbname=${KERNEL_IMAGETYPE}-$(basename $DTB)
+            install -m 644 ${DEPLOY_DIR_IMAGE}/${DTB_DEPLOYDIR}/$dtbname $BOOT_DIR/overlays/
         done
     fi
 
@@ -67,8 +78,8 @@ IMAGE_CMD_newbs-bootimg() {
 
     DEPLOY_TARBALL=$(echo ${DEPLOY_BOOTIMG} | sed 's|\.boot\.vfat|.boot.tar.xz|')
     DEPLOY_TARBALL_SYMLINK=$(echo ${DEPLOY_BOOTIMG_SYMLINK} | sed 's|\.boot\.vfat|.boot.tar.xz|')
-    tar cvJf $DEPLOY_TARBALL -C $BOOT_DIR $(ls $BOOT_DIR)
+    tar cvf - -C $BOOT_DIR . | xz -z -c --threads=0 >${DEPLOY_TARBALL}
 
-    ln -sf $(basename ${DEPLOY_BOOTIMG}) ${DEPLOY_BOOTIMG_SYMLINK}
-    ln -sf $(basename ${DEPLOY_TARBALL}) ${DEPLOY_TARBALL_SYMLINK}
+    ln -sfv $(basename ${DEPLOY_BOOTIMG}) ${DEPLOY_BOOTIMG_SYMLINK}
+    ln -sfv $(basename ${DEPLOY_TARBALL}) ${DEPLOY_TARBALL_SYMLINK}
 }

@@ -10,6 +10,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
 PN = "linux-raspberrypi-newbs"
+SRCPV := "${d.getVar('SRCREV',True)[:10]}"
 PV = "${LINUX_VERSION}"
 python __anonymous() {
     import re
@@ -25,14 +26,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV_SHORT}:"
 SRC_URI += " \
             file://defconfig \
 "
-
-DEPENDS += "rpi-mkimage-native"
 COMPATIBLE_MACHINE = "raspberrypi[23]"
 LINUX_VERSION_EXTENSION = "-NEWBS"
 DTB_DEPLOYDIR ?= ""
-
-# oe-core commit 849b67b removes KERNEL_OUTPUT, put it back
-KERNEL_OUTPUT ?= "arch/${ARCH}/boot/${KERNEL_IMAGETYPE}"
 
 RPI2_DEFCONFIG = "bcm2709_defconfig"
 do_kernel_configme_prepend() {
@@ -52,27 +48,21 @@ do_deploy_append() {
         cd ${DEPLOYDIR}
         rm -rf ${DTB_DEPLOYDIR}
         install -d ${DTB_DEPLOYDIR}
-        for d in *.dtb; do
+        for d in *.dtb *.dtbo; do
             echo "archiving $d"
             mv $d ${DTB_DEPLOYDIR}/$d
         done
     fi
 }
 
-do_rpiboot_mkimage() {
-    if test -n "${KERNEL_DEVICETREE}"; then
-        # Add RPi bootloader trailer to kernel image to enable DeviceTree support
-        ${STAGING_BINDIR_NATIVE}/mkknlimg --dtok ${KERNEL_OUTPUT} ${KERNEL_OUTPUT}
-    fi
-}
-
 do_bundle_initramfs_append() {
     if [ ! -z "${INITRAMFS_IMAGE}" -a x"${INITRAMFS_IMAGE_BUNDLE}" = x1 ]; then
         if test -n "${KERNEL_DEVICETREE}"; then
-            # Add RPi bootloader trailer to kernel image to enable DeviceTree support
-            ${STAGING_BINDIR_NATIVE}/mkknlimg --dtok ${KERNEL_OUTPUT}.initramfs ${KERNEL_OUTPUT}.initramfs
+            for type in ${KERNEL_IMAGETYPES}; do
+                # Add RPi bootloader trailer to kernel image to enable DeviceTree support
+                ${STAGING_BINDIR_NATIVE}/mkknlimg --dtok ${KERNEL_OUTPUT_DIR}/$type.initramfs \
+                                                  ${KERNEL_OUTPUT_DIR}/$type.initramfs
+            done
         fi
     fi
 }
-
-addtask rpiboot_mkimage before do_install after do_compile
