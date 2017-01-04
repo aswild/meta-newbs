@@ -21,19 +21,14 @@ python __anonymous() {
     else:
         d.setVar("PV_SHORT", pv)
 }
-
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV_SHORT}:"
-SRC_URI += " \
-            file://defconfig \
-"
+
 COMPATIBLE_MACHINE = "raspberrypi[23]"
+KBUILD_DEFCONFIG_raspberrypi2 = "bcm2709_defconfig"
+KBUILD_DEFCONFIG_raspberrypi3 = "bcm2709_defconfig"
+KCONFIG_MODE = "alldefconfig"
 LINUX_VERSION_EXTENSION = "-NEWBS"
 DTB_DEPLOYDIR ?= ""
-
-RPI2_DEFCONFIG = "bcm2709_defconfig"
-do_kernel_configme_prepend() {
-    cp -vf ${S}/arch/${ARCH}/configs/${RPI2_DEFCONFIG} ${WORKDIR}/defconfig
-}
 
 do_deploy_append() {
     # deploy cmdline.txt
@@ -52,17 +47,5 @@ do_deploy_append() {
             echo "archiving $d"
             mv $d ${DTB_DEPLOYDIR}/$d
         done
-    fi
-}
-
-do_bundle_initramfs_append() {
-    if [ ! -z "${INITRAMFS_IMAGE}" -a x"${INITRAMFS_IMAGE_BUNDLE}" = x1 ]; then
-        if test -n "${KERNEL_DEVICETREE}"; then
-            for type in ${KERNEL_IMAGETYPES}; do
-                # Add RPi bootloader trailer to kernel image to enable DeviceTree support
-                ${STAGING_BINDIR_NATIVE}/mkknlimg --dtok ${KERNEL_OUTPUT_DIR}/$type.initramfs \
-                                                  ${KERNEL_OUTPUT_DIR}/$type.initramfs
-            done
-        fi
     fi
 }

@@ -4,7 +4,7 @@ LICENSE = "MIT"
 inherit packagegroup
 
 RDEPENDS_${PN} = " \
-    linux-firmware-brcm43430 \
+    linux-firmware-bcm43430 \
     wireless-tools \
     iw \
 "

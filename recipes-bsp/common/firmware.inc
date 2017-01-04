@@ -1,10 +1,10 @@
 # the git repo for raspberry pi firmware is >5GB, so just fetch the latest tarball
 # which is only 112MB
 
-RPIFW_VER = "1.20160921"
+RPIFW_VER = "1.20161125"
 RPIFW_SRC_URI = "https://github.com/raspberrypi/firmware/archive/${RPIFW_VER}.tar.gz"
-RPIFW_MD5 = "07c3ce1e4a83c9e66de0a6db60357961"
-RPIFW_SHA256 = "68a43bd62ddfc377b04c24c341107a2ec2e6b7b176c21588f65cee30020cfea9"
+RPIFW_MD5 = "a9281d2869e2d7673a83d41bacfa66c2"
+RPIFW_SHA256 = "744e050630621c70991c91e0ee8663dc2f579e743583ca762b13b00bc75859bc"
 RPIFW_S = "${WORKDIR}/firmware-${RPIFW_VER}"
 
 SRC_URI = "${RPIFW_SRC_URI}"
