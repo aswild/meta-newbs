@@ -43,26 +43,34 @@ DEPLOY_BOOTIMG_SYMLINK = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}-${MACHINE}.boot.vfat
 
 IMAGE_CMD_newbs-bootimg() {
     BOOT_DIR=${WORKDIR}/boot
+    rm -rf ${BOOT_DIR}
     install -d $BOOT_DIR
     install -m 644 ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}${KERNEL_INITRAMFS}-${MACHINE}.bin \
                    $BOOT_DIR/${KERNEL_NAME}
+
+    # copy bootloader files
     install -t $BOOT_DIR ${DEPLOY_DIR_IMAGE}/${IMAGE_BOOTLOADER}/*
+    rm -vf ${DEPLOY_DIR_IMAGE}/${IMAGE_BOOTLOADER}/*.stamp
+
     #install $(readlink -f "${IMGDEPLOYDIR}/${INIT_DEPLOY_SYMLINK}") $BOOT_DIR/${NEWBS_INIT_DEST}
 
+    # copy device tree files
     DTS="${@get_dts(d, d.getVar('KERNEL_VERSION_BASE',True))}"
     if [ -n "$DTS" ]; then
         DT_OVERLAYS="${@split_overlays(d, 0, d.getVar('KERNEL_VERSION_BASE',True))}"
         DT_ROOT="${@split_overlays(d, 1, d.getVar('KERNEL_VERSION_BASE',True))}"
 
         for DTB in $DT_ROOT; do
-            dtbname=${KERNEL_IMAGETYPE}-$(basename $DTB)
-            install -m 644 ${DEPLOY_DIR_IMAGE}/${DTB_DEPLOYDIR}/$dtbname $BOOT_DIR/
+            dtb_basename=$(basename $DTB)
+            dtbname=${KERNEL_IMAGETYPE}-$dtb_basename
+            install -m 644 ${DEPLOY_DIR_IMAGE}/${DTB_DEPLOYDIR}/$dtbname $BOOT_DIR/$dtb_basename
         done
 
         install -d $BOOT_DIR/overlays
         for DTB in ${DT_OVERLAYS}; do
-            dtbname=${KERNEL_IMAGETYPE}-$(basename $DTB)
-            install -m 644 ${DEPLOY_DIR_IMAGE}/${DTB_DEPLOYDIR}/$dtbname $BOOT_DIR/overlays/
+            dtb_basename=$(basename $DTB)
+            dtbname=${KERNEL_IMAGETYPE}-$dtb_basename
+            install -m 644 ${DEPLOY_DIR_IMAGE}/${DTB_DEPLOYDIR}/$dtbname $BOOT_DIR/overlays/$dtb_basename
         done
     fi
 

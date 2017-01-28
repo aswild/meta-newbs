@@ -228,3 +228,6 @@ DISTRO = "newbs"
 
 BB_NUMBER_THREADS  = "${@oe.utils.cpu_count()}"
 PARALLEL_MAKE   = "-j${@oe.utils.cpu_count()}"
+
+# Uncomment this if /usr/bin/python is python3
+#DISTROOVERRIDES_append = ":hostpython3"

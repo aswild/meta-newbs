@@ -11,10 +11,9 @@ do_deploy_append() {
 
     if [ "${MACHINE}" == "raspberrypi3" ]; then
         tee $CONFIG <<EOF
-
 #### NEWBS CONFIG ####
-enable_uart=1
-core_freq=250
+#enable_uart=1
+#core_freq=250
 dtoverlay=pi3-disable-bt
 EOF
     fi
