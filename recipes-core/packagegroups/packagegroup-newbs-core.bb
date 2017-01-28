@@ -6,14 +6,19 @@ inherit packagegroup
 RDEPENDS_${PN} = " \
     packagegroup-core-full-cmdline-libs \
     packagegroup-core-full-cmdline-utils \
-    packagegroup-core-full-cmdline-initscripts \
     packagegroup-core-full-cmdline-sys-services \
     dosfstools \
+    git \
+    htop \
     iproute2 \
     iputils \
     partclone \
-    git \
+    the-silver-searcher \
     tmux \
-    htop \
-    homefiles \
+    usbutils \
+    vim \
+    wild-linuxfiles \
+    zsh \
 "
+
+#packagegroup-core-full-cmdline-initscripts

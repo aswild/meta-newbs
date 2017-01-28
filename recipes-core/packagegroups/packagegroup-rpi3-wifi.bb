@@ -6,5 +6,6 @@ inherit packagegroup
 RDEPENDS_${PN} = " \
     linux-firmware-bcm43430 \
     wireless-tools \
+    wpa-supplicant \
     iw \
 "
