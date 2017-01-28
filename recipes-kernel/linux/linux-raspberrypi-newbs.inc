@@ -10,8 +10,8 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
 PN = "linux-raspberrypi-newbs"
-SRCPV := "${d.getVar('SRCREV',True)[:10]}"
-PV = "${LINUX_VERSION}"
+SRCPV := "${@d.getVar('SRCREV',True)[:10]}"
+PV = "${LINUX_VERSION}+${SRCPV}"
 python __anonymous() {
     import re
     pv = d.getVar("PV", True)
