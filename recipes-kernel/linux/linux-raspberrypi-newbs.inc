@@ -1,6 +1,5 @@
 # NEWBS kernel customizations
 
-inherit kernel siteinfo
 require recipes-kernel/linux/linux-yocto.inc
 inherit linux-raspberrypi-base
 

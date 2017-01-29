@@ -57,12 +57,10 @@ NEWBS_MARKER="### NEWBS ###"
 sed -i "s|##NEWBSROOT##|$NEWBSROOT|g" $BB_CONF
 sed -i "s|##NEWBSROOT##|$NEWBSROOT|g" $LOCAL_CONF
 
-#if ( python --version | grep -q 'Python 3' ) && [[ -d "$NEWBSROOT/meta-python3-compat" ]]; then
-#    # python3 compatibility layer for building on Arch where /usr/bin/python -> python3
-#    echo "Adding meta-python3-compat layer"
-#    echo "BBLAYERS += \"$NEWBSROOT/meta-python3-compat\"" >>$BB_CONF
-#fi
-
+if /usr/bin/env python --version 2>&1 | grep -q "Python 3"; then
+    echo "Enabling Host Python3 compatibility override"
+    sed -i '/HOST_DEFAULT_PYTHON3 = /s/^#//' $LOCAL_CONF
+fi
 
 sed -i "/$NEWBS_MARKER/,\$s|^MACHINE.*|MACHINE = \"$MACHINE\"|" $LOCAL_CONF
 

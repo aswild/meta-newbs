@@ -218,6 +218,9 @@ CONF_VERSION = "1"
 
 KCONFIG_CONFIG_COMMAND = "nconfig"
 
+BB_NUMBER_THREADS  = "${@oe.utils.cpu_count()}"
+PARALLEL_MAKE   = "-j${@oe.utils.cpu_count()}"
+
 ### NEWBS ###
 NEWBSROOT  = "##NEWBSROOT##"
 DL_DIR     = "${NEWBSROOT}/downloads"
@@ -226,8 +229,12 @@ SSTATE_DIR = "${NEWBSROOT}/sstate-cache"
 MACHINE = "raspberrypi3"
 DISTRO = "newbs"
 
-BB_NUMBER_THREADS  = "${@oe.utils.cpu_count()}"
-PARALLEL_MAKE   = "-j${@oe.utils.cpu_count()}"
+# Comment this to disable including rpi3 wifi drivers
+INCLUDE_RPI3_WIFI = "y"
 
 # Uncomment this if /usr/bin/python is python3
-#DISTROOVERRIDES_append = ":hostpython3"
+#HOST_DEFAULT_PYTHON3 = "y"
+
+# Uncomment and set this to specify SSH host to copy to /etc/ssh on the
+# target. A whitespace-separated list and/or shell glob pattern will work
+#SSH_HOST_KEYS = "${NEWBSROOT}/ssh_host_keys/*"

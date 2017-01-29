@@ -16,7 +16,10 @@ RDEPENDS_${PN} = " \
     iputils \
     openssh \
     openssh-sshd \
+    openssh-sftp \
+    openssh-sftp-server \
     partclone \
+    rsync \
     sysstat \
     the-silver-searcher \
     tmux \
@@ -27,6 +30,6 @@ RDEPENDS_${PN} = " \
     zsh \
 "
 
-RDEPENDS_${PN} += "packagegroup-core-buildessential"
+#RDEPENDS_${PN} += "packagegroup-core-buildessential"
 
 #packagegroup-core-full-cmdline-initscripts
