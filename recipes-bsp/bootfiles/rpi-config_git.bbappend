@@ -15,6 +15,7 @@ do_deploy_append() {
 #enable_uart=1
 #core_freq=250
 dtoverlay=pi3-disable-bt
+dtoverlay=pi3-spi-shiftbrite
 EOF
     fi
 }
