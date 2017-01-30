@@ -9,8 +9,8 @@ SRC_URI += " \
 
 inherit systemd
 
-SYSTEMD_SERVICE = "ifup.service"
-SYSTEMD_AUTO_ENABLE = "enable"
+SYSTEMD_SERVICE_${PN} = "ifup.service"
+SYSTEMD_AUTO_ENABLE_${PN} = "enable"
 
 do_install_append() {
     install -d ${D}${sysconfdir}/network/interfaces.d \

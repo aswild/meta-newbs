@@ -1,0 +1,14 @@
+[Unit]
+Description=NEWBS NVRAM Bind mounts
+DefaultDependencies=false
+RequiresMountsFor=/home
+Before=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+StandardOutput=journal+console
+ExecStart=/usr/sbin/newbs-nvram
+
+[Install]
+WantedBy=local-fs.target

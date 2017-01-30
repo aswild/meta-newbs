@@ -16,6 +16,7 @@ RDEPENDS_${PN} = " \
     ifupdown \
     iproute2 \
     iputils \
+    newbs-nvram \
     openssh \
     openssh-sshd \
     openssh-sftp \
