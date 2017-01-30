@@ -26,7 +26,7 @@ COMPATIBLE_MACHINE = "raspberrypi[23]"
 KBUILD_DEFCONFIG_raspberrypi2 = "bcm2709_defconfig"
 KBUILD_DEFCONFIG_raspberrypi3 = "bcm2709_defconfig"
 KCONFIG_MODE = "alldefconfig"
-LINUX_VERSION_EXTENSION = "-NEWBS"
+LINUX_VERSION_EXTENSION = "-newbs"
 DTB_DEPLOYDIR ?= ""
 
 #do_configure_prepend() {
