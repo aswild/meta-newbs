@@ -10,15 +10,16 @@ RDEPENDS_${PN} = " \
     curl \
     dhcp-client \
     dosfstools \
+    e2fsprogs \
     git \
     htop \
+    ifupdown \
     iproute2 \
     iputils \
     openssh \
     openssh-sshd \
     openssh-sftp \
     openssh-sftp-server \
-    partclone \
     rsync \
     sysstat \
     the-silver-searcher \
@@ -33,3 +34,4 @@ RDEPENDS_${PN} = " \
 #RDEPENDS_${PN} += "packagegroup-core-buildessential"
 
 #packagegroup-core-full-cmdline-initscripts
+#xfsprogs

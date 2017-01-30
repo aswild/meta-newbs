@@ -1,0 +1,15 @@
+[Unit]
+Description=ifup network autoconfiguration
+Before=network.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/ifup -a
+ExecStop=/sbin/ifdown -a
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=network.target

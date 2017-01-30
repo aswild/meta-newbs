@@ -1,7 +1,7 @@
 SUMMARY = "NEWBS core recovery image"
 LICENSE = "MIT"
 
-DEPENDS = "${NEWBS_INIT}"
+#DEPENDS = "${NEWBS_INIT}"
 
 IMAGE_INSTALL = " \
     packagegroup-core-boot \
@@ -10,7 +10,7 @@ IMAGE_INSTALL = " \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
 
-IMAGE_INSTALL_append_rpi3-wifi = "packagegroup-rpi3-wifi"
+IMAGE_INSTALL_append_raspberrypi3 = "packagegroup-rpi3-wifi"
 
 copy_ssh_host_keys() {
     if [ -n "${SSH_HOST_KEYS}" ]; then
@@ -26,12 +26,18 @@ ROOTFS_POSTPROCESS_COMMAND_prepend = "copy_ssh_host_keys; "
 newbs_rootfs_postprocess() {
     # Yocto will install the kernel image to /boot, but we don't want that because
     # the boot partition will be mounted in /boot (by fstab in base-files)
-    cd ${IMAGE_ROOTFS}
-    rm -vf boot/*
+    rm -fv ${IMAGE_ROOTFS}/boot/*
 
-    ln -sfv /usr/share/zoneinfo/America/New_York ${IMAGE_ROOTFS}${sysconfdir}/localtime
+    # set timezone to match the build host
+    localtime_file=${sysconfdir}/localtime
+    if [ -L $localtime_file ]; then
+        host_tz=`readlink -f $localtime_file`
+        if [ -n ${host_tz} ] && [ -e ${IMAGE_ROOTFS}${host_tz} ]; then
+            echo "Setting timezone to ${host_tz}"
+            ln -sfv ${host_tz} ${IMAGE_ROOTFS}${localtime_file}
+        fi
+    fi
 }
-ROOTFS_POSTPROCESS_COMMAND += "newbs_rootfs_postprocess;"
-
+ROOTFS_POSTPROCESS_append = " newbs_rootfs_postprocess;"
 
 inherit core-image
