@@ -37,6 +37,11 @@ newbs_rootfs_postprocess() {
             ln -sfv ${host_tz} ${IMAGE_ROOTFS}${localtime_file}
         fi
     fi
+
+    # make zsh the default shell
+    if [ -x ${IMAGE_ROOTFS}/bin/zsh ]; then
+        sed -i '/^root/s|/bin/sh$|/bin/zsh|' ${IMAGE_ROOTFS}/etc/passwd
+    fi
 }
 ROOTFS_POSTPROCESS_append = " newbs_rootfs_postprocess;"
 

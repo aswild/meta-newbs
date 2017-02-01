@@ -1,7 +1,7 @@
-From d872f7cd5bced3fda0f37048cfcc4839c93feec2 Mon Sep 17 00:00:00 2001
+From c3dc4ad912a3bd5b4447e79b782a05bdc042fbe1 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 29 Jan 2017 04:30:13 -0500
-Subject: [PATCH] shiftbrite RGB LED driver
+Subject: [PATCH 1/2] shiftbrite RGB LED driver
 
 Holy shit, I wrote a kernel driver from scratch and it actually works.
 Well, mostly at least. If I remove and re-insert this module, the system
@@ -288,6 +288,72 @@ index 000000000000..1a84d552ca67
 +MODULE_AUTHOR("Allen Wild <allenwild93@gmail.com>");
 +MODULE_DESCRIPTION("ShiftBrite SPI LED driver");
 +MODULE_LICENSE("GPL");
+-- 
+2.11.0
+
+
+From 254f96157fc0639733902c34b7f35ac787f69415 Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Sun, 29 Jan 2017 22:15:58 -0500
+Subject: [PATCH 2/2] shiftbrite: dt overlay tweaks
+
+---
+ .../dts/overlays/pi3-spi-shiftbrite-overlay.dts    | 28 ++++++++++++++++++----
+ 1 file changed, 23 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
+index 1e27e2ede3d4..f21777bec661 100644
+--- a/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
++++ b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
+@@ -7,7 +7,7 @@
+ /plugin/;
+ 
+ / {
+-    compatible = "brcm,bcm2835", "brcm,bcm2708", "brcm,bcm2709", "brcm,bcm2710";
++    compatible = "brcm,bcm2835", "brcm,bcm2708", "brcm,bcm2709";
+     /* disable spi-dev for spi0.0 & spi0.1 */
+     fragment@0 {
+         target = <&spi0>;
+@@ -15,17 +15,35 @@
+             status = "okay";
+ 
+             spidev@0{
+-                    status = "disabled";
++                status = "disabled";
+             };
+             spidev@1{
+-                    status = "disabled";
++                status = "disabled";
+             };
++        };
++    };
++
++    fragment@1 {
++        target = <&gpio>;
++        __overlay__ {
++            spi0_pins: spi0_pins {
++                brcm,pins = <8 9 10 11>;
++                brcm,function = <4>; /* alt0 */
++            };
++        };
++    };
++
++    fragment@2 {
++        target = <&spi0>;
++        __overlay__ {
++            #address-cells = <1>;
++            #size-cells = <0>;
++            pinctrl-names = "default";
++            pinctrl-0 = <&spi0_pins>;
+ 
+             shiftbrite@0 {
+                 compatible = "shiftbrite";
+                 reg = <0>;      /* CE0 */
+-                #address-cells = <1>;
+-                #size-cells = <0>;
+                 spi-max-frequency = <500000>;
+                 status = "okay";
+             };
 -- 
 2.11.0
 

@@ -29,16 +29,6 @@ KCONFIG_MODE = "alldefconfig"
 LINUX_VERSION_EXTENSION = "-newbs"
 DTB_DEPLOYDIR ?= ""
 
-#do_configure_prepend() {
-#    # *.cfg in SRC_URI and KBUILD_DEFCONFIG don't seem to go well together with
-#    # how kernel-yocto.bbclass handles the metadata, so create an initial .config here
-#    # which then gets run through "make olddefconfig"
-#    cp -vf ${WORKDIR}/defconfig ${B}/.config
-#    for cfg in ${WORKDIR}/*.cfg; do
-#        cat $cfg >>${B}/.config
-#    done
-#}
-
 do_deploy_append() {
     # deploy cmdline.txt
     install -d ${DEPLOYDIR}/bcm2835-bootfiles
