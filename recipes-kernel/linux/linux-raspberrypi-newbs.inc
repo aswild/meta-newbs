@@ -23,8 +23,8 @@ python __anonymous() {
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV_SHORT}:"
 
 COMPATIBLE_MACHINE = "raspberrypi[23]"
-KBUILD_DEFCONFIG_raspberrypi2 = "bcm2709_defconfig"
-KBUILD_DEFCONFIG_raspberrypi3 = "bcm2709_defconfig"
+#KBUILD_DEFCONFIG_raspberrypi2 ?= "bcm2709_defconfig"
+#KBUILD_DEFCONFIG_raspberrypi3 ?= "bcm2709_defconfig"
 KCONFIG_MODE = "alldefconfig"
 LINUX_VERSION_EXTENSION = "-newbs"
 DTB_DEPLOYDIR ?= ""
