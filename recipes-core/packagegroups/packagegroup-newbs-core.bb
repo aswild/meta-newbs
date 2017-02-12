@@ -13,6 +13,7 @@ RDEPENDS_${PN} = " \
     e2fsprogs \
     git \
     htop \
+    i2c-tools \
     ifupdown \
     iproute2 \
     iputils \
@@ -21,6 +22,10 @@ RDEPENDS_${PN} = " \
     openssh-sshd \
     openssh-sftp \
     openssh-sftp-server \
+    python \
+    python-modules \
+    python3 \
+    python3-modules \
     rsync \
     sysstat \
     the-silver-searcher \
