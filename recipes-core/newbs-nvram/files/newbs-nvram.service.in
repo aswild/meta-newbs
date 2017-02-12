@@ -1,7 +1,7 @@
 [Unit]
 Description=NEWBS NVRAM Bind mounts
 DefaultDependencies=false
-RequiresMountsFor=/home
+RequiresMountsFor=@NEWBS_NVRAM_DIR@
 Before=local-fs.target
 
 [Service]

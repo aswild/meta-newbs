@@ -10,7 +10,7 @@ PV = "1.0"
 SRC_URI = " \
     file://LICENSE \
     file://newbs-nvram \
-    file://newbs-nvram.service \
+    file://newbs-nvram.service.in \
 "
 
 FILES_${PN} = " \
@@ -30,7 +30,8 @@ do_install() {
     install -m 0755 newbs-nvram ${D}${sbindir}/
 
     install -d ${D}${systemd_unitdir}/system
-    install -m 0644 newbs-nvram.service ${D}${systemd_unitdir}/system/
+    sed "s|@NEWBS_NVRAM_DIR@|${NEWBS_NVRAM_DIR}|" newbs-nvram.service.in \
+        >${D}${systemd_unitdir}/system/newbs-nvram.service
 
     install -d ${D}${sysconfdir}/default
     echo "NEWBS_NVRAM_DIR=\"${NEWBS_NVRAM_DIR}\"" >${D}${sysconfdir}/default/newbs-nvram
