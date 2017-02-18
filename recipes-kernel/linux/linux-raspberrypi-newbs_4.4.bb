@@ -1,7 +1,7 @@
 # NEWBS Linux 4.4 kernel
 
-LINUX_VERSION ?= "4.4.48"
-SRCREV = "fb50a274e277b6e25588bf96fd8ed8814f4d95c6"
+LINUX_VERSION ?= "4.4.49"
+SRCREV = "8d1dd639a4db6ccc416bb0a00afc7a8888018b3d"
 SRC_URI = "git://github.com/raspberrypi/linux.git;protocol=git;branch=rpi-4.4.y"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
