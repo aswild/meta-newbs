@@ -33,16 +33,29 @@ newbs_rootfs_postprocess() {
     if [ -L $localtime_file ]; then
         host_tz=`readlink -f $localtime_file`
         if [ -n ${host_tz} ] && [ -e ${IMAGE_ROOTFS}${host_tz} ]; then
-            echo "Setting timezone to ${host_tz}"
+            bbnote "Setting timezone to ${host_tz}"
             ln -sfv ${host_tz} ${IMAGE_ROOTFS}${localtime_file}
         fi
     fi
 
     # make zsh the default shell
     if [ -x ${IMAGE_ROOTFS}/bin/zsh ]; then
+        bbnote "Setting /bin/zsh as default root shell"
         sed -i '/^root/s|/bin/sh$|/bin/zsh|' ${IMAGE_ROOTFS}/etc/passwd
     fi
+
+    # Use systemd-networkd and systemd-resolvd
+    rm -rvf ${IMAGE_ROOTFS}${sysconfdir}network
+
+    if [ "${MACHINE}" = "raspberrypi3" ]; then
+        install -d ${IMAGE_ROOTFS}${sysconfdir}/wpa_supplicant
+        ln -sfv /run/systemd/resolve/resolv.conf ${IMAGE_ROOTFS}${sysconfdir}/resolv.conf
+        bbnote "Enabling wpa_supplicant@wlan0.service"
+        # systemctl --root=${IMAGE_ROOTFS} enable wpa_supplicant@wlan0.service
+        ln -sfv ../../../../lib/systemd/system/wpa_supplicant@.service \
+                ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/multi-user.target.wants/wpa_supplicant@wlan0.service
+    fi
 }
-ROOTFS_POSTPROCESS_append = " newbs_rootfs_postprocess;"
+ROOTFS_POSTPROCESS_COMMAND_append = " newbs_rootfs_postprocess;"
 
 inherit core-image

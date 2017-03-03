@@ -229,9 +229,6 @@ SSTATE_DIR = "${NEWBSROOT}/sstate-cache"
 MACHINE = "raspberrypi3"
 DISTRO = "newbs"
 
-# Comment this to disable including rpi3 wifi drivers
-INCLUDE_RPI3_WIFI = "y"
-
 # Uncomment this if /usr/bin/python is python3
 #HOST_DEFAULT_PYTHON3 = "y"
 

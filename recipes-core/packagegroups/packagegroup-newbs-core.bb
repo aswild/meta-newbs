@@ -12,11 +12,13 @@ RDEPENDS_${PN} = " \
     dosfstools \
     e2fsprogs \
     git \
+    git-perltools \
     htop \
     i2c-tools \
-    ifupdown \
     iproute2 \
     iputils \
+    make \
+    man \
     newbs-nvram \
     openssh \
     openssh-sshd \
