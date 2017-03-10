@@ -2,3 +2,5 @@ patch 0001-shiftbrite-RGB-LED-driver.patch
 patch 0002-shiftbrite-dt-overlay-tweaks.patch
 patch 0003-shiftbrite-expose-config-register-in-sysfs.patch
 patch 0004-shiftbrite-use-spinlock-instead-of-mutex.patch
+patch 0005-shiftbrite-add-hello-world-chrdev.patch
+patch 0006-shiftbrite-add-hello-ioctl.patch
