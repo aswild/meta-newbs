@@ -1,7 +1,7 @@
-From 669a561aff8730e3b9bbd7442b697eaa4cc4c7d4 Mon Sep 17 00:00:00 2001
+From ea230194166829e592aa03655282eda94b27c8a1 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 29 Jan 2017 04:30:13 -0500
-Subject: [PATCH 1/4] shiftbrite RGB LED driver
+Subject: [PATCH 02/11] shiftbrite RGB LED driver
 
 Holy shit, I wrote a kernel driver from scratch and it actually works.
 Well, mostly at least. If I remove and re-insert this module, the system
@@ -17,10 +17,10 @@ will kernel panic some arbitrary time afterwards.
  create mode 100644 drivers/misc/shiftbrite.c
 
 diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
-index c890e5ddb0e2..295972639ea3 100644
+index 0f73407..cf0dbcf 100644
 --- a/arch/arm/boot/dts/overlays/Makefile
 +++ b/arch/arm/boot/dts/overlays/Makefile
-@@ -58,6 +58,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+@@ -59,6 +59,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
  	pi3-disable-bt.dtbo \
  	pi3-disable-wifi.dtbo \
  	pi3-miniuart-bt.dtbo \
@@ -30,7 +30,7 @@ index c890e5ddb0e2..295972639ea3 100644
  	pisound.dtbo \
 diff --git a/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
 new file mode 100644
-index 000000000000..1e27e2ede3d4
+index 0000000..1e27e2e
 --- /dev/null
 +++ b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
 @@ -0,0 +1,34 @@
@@ -69,7 +69,7 @@ index 000000000000..1e27e2ede3d4
 +    };
 +};
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index 779f7d61a177..d8b59a8914cd 100644
+index 779f7d6..d8b59a8 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
 @@ -159,6 +159,14 @@ config SGI_IOC4
@@ -88,7 +88,7 @@ index 779f7d61a177..d8b59a8914cd 100644
  	tristate "TI Flash Media interface support"
  	depends on PCI
 diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index 6c400f0fb92f..6549404e6e9b 100644
+index 6c400f0..6549404 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
 @@ -54,6 +54,7 @@ obj-$(CONFIG_ECHO)		+= echo/
@@ -101,7 +101,7 @@ index 6c400f0fb92f..6549404e6e9b 100644
  lkdtm-$(CONFIG_LKDTM)		+= lkdtm_bugs.o
 diff --git a/drivers/misc/shiftbrite.c b/drivers/misc/shiftbrite.c
 new file mode 100644
-index 000000000000..1a84d552ca67
+index 0000000..1a84d55
 --- /dev/null
 +++ b/drivers/misc/shiftbrite.c
 @@ -0,0 +1,186 @@
@@ -292,5 +292,5 @@ index 000000000000..1a84d552ca67
 +MODULE_DESCRIPTION("ShiftBrite SPI LED driver");
 +MODULE_LICENSE("GPL");
 -- 
-2.12.0
+2.9.3
 

@@ -1,6 +1,11 @@
-patch 0001-shiftbrite-RGB-LED-driver.patch
-patch 0002-shiftbrite-dt-overlay-tweaks.patch
-patch 0003-shiftbrite-expose-config-register-in-sysfs.patch
-patch 0004-shiftbrite-use-spinlock-instead-of-mutex.patch
-patch 0005-shiftbrite-add-hello-world-chrdev.patch
-patch 0006-shiftbrite-add-hello-ioctl.patch
+patch 0001-Makefile-allow-setting-INSTALL_HDR_PATH-through-the-.patch
+patch 0002-shiftbrite-RGB-LED-driver.patch
+patch 0003-shiftbrite-dt-overlay-tweaks.patch
+patch 0004-shiftbrite-expose-config-register-in-sysfs.patch
+patch 0005-shiftbrite-use-spinlock-instead-of-mutex.patch
+patch 0006-shiftbrite-add-hello-world-chrdev.patch
+patch 0007-shiftbrite-add-hello-ioctl.patch
+patch 0008-shiftbrite-big-probe-release-refactoring-follow-spid.patch
+patch 0009-shiftbrite-move-sysfs-files-to-the-shiftbrite-device.patch
+patch 0010-shiftbrite-implement-read-write-cdev-and-ioctls.patch
+patch 0011-shiftbrite-use-GPIO-for-latch-instead-of-SPI-CS.patch

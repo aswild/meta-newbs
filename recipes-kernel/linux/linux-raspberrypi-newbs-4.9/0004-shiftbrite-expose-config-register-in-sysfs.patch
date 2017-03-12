@@ -1,14 +1,14 @@
-From 7e40329b3840d2bbccc53e4ce892da2bd7fc0f13 Mon Sep 17 00:00:00 2001
+From 9621cde70ee476679a84581de4b7c36a67abb453 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Mon, 20 Feb 2017 21:45:17 -0500
-Subject: [PATCH 3/4] shiftbrite: expose config register in sysfs
+Subject: [PATCH 04/11] shiftbrite: expose config register in sysfs
 
 ---
  drivers/misc/shiftbrite.c | 166 ++++++++++++++++++++++++++++++++++++++++------
  1 file changed, 147 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/misc/shiftbrite.c b/drivers/misc/shiftbrite.c
-index 1a84d552ca67..df4717f485f6 100644
+index 1a84d55..df4717f 100644
 --- a/drivers/misc/shiftbrite.c
 +++ b/drivers/misc/shiftbrite.c
 @@ -1,5 +1,17 @@
@@ -273,5 +273,5 @@ index 1a84d552ca67..df4717f485f6 100644
      spi_set_drvdata(spi, NULL);
  
 -- 
-2.12.0
+2.9.3
 
