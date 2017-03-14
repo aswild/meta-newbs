@@ -1,7 +1,7 @@
-From 253374a18c6fad8f6b6826d77d1dc04cfa6d909a Mon Sep 17 00:00:00 2001
+From 8a7250e1192e383e84e0969a8652c7162bdafecd Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 10 Mar 2017 21:08:19 -0500
-Subject: [PATCH 01/11] Makefile: allow setting INSTALL_HDR_PATH through the
+Subject: [PATCH 01/13] Makefile: allow setting INSTALL_HDR_PATH through the
  environment
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 01/11] Makefile: allow setting INSTALL_HDR_PATH through the
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 14dc275..5272698 100644
+index 5e7706e..e81a8a3 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1123,7 +1123,7 @@ firmware_install:

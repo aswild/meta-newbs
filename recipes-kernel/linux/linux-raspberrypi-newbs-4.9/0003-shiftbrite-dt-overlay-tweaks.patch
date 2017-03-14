@@ -1,7 +1,7 @@
-From 65ecf9e302cec65289ab1633225318c8e2b75656 Mon Sep 17 00:00:00 2001
+From bcb27aca18ac3ef7e381196ba5d5511eeaeb1f44 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 29 Jan 2017 22:15:58 -0500
-Subject: [PATCH 03/11] shiftbrite: dt overlay tweaks
+Subject: [PATCH 03/13] shiftbrite: dt overlay tweaks
 
 ---
  .../dts/overlays/pi3-spi-shiftbrite-overlay.dts    | 28 ++++++++++++++++++----

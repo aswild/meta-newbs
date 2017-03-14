@@ -1,7 +1,7 @@
-From 24ca098248ba2a55bd699f306e651a42bc435012 Mon Sep 17 00:00:00 2001
+From 183d02325fdf5f048b2e21def4e1ec46676baa1c Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 10 Mar 2017 00:57:42 -0500
-Subject: [PATCH 07/11] shiftbrite: add hello ioctl
+Subject: [PATCH 07/13] shiftbrite: add hello ioctl
 
 ---
  drivers/misc/shiftbrite.c      | 27 ++++++++++++++++++++++++---
