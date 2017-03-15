@@ -1,7 +1,7 @@
 From c35d4adb5618c80a8af8a5f948f28e9d37d7b495 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 00:59:40 -0400
-Subject: [PATCH 12/13] shiftbrite: rename overlay to spi0-shiftbrite.dtbo, add
+Subject: [PATCH 12/15] shiftbrite: rename overlay to spi0-shiftbrite.dtbo, add
  spi1 overlay
 
 spi1 might not work though

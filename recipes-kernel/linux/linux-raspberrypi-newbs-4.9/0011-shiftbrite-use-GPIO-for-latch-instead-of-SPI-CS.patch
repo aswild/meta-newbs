@@ -1,7 +1,7 @@
 From 08a09e731d162b7b06c2a89c2a3cda5f45ba8d29 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 22:02:35 -0500
-Subject: [PATCH 11/13] shiftbrite: use GPIO for latch instead of SPI CS
+Subject: [PATCH 11/15] shiftbrite: use GPIO for latch instead of SPI CS
 
 Apparently the SPI APIs like to toggle CS in between transfers, which
 causes crazy things to happen on the shiftbrite (despite working most of

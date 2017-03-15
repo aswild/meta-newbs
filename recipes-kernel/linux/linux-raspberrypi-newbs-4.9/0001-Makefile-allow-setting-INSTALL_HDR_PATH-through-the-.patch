@@ -1,7 +1,7 @@
 From 8a7250e1192e383e84e0969a8652c7162bdafecd Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 10 Mar 2017 21:08:19 -0500
-Subject: [PATCH 01/13] Makefile: allow setting INSTALL_HDR_PATH through the
+Subject: [PATCH 01/15] Makefile: allow setting INSTALL_HDR_PATH through the
  environment
 
 ---

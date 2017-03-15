@@ -1,7 +1,7 @@
 From 0cb549942a1a9c666fcfedebae390e9c799dcbe6 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Mon, 20 Feb 2017 21:45:17 -0500
-Subject: [PATCH 04/13] shiftbrite: expose config register in sysfs
+Subject: [PATCH 04/15] shiftbrite: expose config register in sysfs
 
 ---
  drivers/misc/shiftbrite.c | 166 ++++++++++++++++++++++++++++++++++++++++------

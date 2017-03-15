@@ -11,3 +11,5 @@ patch 0010-shiftbrite-implement-read-write-cdev-and-ioctls.patch
 patch 0011-shiftbrite-use-GPIO-for-latch-instead-of-SPI-CS.patch
 patch 0012-shiftbrite-rename-overlay-to-spi0-shiftbrite.dtbo-ad.patch
 patch 0013-neostrip-add-initial-ws2812-driver.patch
+patch 0014-Commit-rsync-to-pi-envsetup-create-patches-scripts.patch
+patch 0015-neostrip-tweak-to-workaround-SPI-hardware-resetting-.patch

@@ -1,7 +1,7 @@
 From e00f014b8b216a7056b4b5082f63af3f2dcfa330 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 10 Mar 2017 00:25:35 -0500
-Subject: [PATCH 06/13] shiftbrite: add hello-world chrdev
+Subject: [PATCH 06/15] shiftbrite: add hello-world chrdev
 
 ---
  drivers/misc/shiftbrite.c | 110 +++++++++++++++++++++++++++++++++++++++++++---
