@@ -1,7 +1,7 @@
-From bd1c454bfecead90695b4de6bb238961cbfb554b Mon Sep 17 00:00:00 2001
+From 737a5d097a367336bb8c67e4ddd0f74bfea0018d Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 21:15:00 -0400
-Subject: [PATCH 14/15] Commit rsync-to-pi, envsetup, create-patches scripts
+Subject: [PATCH 14/16] Commit rsync-to-pi, envsetup, create-patches scripts
 
 ---
  scripts/create-patches.sh |  8 ++++++++

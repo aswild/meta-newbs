@@ -1,7 +1,7 @@
-From 208c49151c02da0abab71093e6f5844055857138 Mon Sep 17 00:00:00 2001
+From 56ee5588eea1d4d32d5c8b7c843e53ecb6c7c95c Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 23:33:07 -0400
-Subject: [PATCH 15/15] neostrip: tweak to workaround SPI hardware resetting
+Subject: [PATCH 15/16] neostrip: tweak to workaround SPI hardware resetting
  data in between bites
 
 ---

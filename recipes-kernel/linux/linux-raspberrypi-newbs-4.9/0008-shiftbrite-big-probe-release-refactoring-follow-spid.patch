@@ -1,7 +1,7 @@
-From fdecc23027c838281291bc5ac625c6cb3c154454 Mon Sep 17 00:00:00 2001
+From 3c851e4396d6f2f3d8ac206a6be1ae359c9a0639 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 15:22:12 -0500
-Subject: [PATCH 08/15] shiftbrite: big probe/release refactoring - follow
+Subject: [PATCH 08/16] shiftbrite: big probe/release refactoring - follow
  spidev paradigm
 
 ---
