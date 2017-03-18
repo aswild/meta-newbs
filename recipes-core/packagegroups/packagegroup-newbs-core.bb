@@ -11,6 +11,9 @@ RDEPENDS_${PN} = " \
     dhcp-client \
     dosfstools \
     e2fsprogs \
+    e2fsprogs-mke2fs \
+    e2fsprogs-resize2fs \
+    e2fsprogs-tune2fs \
     git \
     git-perltools \
     htop \
