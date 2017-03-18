@@ -5,7 +5,7 @@ LCONF_VERSION = "5"
 BBPATH = "${TOPDIR}"
 BBFILES ?= ""
 
-BBLAYERS ?= ##OEROOT##/meta"
+BBLAYERS ?= "##OEROOT##/meta"
 BBLAYERS += "##NEWBSROOT##/meta-openembedded/meta-oe"
 BBLAYERS += "##NEWBSROOT##/meta-openembedded/meta-filesystems"
 BBLAYERS += "##NEWBSROOT##/meta-raspberrypi"
@@ -14,4 +14,3 @@ BBLAYERS += "##NEWBSROOT##/meta-wild-common"
 BBLAYERS += "##NEWBSROOT##/meta-newbs"
 
 BBLAYERS_NON_REMOVABLE ?= "##OEROOT##/meta"
-"
