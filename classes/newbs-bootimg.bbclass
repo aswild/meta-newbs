@@ -11,7 +11,7 @@ IMAGE_BOOTLOADER ?= "bcm2835-bootfiles"
 # strip custom linux version extension to avoid breaking linux-raspberrypi-base
 #python __anonymous() {
 #    import re
-#    staging_dir = d.getVar("STAGING_KERNEL_BUILDDIR", True)
+#    staging_dir = d.getVar("STAGING_KERNEL_BUILDDIR")
 #    ver = get_kernelversion_file(staging_dir)
 #    ver = re.sub(r"-.*$", "", ver)
 #
@@ -55,10 +55,10 @@ IMAGE_CMD_newbs-bootimg() {
     #install $(readlink -f "${IMGDEPLOYDIR}/${INIT_DEPLOY_SYMLINK}") $BOOT_DIR/${NEWBS_INIT_DEST}
 
     # copy device tree files
-    DTS="${@get_dts(d, d.getVar('KERNEL_VERSION_BASE',True))}"
+    DTS="${@get_dts(d, d.getVar('KERNEL_VERSION_BASE'))}"
     if [ -n "$DTS" ]; then
-        DT_OVERLAYS="${@split_overlays(d, 0, d.getVar('KERNEL_VERSION_BASE',True))}"
-        DT_ROOT="${@split_overlays(d, 1, d.getVar('KERNEL_VERSION_BASE',True))}"
+        DT_OVERLAYS="${@split_overlays(d, 0, d.getVar('KERNEL_VERSION_BASE'))}"
+        DT_ROOT="${@split_overlays(d, 1, d.getVar('KERNEL_VERSION_BASE'))}"
 
         for DTB in $DT_ROOT; do
             dtb_basename=$(basename $DTB)
