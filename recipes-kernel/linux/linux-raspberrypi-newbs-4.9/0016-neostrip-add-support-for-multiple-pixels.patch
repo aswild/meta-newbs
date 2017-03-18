@@ -1,7 +1,7 @@
-From e4ad0243d2223d68f6cbf870f88014f3e2561e83 Mon Sep 17 00:00:00 2001
+From ce9e54680fa0cffd7bb6e738e1e8dc0cb182bbb1 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 17 Mar 2017 01:05:08 -0400
-Subject: [PATCH 16/16] neostrip: add support for multiple pixels
+Subject: [PATCH 16/17] neostrip: add support for multiple pixels
 
 TODO:
  * re-implement ioctls
@@ -14,7 +14,7 @@ TODO:
  3 files changed, 200 insertions(+), 66 deletions(-)
 
 diff --git a/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
-index 9edb38b..0bb27a7 100644
+index 9edb38b5e699..0bb27a79e272 100644
 --- a/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
 +++ b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
 @@ -39,12 +39,16 @@
@@ -38,7 +38,7 @@ index 9edb38b..0bb27a7 100644
 +    };
  };
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index a83dc09..54c3c07 100644
+index a83dc0928c3f..54c3c07ea832 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
 @@ -174,6 +174,19 @@ config NEOSTRIP
@@ -62,7 +62,7 @@ index a83dc09..54c3c07 100644
  	tristate "TI Flash Media interface support"
  	depends on PCI
 diff --git a/drivers/misc/neostrip.c b/drivers/misc/neostrip.c
-index 1ec8c93..35a10e10 100644
+index d835c3706bba..1b98c633d85a 100644
 --- a/drivers/misc/neostrip.c
 +++ b/drivers/misc/neostrip.c
 @@ -23,6 +23,7 @@
@@ -487,5 +487,5 @@ index 1ec8c93..35a10e10 100644
      kfree(chip);
      dev_info(&spi->dev, "neostrip driver unloaded\n");
 -- 
-2.9.3
+2.12.0
 

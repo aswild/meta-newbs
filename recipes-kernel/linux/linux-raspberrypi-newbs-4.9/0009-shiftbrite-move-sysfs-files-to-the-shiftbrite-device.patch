@@ -1,7 +1,7 @@
-From 6f9ac439935073132e2bd79ad19add5c1ebb9b00 Mon Sep 17 00:00:00 2001
+From a62a2086e710a6c48cff80a08f7834485120d776 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 15:39:09 -0500
-Subject: [PATCH 09/16] shiftbrite: move sysfs files to the shiftbrite device
+Subject: [PATCH 09/17] shiftbrite: move sysfs files to the shiftbrite device
  instead of spi device
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 09/16] shiftbrite: move sysfs files to the shiftbrite device
  1 file changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/misc/shiftbrite.c b/drivers/misc/shiftbrite.c
-index 80ed18f..876a215 100644
+index 80ed18f31c53..876a215baf42 100644
 --- a/drivers/misc/shiftbrite.c
 +++ b/drivers/misc/shiftbrite.c
 @@ -61,6 +61,7 @@
@@ -59,5 +59,5 @@ index 80ed18f..876a215 100644
      spin_lock_irq(&chip->lock);
      chip->spi = NULL;
 -- 
-2.9.3
+2.12.0
 

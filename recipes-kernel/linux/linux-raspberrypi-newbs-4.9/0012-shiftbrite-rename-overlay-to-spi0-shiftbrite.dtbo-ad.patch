@@ -1,7 +1,7 @@
-From 7b2174152f717d05a2152b4fed8a86bd105cefc2 Mon Sep 17 00:00:00 2001
+From 9e13a38136ac76bc9ae788a974f26c9a3d2e78b2 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 00:59:40 -0400
-Subject: [PATCH 12/16] shiftbrite: rename overlay to spi0-shiftbrite.dtbo, add
+Subject: [PATCH 12/17] shiftbrite: rename overlay to spi0-shiftbrite.dtbo, add
  spi1 overlay
 
 spi1 might not work though
@@ -14,7 +14,7 @@ spi1 might not work though
  create mode 100644 arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts
 
 diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
-index cf0dbcf..56b08dc 100644
+index cf0dbcfe50cb..56b08dc2cc61 100644
 --- a/arch/arm/boot/dts/overlays/Makefile
 +++ b/arch/arm/boot/dts/overlays/Makefile
 @@ -59,7 +59,6 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
@@ -43,7 +43,7 @@ rename from arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
 rename to arch/arm/boot/dts/overlays/spi0-shiftbrite-overlay.dts
 diff --git a/arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts b/arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts
 new file mode 100644
-index 0000000..b22f6de
+index 000000000000..b22f6de69a95
 --- /dev/null
 +++ b/arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts
 @@ -0,0 +1,63 @@
@@ -111,5 +111,5 @@ index 0000000..b22f6de
 +    };
 +};
 -- 
-2.9.3
+2.12.0
 

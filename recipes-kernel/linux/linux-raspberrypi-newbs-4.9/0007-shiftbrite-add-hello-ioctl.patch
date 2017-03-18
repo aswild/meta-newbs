@@ -1,7 +1,7 @@
-From 7b72c315b67f7de5fb654d13511ad70b426d9289 Mon Sep 17 00:00:00 2001
+From ee0b6fec9124112a6239061d2bc8dad0858a81c7 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 10 Mar 2017 00:57:42 -0500
-Subject: [PATCH 07/16] shiftbrite: add hello ioctl
+Subject: [PATCH 07/17] shiftbrite: add hello ioctl
 
 ---
  drivers/misc/shiftbrite.c      | 27 ++++++++++++++++++++++++---
@@ -11,7 +11,7 @@ Subject: [PATCH 07/16] shiftbrite: add hello ioctl
  create mode 100644 include/uapi/misc/shiftbrite.h
 
 diff --git a/drivers/misc/shiftbrite.c b/drivers/misc/shiftbrite.c
-index 600c8d8..6f6e883 100644
+index 600c8d81f3ea..6f6e88337f14 100644
 --- a/drivers/misc/shiftbrite.c
 +++ b/drivers/misc/shiftbrite.c
 @@ -18,13 +18,16 @@
@@ -63,7 +63,7 @@ index 600c8d8..6f6e883 100644
  
  // Init/Exit Functions
 diff --git a/include/uapi/misc/Kbuild b/include/uapi/misc/Kbuild
-index e96cae7..99beb11 100644
+index e96cae7d58c9..99beb11f7be2 100644
 --- a/include/uapi/misc/Kbuild
 +++ b/include/uapi/misc/Kbuild
 @@ -1,2 +1,3 @@
@@ -72,7 +72,7 @@ index e96cae7..99beb11 100644
 +header-y += shiftbrite.h
 diff --git a/include/uapi/misc/shiftbrite.h b/include/uapi/misc/shiftbrite.h
 new file mode 100644
-index 0000000..d309f73
+index 000000000000..d309f73383bd
 --- /dev/null
 +++ b/include/uapi/misc/shiftbrite.h
 @@ -0,0 +1,23 @@
@@ -100,5 +100,5 @@ index 0000000..d309f73
 +
 +#endif // _SHIFTBRITE_H_
 -- 
-2.9.3
+2.12.0
 

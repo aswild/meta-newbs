@@ -1,7 +1,7 @@
-From a2659bc655248b5d5f1a61d2a9c7636943abcb96 Mon Sep 17 00:00:00 2001
+From a2536a5afa55b592c70f251105e7816c682f5292 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 18:17:38 -0500
-Subject: [PATCH 10/16] shiftbrite: implement read/write cdev and ioctls
+Subject: [PATCH 10/17] shiftbrite: implement read/write cdev and ioctls
 
 ---
  drivers/misc/shiftbrite.c      | 82 +++++++++++++++++++++++++++++++++---------
@@ -9,7 +9,7 @@ Subject: [PATCH 10/16] shiftbrite: implement read/write cdev and ioctls
  2 files changed, 68 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/misc/shiftbrite.c b/drivers/misc/shiftbrite.c
-index 876a215..714c6e1 100644
+index 876a215baf42..714c6e1b0ab7 100644
 --- a/drivers/misc/shiftbrite.c
 +++ b/drivers/misc/shiftbrite.c
 @@ -113,7 +113,7 @@ static int shiftbrite_write_u32(struct shiftbrite_chip *chip, u32 value)
@@ -138,7 +138,7 @@ index 876a215..714c6e1 100644
              pr_err("shiftbrite: unknown ioctl\n");
              ret = -ENOTTY;
 diff --git a/include/uapi/misc/shiftbrite.h b/include/uapi/misc/shiftbrite.h
-index 717b2c5..b3e93ff 100644
+index 717b2c5bc627..b3e93ffa5c5a 100644
 --- a/include/uapi/misc/shiftbrite.h
 +++ b/include/uapi/misc/shiftbrite.h
 @@ -19,5 +19,7 @@
@@ -150,5 +150,5 @@ index 717b2c5..b3e93ff 100644
  
  #endif // _SHIFTBRITE_H_
 -- 
-2.9.3
+2.12.0
 

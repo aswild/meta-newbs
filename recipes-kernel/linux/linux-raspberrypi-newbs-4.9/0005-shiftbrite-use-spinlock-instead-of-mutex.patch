@@ -1,14 +1,14 @@
-From 6e91ec63de9b633d1fa4f903b4684a9dc593302e Mon Sep 17 00:00:00 2001
+From f31a795e9b6f165cd35f81e95ddfa1adbb543235 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Mon, 20 Feb 2017 22:56:12 -0500
-Subject: [PATCH 05/16] shiftbrite: use spinlock instead of mutex
+Subject: [PATCH 05/17] shiftbrite: use spinlock instead of mutex
 
 ---
  drivers/misc/shiftbrite.c | 86 +++++++++++++++++++++++++----------------------
  1 file changed, 45 insertions(+), 41 deletions(-)
 
 diff --git a/drivers/misc/shiftbrite.c b/drivers/misc/shiftbrite.c
-index df4717f..54db711 100644
+index df4717f485f6..54db711cb818 100644
 --- a/drivers/misc/shiftbrite.c
 +++ b/drivers/misc/shiftbrite.c
 @@ -17,7 +17,7 @@
@@ -195,5 +195,5 @@ index df4717f..54db711 100644
      return 0;
  }
 -- 
-2.9.3
+2.12.0
 

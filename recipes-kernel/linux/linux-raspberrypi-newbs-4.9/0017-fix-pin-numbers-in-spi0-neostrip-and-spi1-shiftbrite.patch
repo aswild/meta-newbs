@@ -1,0 +1,40 @@
+From 45d904c3cf485bcbb4c076851b689e15fa84f6ba Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Sat, 18 Mar 2017 16:05:52 -0400
+Subject: [PATCH 17/17] fix pin numbers in spi0-neostrip and spi1-shiftbrite
+ overlays
+
+---
+ arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts   | 2 +-
+ arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
+index 0bb27a79e272..2f5f7936e8f8 100644
+--- a/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
++++ b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
+@@ -14,7 +14,7 @@
+         __overlay__ {
+             spi0_pins: spi0_pins {
+                 // we only need the data pin
+-                brcm,pins = <20>;
++                brcm,pins = <10>;
+                 brcm,function = <4>; /* alt0 (spi mosi) */
+             };
+         };
+diff --git a/arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts b/arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts
+index b22f6de69a95..14069b4a7d29 100644
+--- a/arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts
++++ b/arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts
+@@ -22,7 +22,7 @@
+                  * make sense to have other devices on the same SPI bus, therefore
+                  * we can re-purpose the SPI MISO pin (9) as the latch output GPIO
+                  */
+-                brcm,pins = <9 10 11>;
++                brcm,pins = <19 20 21>;
+                 brcm,function = <1 4 4>; /* output (latch), alt0 (spi) */
+             };
+         };
+-- 
+2.12.0
+

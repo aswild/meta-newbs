@@ -1,7 +1,7 @@
-From 737a5d097a367336bb8c67e4ddd0f74bfea0018d Mon Sep 17 00:00:00 2001
+From 3d98b47265751bd166a4b9737c4e1037bf694d4b Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 21:15:00 -0400
-Subject: [PATCH 14/16] Commit rsync-to-pi, envsetup, create-patches scripts
+Subject: [PATCH 14/17] Commit rsync-to-pi, envsetup, create-patches scripts
 
 ---
  scripts/create-patches.sh |  8 ++++++++
@@ -14,7 +14,7 @@ Subject: [PATCH 14/16] Commit rsync-to-pi, envsetup, create-patches scripts
 
 diff --git a/scripts/create-patches.sh b/scripts/create-patches.sh
 new file mode 100755
-index 0000000..2e9283e
+index 000000000000..2e9283e578d7
 --- /dev/null
 +++ b/scripts/create-patches.sh
 @@ -0,0 +1,8 @@
@@ -28,7 +28,7 @@ index 0000000..2e9283e
 +    | tee "$NEWBS_FILES/shiftbrite-patches.scc"
 diff --git a/scripts/envsetup.sh b/scripts/envsetup.sh
 new file mode 100644
-index 0000000..347bf42
+index 000000000000..347bf42e44b3
 --- /dev/null
 +++ b/scripts/envsetup.sh
 @@ -0,0 +1,5 @@
@@ -39,7 +39,7 @@ index 0000000..347bf42
 +export INSTALL_MOD_PATH=MODULES_INSTALL
 diff --git a/scripts/rsync-to-pi.sh b/scripts/rsync-to-pi.sh
 new file mode 100755
-index 0000000..65c9b91
+index 000000000000..65c9b9102f3a
 --- /dev/null
 +++ b/scripts/rsync-to-pi.sh
 @@ -0,0 +1,35 @@
@@ -79,5 +79,5 @@ index 0000000..65c9b91
 +    rsync $RSYNC_OPTS -r MODULES_INSTALL/ $USER@$IP:/
 +fi
 -- 
-2.9.3
+2.12.0
 

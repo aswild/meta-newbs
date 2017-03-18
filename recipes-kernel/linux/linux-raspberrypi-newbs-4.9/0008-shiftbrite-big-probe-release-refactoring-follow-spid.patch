@@ -1,7 +1,7 @@
-From 3c851e4396d6f2f3d8ac206a6be1ae359c9a0639 Mon Sep 17 00:00:00 2001
+From da51ae6f36bd3199cbc3a9d04f8a53b5c2cfd5b0 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 15:22:12 -0500
-Subject: [PATCH 08/16] shiftbrite: big probe/release refactoring - follow
+Subject: [PATCH 08/17] shiftbrite: big probe/release refactoring - follow
  spidev paradigm
 
 ---
@@ -10,7 +10,7 @@ Subject: [PATCH 08/16] shiftbrite: big probe/release refactoring - follow
  2 files changed, 191 insertions(+), 85 deletions(-)
 
 diff --git a/drivers/misc/shiftbrite.c b/drivers/misc/shiftbrite.c
-index 6f6e883..80ed18f 100644
+index 6f6e88337f14..80ed18f31c53 100644
 --- a/drivers/misc/shiftbrite.c
 +++ b/drivers/misc/shiftbrite.c
 @@ -60,13 +60,30 @@
@@ -391,7 +391,7 @@ index 6f6e883..80ed18f 100644
  MODULE_LICENSE("GPL");
 +MODULE_ALIAS("spi:shiftbrite");
 diff --git a/include/uapi/misc/shiftbrite.h b/include/uapi/misc/shiftbrite.h
-index d309f73..717b2c5 100644
+index d309f73383bd..717b2c5bc627 100644
 --- a/include/uapi/misc/shiftbrite.h
 +++ b/include/uapi/misc/shiftbrite.h
 @@ -18,6 +18,6 @@
@@ -403,5 +403,5 @@ index d309f73..717b2c5 100644
  
  #endif // _SHIFTBRITE_H_
 -- 
-2.9.3
+2.12.0
 

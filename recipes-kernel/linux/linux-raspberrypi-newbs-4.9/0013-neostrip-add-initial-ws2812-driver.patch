@@ -1,7 +1,7 @@
-From 02c6d77ec1b566b5733d77db11d46d9fa183e897 Mon Sep 17 00:00:00 2001
+From d718440eafbdbde44cc245386eca544c7569c84e Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 01:02:48 -0400
-Subject: [PATCH 13/16] neostrip: add initial ws2812 driver
+Subject: [PATCH 13/17] neostrip: add initial ws2812 driver
 
 It has some output, but is incorrect. Timing is probably wacky
 ---
@@ -10,14 +10,14 @@ It has some output, but is incorrect. Timing is probably wacky
  .../boot/dts/overlays/spi1-neostrip-overlay.dts    |  50 ++
  drivers/misc/Kconfig                               |   7 +
  drivers/misc/Makefile                              |   1 +
- drivers/misc/neostrip.c                            | 546 +++++++++++++++++++++
- 6 files changed, 656 insertions(+)
+ drivers/misc/neostrip.c                            | 545 +++++++++++++++++++++
+ 6 files changed, 655 insertions(+)
  create mode 100644 arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
  create mode 100644 arch/arm/boot/dts/overlays/spi1-neostrip-overlay.dts
  create mode 100644 drivers/misc/neostrip.c
 
 diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
-index 56b08dc..55bad67 100644
+index 56b08dc2cc61..55bad67014ab 100644
 --- a/arch/arm/boot/dts/overlays/Makefile
 +++ b/arch/arm/boot/dts/overlays/Makefile
 @@ -92,10 +92,12 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
@@ -35,7 +35,7 @@ index 56b08dc..55bad67 100644
  	spi2-2cs.dtbo \
 diff --git a/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
 new file mode 100644
-index 0000000..9edb38b
+index 000000000000..9edb38b5e699
 --- /dev/null
 +++ b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
 @@ -0,0 +1,50 @@
@@ -91,7 +91,7 @@ index 0000000..9edb38b
 +};
 diff --git a/arch/arm/boot/dts/overlays/spi1-neostrip-overlay.dts b/arch/arm/boot/dts/overlays/spi1-neostrip-overlay.dts
 new file mode 100644
-index 0000000..4ef65e4
+index 000000000000..4ef65e478765
 --- /dev/null
 +++ b/arch/arm/boot/dts/overlays/spi1-neostrip-overlay.dts
 @@ -0,0 +1,50 @@
@@ -146,7 +146,7 @@ index 0000000..4ef65e4
 +    };
 +};
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index d8b59a8..a83dc09 100644
+index d8b59a8914cd..a83dc0928c3f 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
 @@ -167,6 +167,13 @@ config SHIFTBRITE
@@ -164,7 +164,7 @@ index d8b59a8..a83dc09 100644
  	tristate "TI Flash Media interface support"
  	depends on PCI
 diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index 6549404..b474e8c 100644
+index 6549404e6e9b..b474e8c60773 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
 @@ -55,6 +55,7 @@ obj-$(CONFIG_VEXPRESS_SYSCFG)	+= vexpress-syscfg.o
@@ -177,10 +177,10 @@ index 6549404..b474e8c 100644
  lkdtm-$(CONFIG_LKDTM)		+= lkdtm_bugs.o
 diff --git a/drivers/misc/neostrip.c b/drivers/misc/neostrip.c
 new file mode 100644
-index 0000000..848ce7b
+index 000000000000..e6882e3292a0
 --- /dev/null
 +++ b/drivers/misc/neostrip.c
-@@ -0,0 +1,546 @@
+@@ -0,0 +1,545 @@
 +/***********************************************************************
 + * WS2812 "NeoPixel" RGB LED driver
 + *
@@ -726,7 +726,6 @@ index 0000000..848ce7b
 +MODULE_DESCRIPTION("WS2812 NeoPixel RGB LED driver");
 +MODULE_LICENSE("GPL");
 +MODULE_ALIAS("spi:neostrip");
-+
 -- 
-2.9.3
+2.12.0
 

@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm 4.9.14 Kernel Configuration
+# Linux/arm 4.9.16 Kernel Configuration
 #
 CONFIG_ARM=y
 CONFIG_ARM_HAS_SG_CHAIN=y
@@ -1381,6 +1381,7 @@ CONFIG_BCM2835_SMI=m
 # CONFIG_DUMMY_IRQ is not set
 CONFIG_SHIFTBRITE=m
 CONFIG_NEOSTRIP=m
+CONFIG_NEOSTRIP_SPIBUF_MALLOC_ONCE=y
 # CONFIG_ICS932S401 is not set
 # CONFIG_ENCLOSURE_SERVICES is not set
 # CONFIG_APDS9802ALS is not set
