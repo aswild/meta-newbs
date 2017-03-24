@@ -15,3 +15,5 @@ patch 0014-Commit-rsync-to-pi-envsetup-create-patches-scripts.patch
 patch 0015-neostrip-tweak-to-workaround-SPI-hardware-resetting-.patch
 patch 0016-neostrip-add-support-for-multiple-pixels.patch
 patch 0017-fix-pin-numbers-in-spi0-neostrip-and-spi1-shiftbrite.patch
+patch 0018-neostrip-refactor-colors-pixels.patch
+patch 0019-neostrip-add-per-pixel-sysfs-entries.patch
