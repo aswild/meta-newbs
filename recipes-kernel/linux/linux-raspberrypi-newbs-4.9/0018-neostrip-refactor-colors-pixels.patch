@@ -1,16 +1,16 @@
-From e647f7237effae6f254116af415e2b697d69c6e1 Mon Sep 17 00:00:00 2001
+From eebfb8c6a77847f6fe4f00286cea417c7ea3140c Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Thu, 23 Mar 2017 21:56:26 -0400
-Subject: [PATCH 18/19] neostrip: refactor colors -> pixels
+Subject: [PATCH 18/20] neostrip: refactor colors -> pixels
 
 ---
- drivers/misc/neostrip.c | 55 +++++++++++++++++++++++++++----------------------
+ drivers/spi/neostrip.c | 55 +++++++++++++++++++++++++++-----------------------
  1 file changed, 30 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/misc/neostrip.c b/drivers/misc/neostrip.c
-index 1b98c63..339296a 100644
---- a/drivers/misc/neostrip.c
-+++ b/drivers/misc/neostrip.c
+diff --git a/drivers/spi/neostrip.c b/drivers/spi/neostrip.c
+index 60a0c05..30fa7a1 100644
+--- a/drivers/spi/neostrip.c
++++ b/drivers/spi/neostrip.c
 @@ -48,7 +48,7 @@ struct neostrip_chip {
      struct mutex        in_use_lock;
  
@@ -19,7 +19,7 @@ index 1b98c63..339296a 100644
 +    u32                 *pixels;    // 24-bit 0xRRGGBB value
      int                 strip_len;
  
- #ifdef CONFIG_NEOSTRIP_SPIBUF_MALLOC_ONCE
+ #ifdef CONFIG_SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
 @@ -135,9 +135,9 @@ static int neostrip_write(struct neostrip_chip *chip)
          // a little extra low time doesn't hurt). Therefore mask out that bit and
          // don't allow it to be set.
@@ -180,7 +180,7 @@ index 1b98c63..339296a 100644
      kfree(chip);
  
 @@ -605,7 +610,7 @@ static int neostrip_remove(struct spi_device *spi)
- #ifdef CONFIG_NEOSTRIP_SPIBUF_MALLOC_ONCE
+ #ifdef CONFIG_SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
      kfree(chip->spi_buf);
  #endif
 -    kfree(chip->colors);

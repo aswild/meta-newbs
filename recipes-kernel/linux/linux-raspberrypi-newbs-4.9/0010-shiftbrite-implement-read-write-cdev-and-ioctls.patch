@@ -1,17 +1,17 @@
-From a2536a5afa55b592c70f251105e7816c682f5292 Mon Sep 17 00:00:00 2001
+From 89eef1b076355d3b53f66042766ab74da48fa0df Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 18:17:38 -0500
-Subject: [PATCH 10/17] shiftbrite: implement read/write cdev and ioctls
+Subject: [PATCH 10/20] shiftbrite: implement read/write cdev and ioctls
 
 ---
- drivers/misc/shiftbrite.c      | 82 +++++++++++++++++++++++++++++++++---------
- include/uapi/misc/shiftbrite.h |  2 ++
+ drivers/spi/shiftbrite.c      | 82 ++++++++++++++++++++++++++++++++++---------
+ include/uapi/spi/shiftbrite.h |  2 ++
  2 files changed, 68 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/misc/shiftbrite.c b/drivers/misc/shiftbrite.c
-index 876a215baf42..714c6e1b0ab7 100644
---- a/drivers/misc/shiftbrite.c
-+++ b/drivers/misc/shiftbrite.c
+diff --git a/drivers/spi/shiftbrite.c b/drivers/spi/shiftbrite.c
+index 73de552..20d39a0 100644
+--- a/drivers/spi/shiftbrite.c
++++ b/drivers/spi/shiftbrite.c
 @@ -113,7 +113,7 @@ static int shiftbrite_write_u32(struct shiftbrite_chip *chip, u32 value)
      struct spi_message msg;
      int ret = 0;
@@ -137,10 +137,10 @@ index 876a215baf42..714c6e1b0ab7 100644
          default:
              pr_err("shiftbrite: unknown ioctl\n");
              ret = -ENOTTY;
-diff --git a/include/uapi/misc/shiftbrite.h b/include/uapi/misc/shiftbrite.h
-index 717b2c5bc627..b3e93ffa5c5a 100644
---- a/include/uapi/misc/shiftbrite.h
-+++ b/include/uapi/misc/shiftbrite.h
+diff --git a/include/uapi/spi/shiftbrite.h b/include/uapi/spi/shiftbrite.h
+index 717b2c5..b3e93ff 100644
+--- a/include/uapi/spi/shiftbrite.h
++++ b/include/uapi/spi/shiftbrite.h
 @@ -19,5 +19,7 @@
  #include <linux/ioctl.h>
  
@@ -150,5 +150,5 @@ index 717b2c5bc627..b3e93ffa5c5a 100644
  
  #endif // _SHIFTBRITE_H_
 -- 
-2.12.0
+2.9.3
 

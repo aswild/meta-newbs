@@ -1,14 +1,14 @@
-From 515df65dda328c84c6fcd202d7371d6cd55327b7 Mon Sep 17 00:00:00 2001
+From ecb471a58b2e3c62e0f858a42ac3fd06843b8e36 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 29 Jan 2017 22:15:58 -0500
-Subject: [PATCH 03/17] shiftbrite: dt overlay tweaks
+Subject: [PATCH 03/20] shiftbrite: dt overlay tweaks
 
 ---
  .../dts/overlays/pi3-spi-shiftbrite-overlay.dts    | 28 ++++++++++++++++++----
  1 file changed, 23 insertions(+), 5 deletions(-)
 
 diff --git a/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
-index 1e27e2ede3d4..f21777bec661 100644
+index 1e27e2e..f21777b 100644
 --- a/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
 +++ b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
 @@ -7,7 +7,7 @@
@@ -61,5 +61,5 @@ index 1e27e2ede3d4..f21777bec661 100644
                  status = "okay";
              };
 -- 
-2.12.0
+2.9.3
 

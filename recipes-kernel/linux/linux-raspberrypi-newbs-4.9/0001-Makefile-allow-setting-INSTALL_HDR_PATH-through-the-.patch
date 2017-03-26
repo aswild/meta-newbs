@@ -1,7 +1,7 @@
-From 587da188f033fedae52b32c7e2e8dfa8141ffce6 Mon Sep 17 00:00:00 2001
+From 328b0a08c42503ad357c908875610816617bdf97 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 10 Mar 2017 21:08:19 -0500
-Subject: [PATCH 01/17] Makefile: allow setting INSTALL_HDR_PATH through the
+Subject: [PATCH 01/20] Makefile: allow setting INSTALL_HDR_PATH through the
  environment
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 01/17] Makefile: allow setting INSTALL_HDR_PATH through the
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 4e0f962eb434..f64dfc0be6d5 100644
+index 004f90a..923df21 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1123,7 +1123,7 @@ firmware_install:
@@ -22,5 +22,5 @@ index 4e0f962eb434..f64dfc0be6d5 100644
  # If we do an all arch process set dst to asm-$(hdr-arch)
  hdr-dst = $(if $(KBUILD_HEADERS), dst=include/asm-$(hdr-arch), dst=include/asm)
 -- 
-2.12.0
+2.9.3
 

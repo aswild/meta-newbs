@@ -1,19 +1,19 @@
-From fd08f64c9060aeda3501f548fc1c3f7d2db34a29 Mon Sep 17 00:00:00 2001
+From 14555a17b3096e6b9a8498b660d7e5498a101abc Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 24 Mar 2017 00:06:03 -0400
-Subject: [PATCH 19/19] neostrip: add per-pixel sysfs entries
+Subject: [PATCH 19/20] neostrip: add per-pixel sysfs entries
 
 Plus:
  * use attribute_group stuff to create the static attributes
  * add comments for vim folding
 ---
- drivers/misc/neostrip.c | 149 ++++++++++++++++++++++++++++++++++++++++--------
+ drivers/spi/neostrip.c | 149 +++++++++++++++++++++++++++++++++++++++++--------
  1 file changed, 125 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/misc/neostrip.c b/drivers/misc/neostrip.c
-index 339296a..7ce1ca4 100644
---- a/drivers/misc/neostrip.c
-+++ b/drivers/misc/neostrip.c
+diff --git a/drivers/spi/neostrip.c b/drivers/spi/neostrip.c
+index 30fa7a1..ab59c3d 100644
+--- a/drivers/spi/neostrip.c
++++ b/drivers/spi/neostrip.c
 @@ -38,11 +38,17 @@
  // and 3 bytes of color data per pixel
  #define NEOSTRIP_SPIBUF_LENGTH(__strip_len) ((__strip_len) * 9)

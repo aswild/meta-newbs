@@ -1,7 +1,7 @@
-From ce9e54680fa0cffd7bb6e738e1e8dc0cb182bbb1 Mon Sep 17 00:00:00 2001
+From 6aae35733aba1fda1c16171cf0080bc814f00a19 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 17 Mar 2017 01:05:08 -0400
-Subject: [PATCH 16/17] neostrip: add support for multiple pixels
+Subject: [PATCH 16/20] neostrip: add support for multiple pixels
 
 TODO:
  * re-implement ioctls
@@ -9,12 +9,12 @@ TODO:
  * add per-pixel sysfs files
 ---
  .../boot/dts/overlays/spi0-neostrip-overlay.dts    |  10 +-
- drivers/misc/Kconfig                               |  13 ++
- drivers/misc/neostrip.c                            | 243 +++++++++++++++------
+ drivers/spi/Kconfig                                |  13 ++
+ drivers/spi/neostrip.c                             | 243 +++++++++++++++------
  3 files changed, 200 insertions(+), 66 deletions(-)
 
 diff --git a/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
-index 9edb38b5e699..0bb27a79e272 100644
+index 9edb38b..0bb27a7 100644
 --- a/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
 +++ b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
 @@ -39,12 +39,16 @@
@@ -37,16 +37,16 @@ index 9edb38b5e699..0bb27a79e272 100644
 +        neostrip0_length = <&neostrip0>,"strip-length:0";
 +    };
  };
-diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index a83dc0928c3f..54c3c07ea832 100644
---- a/drivers/misc/Kconfig
-+++ b/drivers/misc/Kconfig
-@@ -174,6 +174,19 @@ config NEOSTRIP
+diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+index 1cdf20d..83a74be 100644
+--- a/drivers/spi/Kconfig
++++ b/drivers/spi/Kconfig
+@@ -759,6 +759,19 @@ config SPI_NEOSTRIP
  	help
  	    Driver to control "NeoPixel" RGB LEDs using SPI hardware
  
-+if NEOSTRIP
-+config NEOSTRIP_SPIBUF_MALLOC_ONCE
++if SPI_NEOSTRIP
++config SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
 +	bool "Use a one-time-allocated buffer for the strip's SPI data"
 +	default y
 +	help
@@ -58,20 +58,20 @@ index a83dc0928c3f..54c3c07ea832 100644
 +		Memory-constrained systems may want to say no here.
 +endif
 +
- config TIFM_CORE
- 	tristate "TI Flash Media interface support"
- 	depends on PCI
-diff --git a/drivers/misc/neostrip.c b/drivers/misc/neostrip.c
-index d835c3706bba..1b98c633d85a 100644
---- a/drivers/misc/neostrip.c
-+++ b/drivers/misc/neostrip.c
+ config SPI_TLE62X0
+ 	tristate "Infineon TLE62X0 (for power switching)"
+ 	depends on SYSFS
+diff --git a/drivers/spi/neostrip.c b/drivers/spi/neostrip.c
+index e945b43..60a0c05 100644
+--- a/drivers/spi/neostrip.c
++++ b/drivers/spi/neostrip.c
 @@ -23,6 +23,7 @@
  #include <linux/of_device.h>
  #include <linux/spinlock.h>
  #include <linux/spi/spi.h>
 +#include <linux/string.h>
  #include <asm/uaccess.h>
- #include <uapi/misc/neostrip.h>
+ #include <uapi/spi/neostrip.h>
  
 @@ -33,6 +34,10 @@
  // This corresponds to 336 and 672 ns pulses
@@ -94,7 +94,7 @@ index d835c3706bba..1b98c633d85a 100644
 +    u32                 *colors;    // 24-bit 0xRRGGBB value
 +    int                 strip_len;
 +
-+#ifdef CONFIG_NEOSTRIP_SPIBUF_MALLOC_ONCE
++#ifdef CONFIG_SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
 +    u8                  *spi_buf;
 +#endif
  };
@@ -129,7 +129,7 @@ index d835c3706bba..1b98c633d85a 100644
 -
 -    neostrip_expand_color(buf, chip->color);
 +    buf_len = NEOSTRIP_SPIBUF_LENGTH(chip->strip_len);
-+#ifdef CONFIG_NEOSTRIP_SPIBUF_MALLOC_ONCE
++#ifdef CONFIG_SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
 +    buf = chip->spi_buf;
 +#else
 +    buf = kmalloc(buf_len, GFP_KERNEL);
@@ -429,7 +429,7 @@ index d835c3706bba..1b98c633d85a 100644
 +        goto fail_dealloc;
 +    }
 +
-+#ifdef CONFIG_NEOSTRIP_SPIBUF_MALLOC_ONCE
++#ifdef CONFIG_SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
 +    chip->spi_buf = kzalloc(NEOSTRIP_SPIBUF_LENGTH(chip->strip_len), GFP_KERNEL);
 +    if (!chip->spi_buf)
 +    {
@@ -454,7 +454,7 @@ index d835c3706bba..1b98c633d85a 100644
      mutex_unlock(&device_list_lock);
  
  fail_dealloc:
-+#ifdef CONFIG_NEOSTRIP_SPIBUF_MALLOC_ONCE
++#ifdef CONFIG_SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
 +    if (chip && chip->spi_buf)
 +        kfree(chip->spi_buf);
 +#endif
@@ -479,7 +479,7 @@ index d835c3706bba..1b98c633d85a 100644
      clear_bit(MINOR(chip->devt), minors);
      mutex_unlock(&device_list_lock);
  
-+#ifdef CONFIG_NEOSTRIP_SPIBUF_MALLOC_ONCE
++#ifdef CONFIG_SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
 +    kfree(chip->spi_buf);
 +#endif
 +    kfree(chip->colors);
@@ -487,5 +487,5 @@ index d835c3706bba..1b98c633d85a 100644
      kfree(chip);
      dev_info(&spi->dev, "neostrip driver unloaded\n");
 -- 
-2.12.0
+2.9.3
 

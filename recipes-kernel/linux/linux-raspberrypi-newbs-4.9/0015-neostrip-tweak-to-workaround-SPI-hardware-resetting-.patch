@@ -1,25 +1,25 @@
-From b3689a3eb69e71a0aa99b833a52c59ce4ace3de5 Mon Sep 17 00:00:00 2001
+From 3aaa7e3d326ae04177399ae24ab72263c664450a Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 23:33:07 -0400
-Subject: [PATCH 15/17] neostrip: tweak to workaround SPI hardware resetting
+Subject: [PATCH 15/20] neostrip: tweak to workaround SPI hardware resetting
  data in between bites
 
 ---
- drivers/misc/neostrip.c      | 30 ++++++++++++++++++++----------
- include/uapi/misc/Kbuild     |  1 +
- include/uapi/misc/neostrip.h | 25 +++++++++++++++++++++++++
+ drivers/spi/neostrip.c      | 30 ++++++++++++++++++++----------
+ include/uapi/spi/Kbuild     |  1 +
+ include/uapi/spi/neostrip.h | 25 +++++++++++++++++++++++++
  3 files changed, 46 insertions(+), 10 deletions(-)
- create mode 100644 include/uapi/misc/neostrip.h
+ create mode 100644 include/uapi/spi/neostrip.h
 
-diff --git a/drivers/misc/neostrip.c b/drivers/misc/neostrip.c
-index e6882e3292a0..d835c3706bba 100644
---- a/drivers/misc/neostrip.c
-+++ b/drivers/misc/neostrip.c
+diff --git a/drivers/spi/neostrip.c b/drivers/spi/neostrip.c
+index e6882e3..e945b43 100644
+--- a/drivers/spi/neostrip.c
++++ b/drivers/spi/neostrip.c
 @@ -24,12 +24,14 @@
  #include <linux/spinlock.h>
  #include <linux/spi/spi.h>
  #include <asm/uaccess.h>
-+#include <uapi/misc/neostrip.h>
++#include <uapi/spi/neostrip.h>
  
  // definitions
  
@@ -89,20 +89,19 @@ index e6882e3292a0..d835c3706bba 100644
          default:
              pr_err("neostrip: unknown ioctl\n");
              ret = -ENOTTY;
-diff --git a/include/uapi/misc/Kbuild b/include/uapi/misc/Kbuild
-index 99beb11f7be2..26981806ce4c 100644
---- a/include/uapi/misc/Kbuild
-+++ b/include/uapi/misc/Kbuild
-@@ -1,3 +1,4 @@
- # misc Header export list
- header-y += cxl.h
+diff --git a/include/uapi/spi/Kbuild b/include/uapi/spi/Kbuild
+index 542eb71..bec567b 100644
+--- a/include/uapi/spi/Kbuild
++++ b/include/uapi/spi/Kbuild
+@@ -1,2 +1,3 @@
+ # spi Header export list
  header-y += shiftbrite.h
 +header-y += neostrip.h
-diff --git a/include/uapi/misc/neostrip.h b/include/uapi/misc/neostrip.h
+diff --git a/include/uapi/spi/neostrip.h b/include/uapi/spi/neostrip.h
 new file mode 100644
-index 000000000000..2e62aa565a1e
+index 0000000..2e62aa5
 --- /dev/null
-+++ b/include/uapi/misc/neostrip.h
++++ b/include/uapi/spi/neostrip.h
 @@ -0,0 +1,25 @@
 +/***********************************************************************
 + * WS2812 "NeoPixel" RGB LED driver
@@ -130,5 +129,5 @@ index 000000000000..2e62aa565a1e
 +
 +#endif // _NEOSTRIP_H_
 -- 
-2.12.0
+2.9.3
 

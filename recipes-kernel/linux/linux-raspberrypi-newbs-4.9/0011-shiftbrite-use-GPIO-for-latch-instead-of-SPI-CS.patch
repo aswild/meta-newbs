@@ -1,7 +1,7 @@
-From ebc28bdf7b0800ece74aa09a8607d388faaff120 Mon Sep 17 00:00:00 2001
+From 75f6813cf888b99a7e3b77a8b30d00f8cd1d4f83 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 22:02:35 -0500
-Subject: [PATCH 11/17] shiftbrite: use GPIO for latch instead of SPI CS
+Subject: [PATCH 11/20] shiftbrite: use GPIO for latch instead of SPI CS
 
 Apparently the SPI APIs like to toggle CS in between transfers, which
 causes crazy things to happen on the shiftbrite (despite working most of
@@ -17,11 +17,11 @@ Set "dtparam=shiftbrite0_latch=xx" to use gpio xx for the latch pin.
 needing a reboot)
 ---
  .../dts/overlays/pi3-spi-shiftbrite-overlay.dts    | 49 ++++++++++-------
- drivers/misc/shiftbrite.c                          | 64 ++++++++++++++++------
+ drivers/spi/shiftbrite.c                           | 64 ++++++++++++++++------
  2 files changed, 76 insertions(+), 37 deletions(-)
 
 diff --git a/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
-index f21777bec661..029f1f481a45 100644
+index f21777b..029f1f4 100644
 --- a/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
 +++ b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
 @@ -8,45 +8,56 @@
@@ -100,10 +100,10 @@ index f21777bec661..029f1f481a45 100644
 +                            <&shiftbrite0>,"latch-gpio:0";
 +    };
  };
-diff --git a/drivers/misc/shiftbrite.c b/drivers/misc/shiftbrite.c
-index 714c6e1b0ab7..b1bb90d77145 100644
---- a/drivers/misc/shiftbrite.c
-+++ b/drivers/misc/shiftbrite.c
+diff --git a/drivers/spi/shiftbrite.c b/drivers/spi/shiftbrite.c
+index 20d39a0..1f7afae 100644
+--- a/drivers/spi/shiftbrite.c
++++ b/drivers/spi/shiftbrite.c
 @@ -64,6 +64,7 @@ struct shiftbrite_chip {
      struct device       *dev;
      struct spi_device   *spi;
@@ -250,5 +250,5 @@ index 714c6e1b0ab7..b1bb90d77145 100644
      .probe  = shiftbrite_probe,
      .remove = shiftbrite_remove,
 -- 
-2.12.0
+2.9.3
 

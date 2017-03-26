@@ -1,7 +1,7 @@
-From 3d98b47265751bd166a4b9737c4e1037bf694d4b Mon Sep 17 00:00:00 2001
+From d08a2d213e6dfa67328b4a98eda788920851486d Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 21:15:00 -0400
-Subject: [PATCH 14/17] Commit rsync-to-pi, envsetup, create-patches scripts
+Subject: [PATCH 14/20] Commit rsync-to-pi, envsetup, create-patches scripts
 
 ---
  scripts/create-patches.sh |  8 ++++++++
@@ -14,7 +14,7 @@ Subject: [PATCH 14/17] Commit rsync-to-pi, envsetup, create-patches scripts
 
 diff --git a/scripts/create-patches.sh b/scripts/create-patches.sh
 new file mode 100755
-index 000000000000..2e9283e578d7
+index 0000000..2e9283e
 --- /dev/null
 +++ b/scripts/create-patches.sh
 @@ -0,0 +1,8 @@
@@ -28,7 +28,7 @@ index 000000000000..2e9283e578d7
 +    | tee "$NEWBS_FILES/shiftbrite-patches.scc"
 diff --git a/scripts/envsetup.sh b/scripts/envsetup.sh
 new file mode 100644
-index 000000000000..347bf42e44b3
+index 0000000..347bf42
 --- /dev/null
 +++ b/scripts/envsetup.sh
 @@ -0,0 +1,5 @@
@@ -39,7 +39,7 @@ index 000000000000..347bf42e44b3
 +export INSTALL_MOD_PATH=MODULES_INSTALL
 diff --git a/scripts/rsync-to-pi.sh b/scripts/rsync-to-pi.sh
 new file mode 100755
-index 000000000000..65c9b9102f3a
+index 0000000..8d99125
 --- /dev/null
 +++ b/scripts/rsync-to-pi.sh
 @@ -0,0 +1,35 @@
@@ -56,13 +56,13 @@ index 000000000000..65c9b9102f3a
 +        case $1 in
 +            sb|shiftbrite)
 +                kernelname=$(ssh $USER@$IP 'uname -r')
-+                rsync $RSYNC_OPTS drivers/misc/shiftbrite.ko \
-+                      $USER@$IP:/lib/modules/$kernelname/kernel/drivers/misc/shiftbrite.ko
++                rsync $RSYNC_OPTS drivers/spi/shiftbrite.ko \
++                      $USER@$IP:/lib/modules/$kernelname/kernel/drivers/spi/shiftbrite.ko
 +            ;;
 +            ns|neostrip)
 +                kernelname=$(ssh $USER@$IP 'uname -r')
-+                rsync $RSYNC_OPTS drivers/misc/neostrip.ko \
-+                      $USER@$IP:/lib/modules/$kernelname/kernel/drivers/misc/neostrip.ko
++                rsync $RSYNC_OPTS drivers/spi/neostrip.ko \
++                      $USER@$IP:/lib/modules/$kernelname/kernel/drivers/spi/neostrip.ko
 +            ;;
 +            dto)
 +                rsync $RSYNC_OPTS arch/arm/boot/dts/overlays/pi3-spi-shiftbrite.dtbo \
@@ -79,5 +79,5 @@ index 000000000000..65c9b9102f3a
 +    rsync $RSYNC_OPTS -r MODULES_INSTALL/ $USER@$IP:/
 +fi
 -- 
-2.12.0
+2.9.3
 

@@ -1,18 +1,18 @@
-From da51ae6f36bd3199cbc3a9d04f8a53b5c2cfd5b0 Mon Sep 17 00:00:00 2001
+From 2e795b1978b209de36e5ee5da3aeea51fc932812 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 15:22:12 -0500
-Subject: [PATCH 08/17] shiftbrite: big probe/release refactoring - follow
+Subject: [PATCH 08/20] shiftbrite: big probe/release refactoring - follow
  spidev paradigm
 
 ---
- drivers/misc/shiftbrite.c      | 274 ++++++++++++++++++++++++++++-------------
- include/uapi/misc/shiftbrite.h |   2 +-
+ drivers/spi/shiftbrite.c      | 274 +++++++++++++++++++++++++++++-------------
+ include/uapi/spi/shiftbrite.h |   2 +-
  2 files changed, 191 insertions(+), 85 deletions(-)
 
-diff --git a/drivers/misc/shiftbrite.c b/drivers/misc/shiftbrite.c
-index 6f6e88337f14..80ed18f31c53 100644
---- a/drivers/misc/shiftbrite.c
-+++ b/drivers/misc/shiftbrite.c
+diff --git a/drivers/spi/shiftbrite.c b/drivers/spi/shiftbrite.c
+index fb9246d..bdcf777 100644
+--- a/drivers/spi/shiftbrite.c
++++ b/drivers/spi/shiftbrite.c
 @@ -60,13 +60,30 @@
  #define RGB24_TO_CONFIG(value)  (0x40000000 | (RGB24_TO_RGB32(value) & CONFIG_MASK))
  
@@ -390,10 +390,10 @@ index 6f6e88337f14..80ed18f31c53 100644
  MODULE_DESCRIPTION("ShiftBrite SPI LED driver");
  MODULE_LICENSE("GPL");
 +MODULE_ALIAS("spi:shiftbrite");
-diff --git a/include/uapi/misc/shiftbrite.h b/include/uapi/misc/shiftbrite.h
-index d309f73383bd..717b2c5bc627 100644
---- a/include/uapi/misc/shiftbrite.h
-+++ b/include/uapi/misc/shiftbrite.h
+diff --git a/include/uapi/spi/shiftbrite.h b/include/uapi/spi/shiftbrite.h
+index d309f73..717b2c5 100644
+--- a/include/uapi/spi/shiftbrite.h
++++ b/include/uapi/spi/shiftbrite.h
 @@ -18,6 +18,6 @@
  
  #include <linux/ioctl.h>
@@ -403,5 +403,5 @@ index d309f73383bd..717b2c5bc627 100644
  
  #endif // _SHIFTBRITE_H_
 -- 
-2.12.0
+2.9.3
 
