@@ -28,6 +28,10 @@ newbs_rootfs_postprocess() {
     # the boot partition will be mounted in /boot (by fstab in base-files)
     rm -fv ${IMAGE_ROOTFS}/boot/*
 
+    # Mark the rootfs as rw in fstab. This gives us rw when booting ext4,
+    # and squashfs will mount ro always anyway
+    sed -i '/\/dev\/root/s/\bro\b/rw/' ${IMAGE_ROOTFS}/etc/fstab
+
     # set timezone to match the build host
     localtime_file=${sysconfdir}/localtime
     if [ -L $localtime_file ]; then

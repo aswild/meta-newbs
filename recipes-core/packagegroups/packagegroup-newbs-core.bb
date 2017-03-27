@@ -20,8 +20,11 @@ RDEPENDS_${PN} = " \
     i2c-tools \
     iproute2 \
     iputils \
+    ldd \
+    linux-newbs-headers-dev \
     make \
     man \
+    neostrip-demo \
     newbs-nvram \
     openssh \
     openssh-sshd \
@@ -32,6 +35,7 @@ RDEPENDS_${PN} = " \
     python3 \
     python3-modules \
     rsync \
+    squashfs-tools \
     sysstat \
     the-silver-searcher \
     tmux \
