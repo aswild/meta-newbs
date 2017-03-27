@@ -1,4 +1,4 @@
-From d08a2d213e6dfa67328b4a98eda788920851486d Mon Sep 17 00:00:00 2001
+From e5f701f07a019248fdd89ddd6275c2697e3da209 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 21:15:00 -0400
 Subject: [PATCH 14/20] Commit rsync-to-pi, envsetup, create-patches scripts
@@ -14,7 +14,7 @@ Subject: [PATCH 14/20] Commit rsync-to-pi, envsetup, create-patches scripts
 
 diff --git a/scripts/create-patches.sh b/scripts/create-patches.sh
 new file mode 100755
-index 0000000..2e9283e
+index 000000000000..2e9283e578d7
 --- /dev/null
 +++ b/scripts/create-patches.sh
 @@ -0,0 +1,8 @@
@@ -28,18 +28,18 @@ index 0000000..2e9283e
 +    | tee "$NEWBS_FILES/shiftbrite-patches.scc"
 diff --git a/scripts/envsetup.sh b/scripts/envsetup.sh
 new file mode 100644
-index 0000000..347bf42
+index 000000000000..be1fe757a846
 --- /dev/null
 +++ b/scripts/envsetup.sh
 @@ -0,0 +1,5 @@
 +export ARCH=arm
 +export CROSS_COMPILE=arm-linux-gnueabihf-
-+export MAKEFLAGS=-j4
++[[ -n "$MAKEFLAGS" ]] || export MAKEFLAGS=-j$(grep -c ^processor /proc/cpuinfo)
 +export INSTALL_HDR_PATH=HEADERS_INSTALL
 +export INSTALL_MOD_PATH=MODULES_INSTALL
 diff --git a/scripts/rsync-to-pi.sh b/scripts/rsync-to-pi.sh
 new file mode 100755
-index 0000000..8d99125
+index 000000000000..8d99125bdd2c
 --- /dev/null
 +++ b/scripts/rsync-to-pi.sh
 @@ -0,0 +1,35 @@
@@ -79,5 +79,5 @@ index 0000000..8d99125
 +    rsync $RSYNC_OPTS -r MODULES_INSTALL/ $USER@$IP:/
 +fi
 -- 
-2.9.3
+2.12.1
 
