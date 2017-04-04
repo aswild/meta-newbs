@@ -1,9 +1,26 @@
-#! /bin/ash
+#!/bin/sh
 
-export PATH=/usr/bin:/bin:/usr/sbin:/sbin
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+mkdir -p /proc
+mkdir -p /sys
+mkdir -p /dev
+
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs none /dev
+
+mkdir -p /run
+mkdir -p /var/run
+
+/sbin/udevd --daemon
+udevadm trigger --action=add
+udevadm settle --timeout=3 --quiet
+
+exec </dev/console >/dev/console 2>&1
 
 echo "*************************************"
 echo "      Welcome to NEWBS INIT!"
 echo "*************************************"
 
-exec ash
+exec sh
