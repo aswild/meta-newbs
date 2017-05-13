@@ -26,6 +26,7 @@ RDEPENDS_${PN} = " \
     man \
     neostrip-demo \
     newbs-nvram \
+    newbs-init-util \
     openssh \
     openssh-sshd \
     openssh-sftp \

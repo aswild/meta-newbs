@@ -5,7 +5,7 @@
 inherit image_types
 inherit linux-raspberrypi-base
 
-KERNEL_INITRAMFS ?= ""
+KERNEL_INITRAMFS = "${@bb.utils.contains('INITRAMFS_IMAGE_BUNDLE', '1', '-initramfs', '', d)}"
 IMAGE_BOOTLOADER ?= "bcm2835-bootfiles"
 
 # strip custom linux version extension to avoid breaking linux-raspberrypi-base
@@ -19,10 +19,6 @@ IMAGE_BOOTLOADER ?= "bcm2835-bootfiles"
 #}
 
 KERNEL_NAME = "kernel7.img"
-NEWBS_INIT_DEST ?= "newbs-init.${INITRAMFS_FSTYPES}"
-
-# we have to guess the symlink that gets deployed for init
-INIT_DEPLOY_SYMLINK ?= "${NEWBS_INIT}-${MACHINE}.${INITRAMFS_FSTYPES}"
 
 
 # 32 MB default boot partition (in 1K blocks)
@@ -51,8 +47,6 @@ IMAGE_CMD_newbs-bootimg() {
     # copy bootloader files
     install -t $BOOT_DIR ${DEPLOY_DIR_IMAGE}/${IMAGE_BOOTLOADER}/*
     rm -vf ${DEPLOY_DIR_IMAGE}/${IMAGE_BOOTLOADER}/*.stamp
-
-    #install $(readlink -f "${IMGDEPLOYDIR}/${INIT_DEPLOY_SYMLINK}") $BOOT_DIR/${NEWBS_INIT_DEST}
 
     # copy device tree files
     DTS="${@get_dts(d, d.getVar('KERNEL_VERSION_BASE'))}"
