@@ -1,8 +1,5 @@
 # Add custom configs to top of config.txt
 
-#FILESEXTRAPATHS_prepend := "${THISDIR}:"
-#SRC_URI += "file://newbs-config.patch"
-
 NEWBS_INIT_DEST ?= "newbs-init.cpio.gz"
 INITRAMFS_LOAD_ADDR = "0x00c00000"
 
@@ -18,6 +15,7 @@ dtoverlay=pi3-disable-bt
 
 dtoverlay=spi0-neostrip
 dtparam=neostrip0_length=8
+${EXTRA_CONFIG_TXT}
 EOF
     fi
 }
