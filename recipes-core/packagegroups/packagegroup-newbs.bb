@@ -3,27 +3,17 @@ LICENSE = "MIT"
 
 inherit packagegroup
 
-RDEPENDS_${PN} = " \
+PACKAGES += "${PN}-core"
+RDEPENDS_${PN}-core = " \
     packagegroup-core-full-cmdline-libs \
     packagegroup-core-full-cmdline-utils \
     packagegroup-core-full-cmdline-sys-services \
     curl \
     dhcp-client \
-    dosfstools \
-    e2fsprogs \
-    e2fsprogs-mke2fs \
-    e2fsprogs-resize2fs \
-    e2fsprogs-tune2fs \
-    git \
-    git-perltools \
     htop \
-    i2c-tools \
     iproute2 \
     iputils \
-    ldd \
     linux-newbs-headers-dev \
-    make \
-    man \
     neostrip-demo \
     newbs-nvram \
     newbs-init-util \
@@ -31,12 +21,6 @@ RDEPENDS_${PN} = " \
     openssh-sshd \
     openssh-sftp \
     openssh-sftp-server \
-    python \
-    python-modules \
-    python3 \
-    python3-modules \
-    rsync \
-    squashfs-tools \
     sysstat \
     the-silver-searcher \
     tmux \
@@ -47,7 +31,33 @@ RDEPENDS_${PN} = " \
     zsh \
 "
 
-#RDEPENDS_${PN} += "packagegroup-core-buildessential"
+PACKAGES += "${PN}-devtools"
+RDEPENDS_${PN}-devtools = " \
+    make \
+    python \
+    python-modules \
+    python3 \
+    python3-modules \
+    squashfs-tools \
+"
 
-#packagegroup-core-full-cmdline-initscripts
-#xfsprogs
+PACKAGES += "${PN}-utils"
+RDEPENDS_${PN}-utils = " \
+    dosfstools \
+    e2fsprogs \
+    e2fsprogs-mke2fs \
+    e2fsprogs-resize2fs \
+    e2fsprogs-tune2fs \
+    git \
+    git-perltools \
+    i2c-tools \
+    ldd \
+    rsync \
+"
+
+PACKAGES += "${PN}-full-cmdline"
+RDEPENDS_${PN}-full-cmdline = " \
+    ${PN}-core \
+    ${PN}-devtools \
+    ${PN}-utils \
+"
