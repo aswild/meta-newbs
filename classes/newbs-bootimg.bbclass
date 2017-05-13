@@ -8,16 +8,6 @@ inherit linux-raspberrypi-base
 KERNEL_INITRAMFS = "${@bb.utils.contains('INITRAMFS_IMAGE_BUNDLE', '1', '-initramfs', '', d)}"
 IMAGE_BOOTLOADER ?= "bcm2835-bootfiles"
 
-# strip custom linux version extension to avoid breaking linux-raspberrypi-base
-#python __anonymous() {
-#    import re
-#    staging_dir = d.getVar("STAGING_KERNEL_BUILDDIR")
-#    ver = get_kernelversion_file(staging_dir)
-#    ver = re.sub(r"-.*$", "", ver)
-#
-#    d.setVar("KERNEL_VERSION_BASE", ver)
-#}
-
 KERNEL_NAME = "kernel7.img"
 
 
