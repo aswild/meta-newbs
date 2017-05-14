@@ -4,11 +4,8 @@ DESCRIPTION = "neostrip demo"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=939d9a033a64e3ba0460a4c6d5185e1f"
 
-SRC_URI = "git://github.com/aswild/neostrip-demo"
-SRCREV = "${AUTOREV}"
-PV = "1.0+git${SRCPV}"
-
-S = "${WORKDIR}/git"
+NEWBS_SRCNAME = "neostrip-demo"
+inherit newbs-localsrc
 
 DEPENDS += "linux-newbs-headers"
 

@@ -4,11 +4,8 @@ DESCRIPTION = "NEWBS init and utils"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=f124bfaefacd4e1a4080065d403bc1d4"
 
-SRC_URI = "git://github.com/aswild/newbs-init;branch=master"
-SRCREV = "${AUTOREV}"
-PV = "1.0+git${SRCPV}"
-
-S = "${WORKDIR}/git"
+NEWBS_SRCNAME = "newbs-init"
+inherit newbs-localsrc
 
 PACKAGES += "${PN}-util"
 FILES_${PN} = " \
@@ -41,16 +38,3 @@ do_install() {
     install -d ${D}/usr/share
     install -m 644 newbs.default.txt ${D}/usr/share/newbs.default.txt
 }
-
-# build using local/external source if it exists in the workspace
-# (rather than having to push to github or edit in WORKDIR)
-def get_externalsrc_dir(d):
-    srcdir = d.getVar('NEWBSROOT') + '/newbs-init-source'
-    if os.path.isdir(srcdir):
-        return srcdir
-    else:
-        return ''
-
-inherit externalsrc
-EXTERNALSRC = "${@get_externalsrc_dir(d)}"
-EXTERNALSRC_BUILD = "${@get_externalsrc_dir(d)}"
