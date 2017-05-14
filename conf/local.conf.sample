@@ -227,7 +227,7 @@ DL_DIR     = "${NEWBSROOT}/downloads"
 SSTATE_DIR = "${NEWBSROOT}/sstate-cache"
 
 MACHINE = "raspberrypi3"
-DISTRO = "newbs"
+DISTRO = "##DISTRO##"
 
 # Uncomment this if /usr/bin/python is python3
 #HOST_DEFAULT_PYTHON3 = "y"

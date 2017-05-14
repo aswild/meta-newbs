@@ -6,6 +6,7 @@ IMAGE_INSTALL = " \
     kernel-modules \
     packagegroup-newbs-core \
     packagegroup-newbs-utils \
+    kodi \
     userland \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "

@@ -1,0 +1,43 @@
+From bd004546a6b3885354c67f11ebd5ddff092638fe Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Sun, 14 May 2017 16:15:32 -0400
+Subject: [PATCH] raspberrypi-autoconf-fixes
+
+---
+ configure.ac | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 395f5bfe9c..2f42769fd5 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -954,14 +954,23 @@ if test "$use_gles" = "yes"; then
+     AC_DEFINE([HAVE_LIBGLESV2],[1],["Define to 1 if you have the `GLESv2' library (-lGLESv2)."])
+     AC_MSG_RESULT(== WARNING: OpenGLES support is assumed.)
+   else
+-    if test "$target_platform" = "target_raspberry_pi"; then
++    if false && test "$target_platform" = "target_raspberry_pi"; then
+       AC_DEFINE([HAVE_LIBEGL],[1],["Define to 1 if you have the `EGL' library (-lEGL)."])
+       AC_DEFINE([HAVE_LIBGLESV2],[1],["Define to 1 if you have the `GLESv2' library (-lGLESv2)."])
+       AC_MSG_RESULT(== WARNING: OpenGLES support is assumed.)
+       LIBS="$LIBS -lEGL -lGLESv2 -lbcm_host -lvcos -lvchiq_arm -lmmal -lmmal_core -lmmal_util -lvcsm"
+     else
+-      AC_CHECK_LIB([EGL],   [main],, AC_MSG_ERROR($missing_library))
+-      AC_CHECK_LIB([GLESv2],[main],, AC_MSG_ERROR($missing_library))
++      PKG_CHECK_MODULES([EGL], [egl], [
++                        AC_DEFINE([HAVE_LIBEGL], [1], ["Define to 1 if you have the `EGL' library (-lEGL)."])
++                        LIBS="$LIBS $EGL_LIBS"],
++                        [AC_MSG_ERROR($missing_library)])
++      PKG_CHECK_MODULES([GLESV2], [glesv2], [
++                        AC_DEFINE([HAVE_LIBGLESV2], [1], ["Define to 1 if you have the `GLESv2' library (-lGLESv2)."])
++                        LIBS="$LIBS $GLESV2_LIBS"],
++                        [AC_MSG_ERROR($missing_library)])
++      if test "$USE_MMAL" = "1"; then
++        PKG_CHECK_MODULES([MMAL], [mmal], [LIBS="$LIBS $MMAL_LIBS"], [AC_MSG_ERROR($missing_library)])
++      fi
+     fi
+   fi
+ else
+-- 
+2.13.0
+
