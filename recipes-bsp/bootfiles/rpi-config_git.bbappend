@@ -15,7 +15,7 @@ dtoverlay=pi3-disable-bt
 
 dtoverlay=spi0-neostrip
 dtparam=neostrip0_length=8
-${EXTRA_CONFIG_TXT}
+${@d.getVar('EXTRA_CONFIG_TXT').replace('\\n', '\n')}
 EOF
     fi
 }
