@@ -53,6 +53,10 @@ RDEPENDS_${PN}-utils = " \
     i2c-tools \
     ldd \
     rsync \
+    sshfs-fuse \
+    udev-extraconf \
+    util-linux \
+    util-linux-blkid \
 "
 
 PACKAGES += "${PN}-full-cmdline"

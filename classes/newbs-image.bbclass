@@ -49,5 +49,9 @@ newbs_rootfs_postprocess() {
         ln -sfv ../../../../lib/systemd/system/wpa_supplicant@.service \
                 ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/multi-user.target.wants/wpa_supplicant@wlan0.service
     fi
+
+    # Make /media a symlink to /run/media
+    rm -rf ${IMAGE_ROOTFS}/media
+    ln -sfv run/media ${IMAGE_ROOTFS}/media
 }
 ROOTFS_POSTPROCESS_COMMAND_append = " newbs_rootfs_postprocess;"
