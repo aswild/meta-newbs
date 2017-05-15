@@ -1,0 +1,8 @@
+SUBSYSTEM=="input",           GROUP="input", MODE="0660"
+KERNEL=="mouse*|mice|event*", GROUP="input", MODE="0660"
+KERNEL=="ts[0-9]*|uinput",    GROUP="input", MODE="0660"
+KERNEL=="js[0-9]*",           GROUP="input", MODE="0660"
+
+KERNEL=="tty[0-9]*",          GROUP="tty",   MODE="0660"
+
+SUBSYSTEM=="vchiq",           GROUP="video", MODE="0660"

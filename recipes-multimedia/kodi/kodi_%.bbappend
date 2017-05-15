@@ -33,7 +33,7 @@ PACKAGECONFIG = "openglesv2"
 EXTRA_OECONF += "--with-platform=raspberry-pi2 --enable-player=omxplayer"
 EXTRA_OEMAKE = "V=1"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI += " \
     file://1000-raspberrypi-autoconf-fixes.patch \
 "

@@ -1,0 +1,11 @@
+[Unit]
+Description=Kodi Media Center
+
+[Service]
+User=kodi
+Group=kodi
+Type=simple
+ExecStart=/usr/bin/kodi-standalone
+
+[Install]
+WantedBy=multi-user.target
