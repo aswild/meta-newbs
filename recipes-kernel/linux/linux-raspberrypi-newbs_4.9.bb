@@ -8,8 +8,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
 SRC_URI += " \
     file://defconfig \
     file://shiftbrite-patches.scc \
+    ${@bb.utils.contains('DISTRO', 'newbs-mce', 'file://media-drivers.cfg', '', d)} \
 "
-
-#KBUILD_DEFCONFIG = "bcm2709_defconfig"
 
 require linux-raspberrypi-newbs.inc
