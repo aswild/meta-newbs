@@ -5,7 +5,9 @@ Description=Kodi Media Center
 User=kodi
 Group=kodi
 Type=simple
-ExecStart=/usr/bin/kodi-standalone
+ExecStart=/usr/bin/kodi --standalone
+KillMode=mixed
+TimeoutStopSec=15
 
 [Install]
 WantedBy=multi-user.target
