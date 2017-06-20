@@ -2,6 +2,7 @@
 
 NEWBS_INIT_DEST ?= "newbs-init.cpio.gz"
 INITRAMFS_LOAD_ADDR = "0x00c00000"
+EXTRA_CONFIG_TXT ??= ""
 
 do_deploy_append() {
     CONFIG=${DEPLOYDIR}/bcm2835-bootfiles/config.txt
