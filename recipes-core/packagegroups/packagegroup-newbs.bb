@@ -14,6 +14,7 @@ RDEPENDS_${PN}-core = " \
     iproute2 \
     iputils \
     linux-newbs-headers-dev \
+    make \
     neostrip-demo \
     newbs-nvram \
     newbs-init-util \
@@ -33,7 +34,6 @@ RDEPENDS_${PN}-core = " \
 
 PACKAGES += "${PN}-devtools"
 RDEPENDS_${PN}-devtools = " \
-    make \
     python \
     python-modules \
     python3 \
@@ -57,6 +57,14 @@ RDEPENDS_${PN}-utils = " \
     udev-extraconf \
     util-linux \
     util-linux-blkid \
+"
+
+PACKAGES += "${PN}-network-utils"
+RDEPENDS_${PN}-utils = " \
+    bridge-utils \
+    ebtables \
+    iptables \
+    tcpdump \
 "
 
 PACKAGES += "${PN}-full-cmdline"
