@@ -48,7 +48,7 @@ DISTRO_FEATURES += " \
 "
 
 # Enable systemd
-DISTRO_FEATURES_BACKFILL_CONSIDERED = "sysvinit"
+DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
 DISTRO_FEATURES += "systemd"
 VIRTUAL-RUNTIME_init_manager = "systemd"
 
