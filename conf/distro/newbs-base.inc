@@ -10,7 +10,7 @@ BB_DANGLINGAPPENDS_WARNONLY = "1"
 
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
-PREFERRED_VERSION_linux-raspberrypi-newbs = "4.9%"
+PREFERRED_VERSION_linux-raspberrypi-newbs ?= "4.9%"
 KERNEL_IMAGETYPE = "zImage"
 DTB_DEPLOYDIR = "dtb"
 

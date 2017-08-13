@@ -1,0 +1,26 @@
+From a54811557bedcfd87e1742f06f107ea4c8d6723f Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Fri, 10 Mar 2017 21:08:19 -0500
+Subject: [PATCH 01/21] Makefile: allow setting INSTALL_HDR_PATH through the
+ environment
+
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index ebe69a704bca..63dd8f5330b6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1142,7 +1142,7 @@ firmware_install:
+ # Kernel headers
+ 
+ #Default location for installed headers
+-export INSTALL_HDR_PATH = $(objtree)/usr
++export INSTALL_HDR_PATH ?= $(objtree)/usr
+ 
+ # If we do an all arch process set dst to asm-$(hdr-arch)
+ hdr-dst = $(if $(KBUILD_HEADERS), dst=include/arch-$(hdr-arch), dst=include)
+-- 
+2.14.1
+
