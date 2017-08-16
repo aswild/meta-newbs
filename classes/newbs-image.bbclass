@@ -41,13 +41,19 @@ newbs_rootfs_postprocess() {
     # Use systemd-networkd and systemd-resolvd
     rm -rvf ${IMAGE_ROOTFS}${sysconfdir}network
 
-    if [ "${MACHINE}" = "raspberrypi3" ]; then
+    if echo "${MACHINE}" | grep -q raspberrypi3; then
         install -d ${IMAGE_ROOTFS}${sysconfdir}/wpa_supplicant
         ln -sfv /run/systemd/resolve/resolv.conf ${IMAGE_ROOTFS}${sysconfdir}/resolv.conf
         bbnote "Enabling wpa_supplicant@wlan0.service"
         # systemctl --root=${IMAGE_ROOTFS} enable wpa_supplicant@wlan0.service
         ln -sfv ../../../../lib/systemd/system/wpa_supplicant@.service \
                 ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/multi-user.target.wants/wpa_supplicant@wlan0.service
+    fi
+
+    # use systemd-resolved for /etc/resolv.conf
+    if [ -f ${IMAGE_ROOTFS}/lib/systemd/systemd-resolved ]; then
+        rm -f ${IMAGE_ROOTFS}/etc/resolv.conf
+        ln -s /run/systemd/resolve/resolv.conf ${IMAGE_ROOTFS}/etc/resolv.conf
     fi
 
     # Make /media a symlink to /run/media

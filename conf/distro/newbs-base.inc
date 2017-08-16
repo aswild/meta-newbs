@@ -10,8 +10,9 @@ BB_DANGLINGAPPENDS_WARNONLY = "1"
 
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
-PREFERRED_VERSION_linux-raspberrypi-newbs ?= "4.9%"
-KERNEL_IMAGETYPE = "zImage"
+PREFERRED_VERSION_linux-raspberrypi-newbs ?= "4.12%"
+KERNEL_IMAGETYPE_arm = "zImage"
+KERNEL_IMAGETYPE_aarch64 = "Image"
 DTB_DEPLOYDIR = "dtb"
 
 # kernel commandline
@@ -25,6 +26,7 @@ SERIAL_CONSOLE = "115200 ttyAMA0"
 SYSDTB ??= ""
 SYSDTB_raspberrypi2 = "bcm2709-rpi-2-b.dtb"
 SYSDTB_raspberrypi3 = "bcm2710-rpi-3-b.dtb"
+SYSDTB_raspberrypi3-64 = "broadcom/bcm2710-rpi-3-b.dtb broadcom/bcm2837-rpi-3-b.dtb"
 DTOVERLAYS ??= ""
 DTOVERLAYS_raspberrypi3 = " \
     overlays/pi3-disable-bt.dtbo \

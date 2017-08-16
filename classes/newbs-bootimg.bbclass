@@ -5,14 +5,24 @@
 inherit image_types
 inherit linux-raspberrypi-base
 
-KERNEL_INITRAMFS = "${@bb.utils.contains('INITRAMFS_IMAGE_BUNDLE', '1', '-initramfs', '', d)}"
+def kernel_initramfs_extension(d):
+    image = d.getVar('INITRAMFS_IMAGE')
+    bundle = d.getVar('INITRAMFS_IMAGE_BUNDLE')
+    if image and bundle == '1':
+        return '-initramfs'
+    return ''
+
 IMAGE_BOOTLOADER ?= "bcm2835-bootfiles"
 
 KERNEL_NAME = "kernel7.img"
+KERNEL_NAME_raspberrypi3-64 = "kernel8.img"
 
 
 # 32 MB default boot partition (in 1K blocks)
-BOOTIMG_SIZE ?= "32768"
+# 48 MB for 64-bit since the aarch64 kernel doesn't support zImage yet
+DEFAULT_BOOTIMG_SIZE = "32768"
+DEFAULT_BOOTIMG_SIZE_aarch64 = "49152"
+BOOTIMG_SIZE ?= "${DEFAULT_BOOTIMG_SIZE}"
 BOOTIMG_LABEL ?= "NEWBS"
 
 IMAGE_DEPENDS_newbs-bootimg = " \
@@ -31,7 +41,7 @@ IMAGE_CMD_newbs-bootimg() {
     BOOT_DIR=${WORKDIR}/boot
     rm -rf ${BOOT_DIR}
     install -d $BOOT_DIR
-    install -m 644 ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}${KERNEL_INITRAMFS}-${MACHINE}.bin \
+    install -m 644 ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}${@kernel_initramfs_extension(d)}-${MACHINE}.bin \
                    $BOOT_DIR/${KERNEL_NAME}
 
     # copy bootloader files

@@ -2,6 +2,7 @@
 
 disk=/dev/sdd
 image=core-image-newbs
+machine=raspberrypi3
 
 while [[ $# != 0 ]]; do
     case $1 in
@@ -13,6 +14,9 @@ while [[ $# != 0 ]]; do
             ;;
         ext)
             rootfstype=ext4
+            ;;
+        64)
+            machine=raspberrypi3-64
             ;;
         *)
             echo "Unknown option: $1"
@@ -28,7 +32,7 @@ set -xe
 [[ -e ${disk}1 ]]
 [[ -e ${disk}2 ]]
 
-sudo dd if=${image}-raspberrypi3.boot.vfat of=${disk}1 bs=1M
-sudo dd if=${image}-raspberrypi3.${rootfstype} of=${disk}2 bs=1M
+sudo dd if=${image}-${machine}.boot.vfat of=${disk}1 bs=1M
+sudo dd if=${image}-${machine}.${rootfstype} of=${disk}2 bs=1M
 sync
 sync
