@@ -58,8 +58,8 @@ sed -i "s|##NEWBSROOT##|$NEWBSROOT|g" $BB_CONF
 sed -i "s|##NEWBSROOT##|$NEWBSROOT|g" $LOCAL_CONF
 
 # set the distro
-if [[ -n "$DISTRO" ]]; then
-    DISTRO="newbs-mce"
+if [[ -z "$DISTRO" ]]; then
+    DISTRO="newbs"
 fi
 sed -i "s|##DISTRO##|$DISTRO|g" $LOCAL_CONF
 
