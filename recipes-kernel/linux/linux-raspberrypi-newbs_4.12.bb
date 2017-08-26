@@ -1,7 +1,7 @@
 # NEWBS Linux 4.12 kernel
 
-LINUX_VERSION = "4.12.7"
-SRCREV = "0d9ed68fbe6e4e8a5f8a580a211f962304395089"
+LINUX_VERSION = "4.12.9"
+SRCREV = "ef79e7bb67c80f0b20a8327692f590a54568eda5"
 SRC_URI = "git://github.com/raspberrypi/linux.git;protocol=git;branch=rpi-4.12.y"
 
 # Configs must be named 'defconfig' or '*.cfg', or be wrapped in an scc
