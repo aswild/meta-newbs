@@ -59,9 +59,5 @@ newbs_rootfs_postprocess() {
     # Make /media a symlink to /run/media
     rm -rf ${IMAGE_ROOTFS}/media
     ln -sfv run/media ${IMAGE_ROOTFS}/media
-
-    # Make /tmp a symlink to /var/tmp (which is in turn a symlink to /var/volatile/tmp)
-    rm -rf ${IMAGE_ROOTFS}/tmp
-    ln -sfv var/tmp ${IMAGE_ROOTFS}/tmp
 }
 ROOTFS_POSTPROCESS_COMMAND_append = " newbs_rootfs_postprocess;"
