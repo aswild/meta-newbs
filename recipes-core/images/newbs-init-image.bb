@@ -3,7 +3,7 @@ LICENSE = "MIT"
 
 require recipes-core/images/core-image-minimal-initramfs.bb
 
-COMPATIBLE_HOST = "arm.*-linux"
+COMPATIBLE_HOST = "(arm|aarch64).*-linux"
 
 PACKAGE_INSTALL_remove = " \
     initramfs-live-boot \
