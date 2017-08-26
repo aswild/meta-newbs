@@ -3,10 +3,17 @@
 inherit core-image
 
 copy_ssh_host_keys() {
+    install -d ${IMAGE_ROOTFS}${sysconfdir}/ssh
     if [ -n "${SSH_HOST_KEYS}" ]; then
         for key in ${SSH_HOST_KEYS}; do
-            install -d ${IMAGE_ROOTFS}${sysconfdir}/ssh
             cp -vf ${key} ${IMAGE_ROOTFS}${sysconfdir}/ssh/
+        done
+    else
+        # If an SSH key path isn't set, create empty files anyway so
+        # newbs can bind-mount over them
+        for key in ssh_host_{dsa,ecdsa,ed25519,rsa}_key{,.pub}; do
+            echo "Creating empty ${IMAGE_ROOTFS}${sysconfdir}/ssh/${key}"
+            touch ${IMAGE_ROOTFS}${sysconfdir}/ssh/${key}
         done
     fi
 }
