@@ -8,6 +8,11 @@ TCLIBCAPPEND = ""
 # don't fail because of dangling appends
 BB_DANGLINGAPPENDS_WARNONLY = "1"
 
+BBMASK ?= "fake-bbmask-string-that-wont-match-anything"
+
+# FIXME meta-kodi has broken bbappends for llvm on OE's master
+BBMASK .= "|meta-kodi/recipes-core/llvm/.*"
+
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
 PREFERRED_VERSION_linux-raspberrypi-newbs ?= "4.12%"

@@ -25,12 +25,12 @@ DEFAULT_BOOTIMG_SIZE_aarch64 = "49152"
 BOOTIMG_SIZE ?= "${DEFAULT_BOOTIMG_SIZE}"
 BOOTIMG_LABEL ?= "NEWBS"
 
-IMAGE_DEPENDS_newbs-bootimg = " \
-    mtools-native \
-    dosfstools-native \
-    xz-native \
+do_image_newbs_bootimg[depends] += " \
+    mtools-native:do_populate_sysroot \
+    dosfstools-native:do_populate_sysroot \
+    xz-native:do_populate_sysroot \
     virtual/kernel:do_deploy \
-    ${IMAGE_BOOTLOADER} \
+    ${IMAGE_BOOTLOADER}:do_deploy \
 "
 
 DEPLOY_BOOTIMG_NAME    = "${IMAGE_NAME}.boot.vfat"
