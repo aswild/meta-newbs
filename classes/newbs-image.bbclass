@@ -10,7 +10,7 @@ copy_ssh_host_keys() {
         done
     else
         # If an SSH key path isn't set, create empty files anyway so
-        # newbs can bind-mount over them
+        # newbs-nvram can bind-mount over them
         for key in ssh_host_{dsa,ecdsa,ed25519,rsa}_key{,.pub}; do
             echo "Creating empty ${IMAGE_ROOTFS}${sysconfdir}/ssh/${key}"
             touch ${IMAGE_ROOTFS}${sysconfdir}/ssh/${key}
@@ -39,10 +39,14 @@ newbs_rootfs_postprocess() {
         fi
     fi
 
-    # make zsh the default shell
+    # make zsh or bash the default shell
     if [ -x ${IMAGE_ROOTFS}/bin/zsh ]; then
         bbnote "Setting /bin/zsh as default root shell"
         sed -i '/^root/s|/bin/sh$|/bin/zsh|' ${IMAGE_ROOTFS}/etc/passwd
+    elif [ -x ${IMAGE_ROOTFS}/bin/bash -o -L ${IMAGE_ROOTFS}/bin/bash ]; then
+        # /bin/bash might be a symlink to /bin/bash.bash
+        bbnote "Setting /bin/bash as default root shell"
+        sed -i '/^root/s|/bin/sh$|/bin/bash|' ${IMAGE_ROOTFS}/etc/passwd
     fi
 
     # Use systemd-networkd and systemd-resolvd
