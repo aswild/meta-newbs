@@ -12,6 +12,9 @@ while [[ $# != 0 ]]; do
         mce)
             image=newbs-mce-image
             ;;
+        mini)
+            image=newbs-mini-image
+            ;;
         ext)
             rootfstype=ext4
             ;;
