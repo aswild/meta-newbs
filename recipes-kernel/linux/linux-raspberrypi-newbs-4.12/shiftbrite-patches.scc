@@ -19,3 +19,4 @@ patch 0018-neostrip-refactor-colors-pixels.patch
 patch 0019-neostrip-add-per-pixel-sysfs-entries.patch
 patch 0020-neostrip-implement-read-write-ioctls.patch
 patch 0021-neostrip-shiftbrite-include-uaccess.h-from-linux-rat.patch
+patch 0022-thermal-Enable-BCM2835-thermal-driver-for-RPi3-64-bi.patch

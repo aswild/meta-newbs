@@ -1,0 +1,45 @@
+From de7683055975af4c5e0e29efcf34a31f4ed3428b Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Mon, 28 Aug 2017 23:36:31 -0400
+Subject: [PATCH] thermal: Enable bcm2835_thermal for arm64
+
+Use the upstream driver with CONFIG_BCM2835_THERMAL instead of
+CONFIG_THERMAL_BCM2835.
+
+Include the broadcom thermal drivers for either ARCH_BCM or
+ARCH_BCM2835, since ARCH_BCM is only for 32-bit ARM
+---
+ arch/arm64/configs/bcmrpi3_defconfig | 3 ++-
+ drivers/thermal/Kconfig              | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index 9dcb58a519d0..2dc41aad3366 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -642,7 +642,8 @@ CONFIG_SENSORS_SHT21=m
+ CONFIG_SENSORS_SHTC1=m
+ CONFIG_SENSORS_INA2XX=m
+ CONFIG_THERMAL=y
+-CONFIG_THERMAL_BCM2835=y
++# CONFIG_THERMAL_BCM2835 is not set
++CONFIG_BCM2835_THERMAL=y
+ CONFIG_WATCHDOG=y
+ CONFIG_BCM2835_WDT=y
+ CONFIG_UCB1400_CORE=m
+diff --git a/drivers/thermal/Kconfig b/drivers/thermal/Kconfig
+index 257e2d59d1b0..61353fdcc995 100644
+--- a/drivers/thermal/Kconfig
++++ b/drivers/thermal/Kconfig
+@@ -415,7 +415,7 @@ config MTK_THERMAL
+ 	  controller present in Mediatek SoCs
+ 
+ menu "Broadcom thermal drivers"
+-depends on ARCH_BCM || COMPILE_TEST
++depends on ARCH_BCM || ARCH_BCM2835 || COMPILE_TEST
+ source "drivers/thermal/broadcom/Kconfig"
+ endmenu
+ 
+-- 
+2.14.1
+
