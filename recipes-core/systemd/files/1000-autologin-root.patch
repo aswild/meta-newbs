@@ -1,0 +1,11 @@
+--- a/serial-getty@.service
++++ b/serial-getty@.service
+@@ -21,7 +21,7 @@
+ 
+ [Service]
+ Environment="TERM=xterm"
+-ExecStart=-/sbin/agetty -8 -L %I @BAUDRATE@ $TERM
++ExecStart=-/sbin/agetty -8 -L --autologin root %I @BAUDRATE@ $TERM
+ Type=idle
+ Restart=always
+ RestartSec=0
