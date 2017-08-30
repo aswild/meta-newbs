@@ -1,7 +1,7 @@
-From d322c829a36d667d610b1f8cb25f73fd156c5803 Mon Sep 17 00:00:00 2001
+From cf23a1bf20ebcee4a68847af1fb4144da46cdc09 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 18:17:38 -0500
-Subject: [PATCH 10/21] shiftbrite: implement read/write cdev and ioctls
+Subject: [PATCH] shiftbrite: implement read/write cdev and ioctls
 
 ---
  drivers/spi/shiftbrite.c      | 82 ++++++++++++++++++++++++++++++++++---------

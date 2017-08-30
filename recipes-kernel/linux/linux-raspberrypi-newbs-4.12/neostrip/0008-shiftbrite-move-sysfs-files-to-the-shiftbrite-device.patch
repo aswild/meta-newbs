@@ -1,8 +1,8 @@
-From 4a19dfde53c83731020146d523fabac3ed2ac295 Mon Sep 17 00:00:00 2001
+From 0d2af27eae36cc6d9002850983639b84017b24d1 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 15:39:09 -0500
-Subject: [PATCH 09/21] shiftbrite: move sysfs files to the shiftbrite device
- instead of spi device
+Subject: [PATCH] shiftbrite: move sysfs files to the shiftbrite device instead
+ of spi device
 
 ---
  drivers/spi/shiftbrite.c | 11 ++++++-----

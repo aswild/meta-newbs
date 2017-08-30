@@ -1,8 +1,7 @@
-From e03a8c4676c2a9bfa54bb956173f28c8a2a7cbd1 Mon Sep 17 00:00:00 2001
+From cf9f803efc3049f02a8d388ea152103fe2097297 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 18 Mar 2017 16:05:52 -0400
-Subject: [PATCH 17/21] fix pin numbers in spi0-neostrip and spi1-shiftbrite
- overlays
+Subject: [PATCH] fix pin numbers in spi0-neostrip and spi1-shiftbrite overlays
 
 ---
  arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts   | 2 +-

@@ -1,8 +1,8 @@
-From 00d9e5a5f869c3fbe5a492a2336ca78152ebb250 Mon Sep 17 00:00:00 2001
+From 7990203dbcb98f08815b82371246645031126a84 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 13 Aug 2017 13:37:01 -0400
-Subject: [PATCH 21/21] neostrip, shiftbrite: include uaccess.h from linux/
- rather than asm/
+Subject: [PATCH] neostrip, shiftbrite: include uaccess.h from linux/ rather
+ than asm/
 
 The definitions for copy_(to|from)_user moved
 ---

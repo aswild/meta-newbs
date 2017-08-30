@@ -11,7 +11,7 @@ NEWBS_DEFCONFIG_aarch64 = "defconfig-arm64.cfg"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
 SRC_URI += " \
     file://${NEWBS_DEFCONFIG} \
-    file://shiftbrite-patches.scc \
+    file://newbs-patches.scc \
     ${@bb.utils.contains('DISTRO', 'newbs-mce', 'file://media-drivers.cfg', '', d)} \
 "
 

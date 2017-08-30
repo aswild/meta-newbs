@@ -1,7 +1,7 @@
-From 6de28c8251d207d5440cfd2f757745bb02d18e81 Mon Sep 17 00:00:00 2001
+From d249c3b50010e0ff74fa17af2a4ccd40552d4143 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Mon, 20 Feb 2017 21:45:17 -0500
-Subject: [PATCH 04/21] shiftbrite: expose config register in sysfs
+Subject: [PATCH] shiftbrite: expose config register in sysfs
 
 ---
  drivers/spi/shiftbrite.c | 166 +++++++++++++++++++++++++++++++++++++++++------

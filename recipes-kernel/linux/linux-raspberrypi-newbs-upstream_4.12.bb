@@ -8,12 +8,9 @@ KBUILD_DEFCONFIG = "bcm2709_defconfig"
 KBUILD_DEFCONFIG_aarch64 = "bcmrpi3_defconfig"
 KCONFIG_MODE = "alldefconfig"
 
-KERNEL_DEVICETREE_remove = "overlays/spi0-shiftbrite.dtbo overlays/spi1-shiftbrite.dtbo overlays/spi0-neostrip.dtbo overlays/spi1-neostrip.dtbo"
-
 FILESEXTRAPATHS_prepend := "${THISDIR}/linux-raspberrypi-newbs-${PV}:"
 SRC_URI += " \
-    file://0022-thermal-Enable-BCM2835-thermal-driver-for-RPi3-64-bi.patch \
+    file://0003-thermal-Enable-BCM2835-thermal-driver-for-RPi3-64-bi.patch \
 "
 
 require linux-raspberrypi-newbs.inc
-

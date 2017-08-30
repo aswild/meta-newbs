@@ -1,7 +1,7 @@
-From 7da029c3ca431d75b47305299775380a07382456 Mon Sep 17 00:00:00 2001
+From dc43f40b94598fb4e72bd86be568c95e6af29bae Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Thu, 23 Mar 2017 21:56:26 -0400
-Subject: [PATCH 18/21] neostrip: refactor colors -> pixels
+Subject: [PATCH] neostrip: refactor colors -> pixels
 
 ---
  drivers/spi/neostrip.c | 55 +++++++++++++++++++++++++++-----------------------

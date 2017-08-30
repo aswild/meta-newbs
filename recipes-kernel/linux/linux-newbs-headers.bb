@@ -9,6 +9,9 @@ do_patch[noexec] = "1"
 do_configure[noexec] = "1"
 
 do_compile() {
+    if ! echo "${KERNEL_FEATURES}" | grep -q neostrip; then
+        bbfatal "'neostrip' is not enabled in KERNEL_FEATURES, so its headers don't exist!"
+    fi
     mkdir -p ${B}
     oe_runmake -C ${STAGING_KERNEL_DIR} INSTALL_HDR_PATH=${B} headers_install
 }

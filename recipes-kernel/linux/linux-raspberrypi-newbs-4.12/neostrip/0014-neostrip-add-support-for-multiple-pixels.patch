@@ -1,7 +1,7 @@
-From e34d718b8dd5c0aa6a1ff9d3b8afd2d5442c34cc Mon Sep 17 00:00:00 2001
+From a9743885260ea1203ed80b5e64e3d0fc39889901 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 17 Mar 2017 01:05:08 -0400
-Subject: [PATCH 16/21] neostrip: add support for multiple pixels
+Subject: [PATCH] neostrip: add support for multiple pixels
 
 TODO:
  * re-implement ioctls

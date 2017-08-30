@@ -33,13 +33,16 @@ SYSDTB_raspberrypi2 = "bcm2709-rpi-2-b.dtb"
 SYSDTB_raspberrypi3 = "bcm2710-rpi-3-b.dtb"
 SYSDTB_raspberrypi3-64 = "broadcom/bcm2710-rpi-3-b.dtb broadcom/bcm2837-rpi-3-b.dtb"
 DTOVERLAYS ??= ""
-DTOVERLAYS_raspberrypi3 = " \
-    overlays/pi3-disable-bt.dtbo \
-    overlays/pi3-miniuart-bt.dtbo \
+NEOSTRIP_OVERLAYS = " \
     overlays/spi0-shiftbrite.dtbo \
     overlays/spi1-shiftbrite.dtbo \
     overlays/spi0-neostrip.dtbo \
     overlays/spi1-neostrip.dtbo \
+"
+DTOVERLAYS_raspberrypi3 = " \
+    overlays/pi3-disable-bt.dtbo \
+    overlays/pi3-miniuart-bt.dtbo \
+    ${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', '${NEOSTRIP_OVERLAYS}', '', d)} \
 "
 KERNEL_DEVICETREE = " \
     ${SYSDTB} \

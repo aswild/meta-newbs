@@ -1,7 +1,7 @@
-From 609efe5d969da3f64fdd2fda3d3d7b6697400e72 Mon Sep 17 00:00:00 2001
+From af34715822781f6891425784c003202db14a0146 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 24 Mar 2017 00:06:03 -0400
-Subject: [PATCH 19/21] neostrip: add per-pixel sysfs entries
+Subject: [PATCH] neostrip: add per-pixel sysfs entries
 
 Plus:
  * use attribute_group stuff to create the static attributes

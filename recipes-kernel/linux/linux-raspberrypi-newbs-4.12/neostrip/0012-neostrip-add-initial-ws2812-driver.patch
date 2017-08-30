@@ -1,7 +1,7 @@
-From 2cd56a0eba3e9bf964ea3152c578eafdb5558573 Mon Sep 17 00:00:00 2001
+From c2126bb391dfd6efb2adc7128c7ecaa7eab7c70c Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 01:02:48 -0400
-Subject: [PATCH 13/21] neostrip: add initial ws2812 driver
+Subject: [PATCH] neostrip: add initial ws2812 driver
 
 It has some output, but is incorrect. Timing is probably wacky
 ---

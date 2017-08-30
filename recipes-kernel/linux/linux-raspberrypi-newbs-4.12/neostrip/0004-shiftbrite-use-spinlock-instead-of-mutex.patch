@@ -1,7 +1,7 @@
-From 650cf3851e88d05bc9211ea59a1473b1cd314383 Mon Sep 17 00:00:00 2001
+From 9feda8bb9bf78c1399bc94218efcf9378690899b Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Mon, 20 Feb 2017 22:56:12 -0500
-Subject: [PATCH 05/21] shiftbrite: use spinlock instead of mutex
+Subject: [PATCH] shiftbrite: use spinlock instead of mutex
 
 ---
  drivers/spi/shiftbrite.c | 86 +++++++++++++++++++++++++-----------------------

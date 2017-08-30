@@ -1,0 +1,20 @@
+kconf hardware neostrip.cfg
+patch 0001-shiftbrite-RGB-LED-driver.patch
+patch 0002-shiftbrite-dt-overlay-tweaks.patch
+patch 0003-shiftbrite-expose-config-register-in-sysfs.patch
+patch 0004-shiftbrite-use-spinlock-instead-of-mutex.patch
+patch 0005-shiftbrite-add-hello-world-chrdev.patch
+patch 0006-shiftbrite-add-hello-ioctl.patch
+patch 0007-shiftbrite-big-probe-release-refactoring-follow-spid.patch
+patch 0008-shiftbrite-move-sysfs-files-to-the-shiftbrite-device.patch
+patch 0009-shiftbrite-implement-read-write-cdev-and-ioctls.patch
+patch 0010-shiftbrite-use-GPIO-for-latch-instead-of-SPI-CS.patch
+patch 0011-shiftbrite-rename-overlay-to-spi0-shiftbrite.dtbo-ad.patch
+patch 0012-neostrip-add-initial-ws2812-driver.patch
+patch 0013-neostrip-tweak-to-workaround-SPI-hardware-resetting-.patch
+patch 0014-neostrip-add-support-for-multiple-pixels.patch
+patch 0015-fix-pin-numbers-in-spi0-neostrip-and-spi1-shiftbrite.patch
+patch 0016-neostrip-refactor-colors-pixels.patch
+patch 0017-neostrip-add-per-pixel-sysfs-entries.patch
+patch 0018-neostrip-implement-read-write-ioctls.patch
+patch 0019-neostrip-shiftbrite-include-uaccess.h-from-linux-rat.patch

@@ -1,4 +1,4 @@
-From de7683055975af4c5e0e29efcf34a31f4ed3428b Mon Sep 17 00:00:00 2001
+From e9b8b5f89b734300ed6391f732daa508d67f7587 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Mon, 28 Aug 2017 23:36:31 -0400
 Subject: [PATCH] thermal: Enable bcm2835_thermal for arm64

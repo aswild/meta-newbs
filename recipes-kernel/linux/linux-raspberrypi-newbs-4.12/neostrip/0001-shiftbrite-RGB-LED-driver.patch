@@ -1,7 +1,7 @@
-From 6f63c096d5049192e90286386fbcc22f050521c3 Mon Sep 17 00:00:00 2001
+From 454000a4a64e21198277a4573272eba9c22b318b Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 29 Jan 2017 04:30:13 -0500
-Subject: [PATCH 02/21] shiftbrite RGB LED driver
+Subject: [PATCH] shiftbrite RGB LED driver
 
 Holy shit, I wrote a kernel driver from scratch and it actually works.
 Well, mostly at least. If I remove and re-insert this module, the system
