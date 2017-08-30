@@ -11,9 +11,7 @@ SRCPV := "${@d.getVar('SRCREV')[:10]}"
 PV = "${LINUX_VERSION}+git${SRCPV}"
 
 COMPATIBLE_MACHINE = "^raspberrypi[23]$"
-#KBUILD_DEFCONFIG_raspberrypi2 ?= "bcm2709_defconfig"
-#KBUILD_DEFCONFIG_raspberrypi3 ?= "bcm2709_defconfig"
-KCONFIG_MODE = "allnoconfig"
+KCONFIG_MODE ?= "allnoconfig"
 LINUX_VERSION_EXTENSION = "-newbs"
 DTB_DEPLOYDIR ?= ""
 
