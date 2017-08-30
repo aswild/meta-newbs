@@ -229,9 +229,27 @@ SSTATE_DIR = "${NEWBSROOT}/sstate-cache"
 MACHINE = "raspberrypi3"
 DISTRO = "##DISTRO##"
 
+# Extra packages to install
+CORE_IMAGE_EXTRA_INSTALL = ""
+
+# Extra stuff for config.txt (use \n for newlines)
+EXTRA_CONFIG_TXT = ""
+
 # Uncomment this if /usr/bin/python is python3
 #HOST_DEFAULT_PYTHON3 = "y"
 
 # Uncomment and set this to specify SSH host to copy to /etc/ssh on the
 # target. A whitespace-separated list and/or shell glob pattern will work
 #SSH_HOST_KEYS = "${NEWBSROOT}/ssh_host_keys/*"
+
+# include shiftbrite/neostrip drivers
+#KERNEL_FEATURES += "neostrip"
+
+# use the upstream raspberrypi/linux.git kernel without newbs patches
+# Use an override here because newbs-base.inc has to use a hard = set which
+# clobbers local.conf by default
+#PREFERRED_PROVIDER_virtual/kernel_raspberrypi3 = "linux-raspberrypi-newbs-upstream"
+
+# Enable packagemanagement and ad-hoc feeds
+#IMAGE_FEATURES += "package-management"
+#FEED_DEPLOYDIR_BASE_URI = "http://server/newbs-ipk"
