@@ -1,13 +1,16 @@
-From e9b8b5f89b734300ed6391f732daa508d67f7587 Mon Sep 17 00:00:00 2001
+From 1218596a087032107a89c05c463d304b60bba3fe Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Mon, 28 Aug 2017 23:36:31 -0400
-Subject: [PATCH] thermal: Enable bcm2835_thermal for arm64
+Subject: [PATCH] thermal: use upstream bcm2835 thermal driver for arm64
 
-Use the upstream driver with CONFIG_BCM2835_THERMAL instead of
-CONFIG_THERMAL_BCM2835.
+The downstream bcm2835-thermal driver (enabled with THERMAL_BCM2835)
+doesn't work on the Pi3 in 64 bit mode, but the upstream driver (enabled
+with BCM2835_THERMAL) can't be enabled for arm64 since the Broadcom
+Kconfig menu depends on ARCH_BCM which is only for 32-bit ARM.
 
-Include the broadcom thermal drivers for either ARCH_BCM or
-ARCH_BCM2835, since ARCH_BCM is only for 32-bit ARM
+This patch enables the Broadcom thermal drivers Kconfigs for
+ARCH_BCM2835 and updates the bcmrpi3_defconfig to use the upstream
+bcm2835 thermal driver.
 ---
  arch/arm64/configs/bcmrpi3_defconfig | 3 ++-
  drivers/thermal/Kconfig              | 2 +-
