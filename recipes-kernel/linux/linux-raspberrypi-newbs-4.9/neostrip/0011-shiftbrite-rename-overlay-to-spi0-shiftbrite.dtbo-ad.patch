@@ -1,8 +1,8 @@
-From 3bbea98ee38abe48f6d2d76c494ee1af2bafa8a7 Mon Sep 17 00:00:00 2001
+From 8a7054f496be061a626fe5b4ff514eee8213726d Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 00:59:40 -0400
-Subject: [PATCH 12/20] shiftbrite: rename overlay to spi0-shiftbrite.dtbo, add
- spi1 overlay
+Subject: [PATCH] shiftbrite: rename overlay to spi0-shiftbrite.dtbo, add spi1
+ overlay
 
 spi1 might not work though
 ---
@@ -14,10 +14,10 @@ spi1 might not work though
  create mode 100644 arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts
 
 diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
-index cf0dbcf..56b08dc 100644
+index 765330d79549..6f7540f4961c 100644
 --- a/arch/arm/boot/dts/overlays/Makefile
 +++ b/arch/arm/boot/dts/overlays/Makefile
-@@ -59,7 +59,6 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+@@ -68,7 +68,6 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
  	pi3-disable-bt.dtbo \
  	pi3-disable-wifi.dtbo \
  	pi3-miniuart-bt.dtbo \
@@ -25,7 +25,7 @@ index cf0dbcf..56b08dc 100644
  	piscreen.dtbo \
  	piscreen2r.dtbo \
  	pisound.dtbo \
-@@ -93,9 +92,11 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+@@ -104,9 +103,11 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
  	spi-rtc.dtbo \
  	spi0-cs.dtbo \
  	spi0-hw-cs.dtbo \
@@ -43,7 +43,7 @@ rename from arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
 rename to arch/arm/boot/dts/overlays/spi0-shiftbrite-overlay.dts
 diff --git a/arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts b/arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts
 new file mode 100644
-index 0000000..b22f6de
+index 000000000000..b22f6de69a95
 --- /dev/null
 +++ b/arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts
 @@ -0,0 +1,63 @@
@@ -111,5 +111,5 @@ index 0000000..b22f6de
 +    };
 +};
 -- 
-2.9.3
+2.14.1
 

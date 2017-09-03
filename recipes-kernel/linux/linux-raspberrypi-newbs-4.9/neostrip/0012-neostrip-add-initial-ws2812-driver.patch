@@ -1,7 +1,7 @@
-From d1597c280172b824085bbdd62c569c01182818e7 Mon Sep 17 00:00:00 2001
+From c2126bb391dfd6efb2adc7128c7ecaa7eab7c70c Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 01:02:48 -0400
-Subject: [PATCH 13/20] neostrip: add initial ws2812 driver
+Subject: [PATCH] neostrip: add initial ws2812 driver
 
 It has some output, but is incorrect. Timing is probably wacky
 ---
@@ -17,10 +17,10 @@ It has some output, but is incorrect. Timing is probably wacky
  create mode 100644 drivers/spi/neostrip.c
 
 diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
-index 56b08dc..55bad67 100644
+index 6f7540f4961c..31b61c5db27a 100644
 --- a/arch/arm/boot/dts/overlays/Makefile
 +++ b/arch/arm/boot/dts/overlays/Makefile
-@@ -92,10 +92,12 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+@@ -103,10 +103,12 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
  	spi-rtc.dtbo \
  	spi0-cs.dtbo \
  	spi0-hw-cs.dtbo \
@@ -35,7 +35,7 @@ index 56b08dc..55bad67 100644
  	spi2-2cs.dtbo \
 diff --git a/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
 new file mode 100644
-index 0000000..9edb38b
+index 000000000000..9edb38b5e699
 --- /dev/null
 +++ b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
 @@ -0,0 +1,50 @@
@@ -91,7 +91,7 @@ index 0000000..9edb38b
 +};
 diff --git a/arch/arm/boot/dts/overlays/spi1-neostrip-overlay.dts b/arch/arm/boot/dts/overlays/spi1-neostrip-overlay.dts
 new file mode 100644
-index 0000000..4ef65e4
+index 000000000000..4ef65e478765
 --- /dev/null
 +++ b/arch/arm/boot/dts/overlays/spi1-neostrip-overlay.dts
 @@ -0,0 +1,50 @@
@@ -146,10 +146,10 @@ index 0000000..4ef65e4
 +    };
 +};
 diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-index 82c30ba..1cdf20d 100644
+index cbe6d495743b..bfaed9e76502 100644
 --- a/drivers/spi/Kconfig
 +++ b/drivers/spi/Kconfig
-@@ -753,6 +753,12 @@ config SPI_SHIFTBRITE
+@@ -776,6 +776,12 @@ config SPI_SHIFTBRITE
  	    Driver to control ShiftBrite LEDs with a SPI bus, using the chip
  	    select GPIO to toggle the latch pin.
  
@@ -163,10 +163,10 @@ index 82c30ba..1cdf20d 100644
  	tristate "Infineon TLE62X0 (for power switching)"
  	depends on SYSFS
 diff --git a/drivers/spi/Makefile b/drivers/spi/Makefile
-index 4f7ebf7..49fae6c 100644
+index 9f84ebf73aa1..51f26894002e 100644
 --- a/drivers/spi/Makefile
 +++ b/drivers/spi/Makefile
-@@ -56,6 +56,7 @@ obj-$(CONFIG_SPI_MPC52xx_PSC)		+= spi-mpc52xx-psc.o
+@@ -59,6 +59,7 @@ obj-$(CONFIG_SPI_MPC52xx_PSC)		+= spi-mpc52xx-psc.o
  obj-$(CONFIG_SPI_MPC52xx)		+= spi-mpc52xx.o
  obj-$(CONFIG_SPI_MT65XX)                += spi-mt65xx.o
  obj-$(CONFIG_SPI_MXS)			+= spi-mxs.o
@@ -176,7 +176,7 @@ index 4f7ebf7..49fae6c 100644
  spi-octeon-objs				:= spi-cavium.o spi-cavium-octeon.o
 diff --git a/drivers/spi/neostrip.c b/drivers/spi/neostrip.c
 new file mode 100644
-index 0000000..e6882e3
+index 000000000000..e6882e3292a0
 --- /dev/null
 +++ b/drivers/spi/neostrip.c
 @@ -0,0 +1,545 @@
@@ -726,5 +726,5 @@ index 0000000..e6882e3
 +MODULE_LICENSE("GPL");
 +MODULE_ALIAS("spi:neostrip");
 -- 
-2.9.3
+2.14.1
 

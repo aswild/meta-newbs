@@ -15,6 +15,19 @@ KCONFIG_MODE ?= "allnoconfig"
 LINUX_VERSION_EXTENSION = "-newbs"
 DTB_DEPLOYDIR ?= ""
 
+# Configs must be named 'defconfig' or '*.cfg', or be wrapped in an scc
+NEWBS_DEFCONFIG_arm = "defconfig.cfg"
+NEWBS_DEFCONFIG_aarch64 = "defconfig-arm64.cfg"
+
+# have to manually expand ${PN} because immediate expansion when parsing the inc file will yield 'defaultpkgname'
+# LINUX_VERSION must be set before including this file
+FILESEXTRAPATHS_prepend := "${THISDIR}/linux-raspberrypi-newbs-${@'.'.join(d.getVar('LINUX_VERSION').split('.')[:2])}:"
+SRC_URI += " \
+    file://${NEWBS_DEFCONFIG} \
+    file://newbs-patches.scc \
+    ${@bb.utils.contains('DISTRO', 'newbs-mce', 'file://media-drivers.cfg', '', d)} \
+"
+
 do_deploy_append() {
     # deploy cmdline.txt
     install -d ${DEPLOYDIR}/bcm2835-bootfiles

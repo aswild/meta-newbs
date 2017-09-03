@@ -1,7 +1,7 @@
-From 6aae35733aba1fda1c16171cf0080bc814f00a19 Mon Sep 17 00:00:00 2001
+From a9743885260ea1203ed80b5e64e3d0fc39889901 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 17 Mar 2017 01:05:08 -0400
-Subject: [PATCH 16/20] neostrip: add support for multiple pixels
+Subject: [PATCH] neostrip: add support for multiple pixels
 
 TODO:
  * re-implement ioctls
@@ -14,7 +14,7 @@ TODO:
  3 files changed, 200 insertions(+), 66 deletions(-)
 
 diff --git a/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
-index 9edb38b..0bb27a7 100644
+index 9edb38b5e699..0bb27a79e272 100644
 --- a/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
 +++ b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
 @@ -39,12 +39,16 @@
@@ -38,10 +38,10 @@ index 9edb38b..0bb27a7 100644
 +    };
  };
 diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-index 1cdf20d..83a74be 100644
+index bfaed9e76502..a848488c6dea 100644
 --- a/drivers/spi/Kconfig
 +++ b/drivers/spi/Kconfig
-@@ -759,6 +759,19 @@ config SPI_NEOSTRIP
+@@ -782,6 +782,19 @@ config SPI_NEOSTRIP
  	help
  	    Driver to control "NeoPixel" RGB LEDs using SPI hardware
  
@@ -62,7 +62,7 @@ index 1cdf20d..83a74be 100644
  	tristate "Infineon TLE62X0 (for power switching)"
  	depends on SYSFS
 diff --git a/drivers/spi/neostrip.c b/drivers/spi/neostrip.c
-index e945b43..60a0c05 100644
+index e945b4342fbc..60a0c0532a46 100644
 --- a/drivers/spi/neostrip.c
 +++ b/drivers/spi/neostrip.c
 @@ -23,6 +23,7 @@
@@ -487,5 +487,5 @@ index e945b43..60a0c05 100644
      kfree(chip);
      dev_info(&spi->dev, "neostrip driver unloaded\n");
 -- 
-2.9.3
+2.14.1
 

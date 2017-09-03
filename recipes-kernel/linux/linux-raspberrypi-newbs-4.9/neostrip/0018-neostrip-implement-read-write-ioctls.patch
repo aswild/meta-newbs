@@ -1,7 +1,7 @@
-From 78be51cdf91a612b92c55b8c3de6aece65ef9c46 Mon Sep 17 00:00:00 2001
+From f04fe535de5126aa870414243af363d76bfb12d6 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 26 Mar 2017 02:53:35 -0400
-Subject: [PATCH 20/20] neostrip: implement read/write ioctls
+Subject: [PATCH] neostrip: implement read/write ioctls
 
 ---
  drivers/spi/neostrip.c      | 69 ++++++++++++++++++++++++++++++++++++---------
@@ -9,7 +9,7 @@ Subject: [PATCH 20/20] neostrip: implement read/write ioctls
  2 files changed, 70 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/spi/neostrip.c b/drivers/spi/neostrip.c
-index ab59c3d..0f533ac 100644
+index ab59c3dddd53..0f533ac948f0 100644
 --- a/drivers/spi/neostrip.c
 +++ b/drivers/spi/neostrip.c
 @@ -449,6 +449,51 @@ static ssize_t neostrip_cdev_write(struct file *fp, const char *buf, size_t size
@@ -100,7 +100,7 @@ index ab59c3d..0f533ac 100644
              break;
      }
 diff --git a/include/uapi/spi/neostrip.h b/include/uapi/spi/neostrip.h
-index 2e62aa5..7ad0415 100644
+index 2e62aa565a1e..7ad0415d590e 100644
 --- a/include/uapi/spi/neostrip.h
 +++ b/include/uapi/spi/neostrip.h
 @@ -17,9 +17,21 @@
@@ -129,5 +129,5 @@ index 2e62aa5..7ad0415 100644
  
  #endif // _NEOSTRIP_H_
 -- 
-2.9.3
+2.14.1
 

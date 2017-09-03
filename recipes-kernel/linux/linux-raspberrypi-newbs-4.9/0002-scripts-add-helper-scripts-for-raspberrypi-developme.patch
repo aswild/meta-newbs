@@ -1,15 +1,17 @@
-From 2fc966c6b1703b59f162db0353b5760259359268 Mon Sep 17 00:00:00 2001
+From 16218b8fea8f6812630603063f5fa44788580855 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 21:15:00 -0400
-Subject: [PATCH] Commit rsync-to-pi, envsetup, create-patches scripts
+Subject: [PATCH 2/2] scripts: add helper scripts for raspberrypi development
 
 ---
- scripts/create-patches.sh |  8 ++++++++
- scripts/envsetup.sh       |  5 +++++
- scripts/rsync-to-pi.sh    | 35 +++++++++++++++++++++++++++++++++++
- 3 files changed, 48 insertions(+)
+ scripts/create-patches.sh    |  8 +++++
+ scripts/envsetup.sh          |  5 +++
+ scripts/install-to-sdcard.sh | 76 ++++++++++++++++++++++++++++++++++++++++++++
+ scripts/rsync-to-pi.sh       | 35 ++++++++++++++++++++
+ 4 files changed, 124 insertions(+)
  create mode 100755 scripts/create-patches.sh
  create mode 100644 scripts/envsetup.sh
+ create mode 100755 scripts/install-to-sdcard.sh
  create mode 100755 scripts/rsync-to-pi.sh
 
 diff --git a/scripts/create-patches.sh b/scripts/create-patches.sh
@@ -37,6 +39,88 @@ index 000000000000..be1fe757a846
 +[[ -n "$MAKEFLAGS" ]] || export MAKEFLAGS=-j$(grep -c ^processor /proc/cpuinfo)
 +export INSTALL_HDR_PATH=HEADERS_INSTALL
 +export INSTALL_MOD_PATH=MODULES_INSTALL
+diff --git a/scripts/install-to-sdcard.sh b/scripts/install-to-sdcard.sh
+new file mode 100755
+index 000000000000..c757ab892c5e
+--- /dev/null
++++ b/scripts/install-to-sdcard.sh
+@@ -0,0 +1,76 @@
++#!/bin/bash
++
++[[ $EUID == 0 ]] || exec sudo -E "$0" "$@"
++
++[[ -n $CROSS_COMPILE ]] || CROSS_COMPILE=arm-linux-gnueabihf
++[[ -n $ARCH ]] || ARCH=arm
++
++export CROSS_COMPILE ARCH
++
++if [[ $ARCH == arm64 ]]; then
++    kernel_imgtype=Image
++    kernelimg=kernel8.img
++    dtbdir=arch/$ARCH/boot/dts/broadcom
++else
++    kernel_imgtype=zImage
++    kernelimg=kernel7.img
++    dtbdir=arch/$ARCH/boot/dts
++fi
++
++dtbodir=arch/$ARCH/boot/dts/overlays
++dev=/dev/sdd
++
++while [[ $#  > 0 ]]; do
++    case $1 in
++        sd*) dev=/dev/$1 ;;
++    esac
++    shift
++done
++
++maybe_mount() {
++    local _mp="$(awk "/${1//\//\\/}/{print \$2}" /proc/mounts)"
++    if [[ -n "$_mp" ]]; then
++        echo "$_mp"
++    else
++        _mp="$PWD/$(basename $1)-mount"
++        mkdir -p "$_mp"
++        mount $1 "$_mp"
++        if [[ $? == 0 ]]; then
++            echo "$_mp"
++        fi
++    fi
++}
++
++die() {
++    echo "die: $*"
++    umount $boot_mount
++    umount $root_mount
++    exit 1
++}
++
++boot_mount=$(maybe_mount ${dev}1)
++root_mount=$(maybe_mount ${dev}2)
++
++if [[ -d $boot_mount ]]; then
++    rm -vf $boot_mount/kernel*.img
++    rm -vf $boot_mount/*.dtb
++    cp -v arch/$ARCH/boot/$kernel_imgtype $boot_mount/$kernelimg
++    cp -v $dtbdir/*.dtb $boot_mount
++
++    mkdir -p $boot_mount/overlays
++    cp -v $dtbodir/*.dtbo $boot_mount/overlays
++fi
++
++rm -rf MODULES_INSTALL
++make INSTALL_MOD_PATH=MODULES_INSTALL modules_install
++[[ $? == 0 ]] || die "modules_install failed"
++
++if [[ -d $root_mount ]]; then
++    rm -rf $root_mount/lib/modules/*
++    cp -rv MODULES_INSTALL/lib/modules/* $root_mount/lib/modules
++fi
++
++umount $boot_mount
++umount $root_mount
++sync
++sync
 diff --git a/scripts/rsync-to-pi.sh b/scripts/rsync-to-pi.sh
 new file mode 100755
 index 000000000000..8d99125bdd2c

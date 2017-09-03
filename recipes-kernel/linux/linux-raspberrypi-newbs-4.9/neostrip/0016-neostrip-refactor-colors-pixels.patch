@@ -1,14 +1,14 @@
-From eebfb8c6a77847f6fe4f00286cea417c7ea3140c Mon Sep 17 00:00:00 2001
+From dc43f40b94598fb4e72bd86be568c95e6af29bae Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Thu, 23 Mar 2017 21:56:26 -0400
-Subject: [PATCH 18/20] neostrip: refactor colors -> pixels
+Subject: [PATCH] neostrip: refactor colors -> pixels
 
 ---
  drivers/spi/neostrip.c | 55 +++++++++++++++++++++++++++-----------------------
  1 file changed, 30 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/spi/neostrip.c b/drivers/spi/neostrip.c
-index 60a0c05..30fa7a1 100644
+index 60a0c0532a46..30fa7a1df359 100644
 --- a/drivers/spi/neostrip.c
 +++ b/drivers/spi/neostrip.c
 @@ -48,7 +48,7 @@ struct neostrip_chip {
@@ -189,5 +189,5 @@ index 60a0c05..30fa7a1 100644
      kfree(chip);
      dev_info(&spi->dev, "neostrip driver unloaded\n");
 -- 
-2.9.3
+2.14.1
 

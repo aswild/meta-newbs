@@ -1,7 +1,7 @@
-From 15f9de28d0fd797c91161710ebc864b246515db3 Mon Sep 17 00:00:00 2001
+From 454000a4a64e21198277a4573272eba9c22b318b Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 29 Jan 2017 04:30:13 -0500
-Subject: [PATCH 02/20] shiftbrite RGB LED driver
+Subject: [PATCH] shiftbrite RGB LED driver
 
 Holy shit, I wrote a kernel driver from scratch and it actually works.
 Well, mostly at least. If I remove and re-insert this module, the system
@@ -17,10 +17,10 @@ will kernel panic some arbitrary time afterwards.
  create mode 100644 drivers/spi/shiftbrite.c
 
 diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
-index 0f73407..cf0dbcf 100644
+index c50b1dfa9d73..765330d79549 100644
 --- a/arch/arm/boot/dts/overlays/Makefile
 +++ b/arch/arm/boot/dts/overlays/Makefile
-@@ -59,6 +59,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+@@ -68,6 +68,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
  	pi3-disable-bt.dtbo \
  	pi3-disable-wifi.dtbo \
  	pi3-miniuart-bt.dtbo \
@@ -30,7 +30,7 @@ index 0f73407..cf0dbcf 100644
  	pisound.dtbo \
 diff --git a/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
 new file mode 100644
-index 0000000..1e27e2e
+index 000000000000..1e27e2ede3d4
 --- /dev/null
 +++ b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
 @@ -0,0 +1,34 @@
@@ -69,10 +69,10 @@ index 0000000..1e27e2e
 +    };
 +};
 diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-index b799547..82c30ba 100644
+index 1761c9004fc1..cbe6d495743b 100644
 --- a/drivers/spi/Kconfig
 +++ b/drivers/spi/Kconfig
-@@ -746,6 +746,13 @@ config SPI_LOOPBACK_TEST
+@@ -769,6 +769,13 @@ config SPI_LOOPBACK_TEST
  	  primarily used for development of spi_master drivers
  	  and to detect regressions
  
@@ -87,10 +87,10 @@ index b799547..82c30ba 100644
  	tristate "Infineon TLE62X0 (for power switching)"
  	depends on SYSFS
 diff --git a/drivers/spi/Makefile b/drivers/spi/Makefile
-index aa939d9..4f7ebf7 100644
+index b375a7a89216..9f84ebf73aa1 100644
 --- a/drivers/spi/Makefile
 +++ b/drivers/spi/Makefile
-@@ -85,6 +85,7 @@ obj-$(CONFIG_SPI_SH)			+= spi-sh.o
+@@ -88,6 +88,7 @@ obj-$(CONFIG_SPI_SH)			+= spi-sh.o
  obj-$(CONFIG_SPI_SH_HSPI)		+= spi-sh-hspi.o
  obj-$(CONFIG_SPI_SH_MSIOF)		+= spi-sh-msiof.o
  obj-$(CONFIG_SPI_SH_SCI)		+= spi-sh-sci.o
@@ -100,7 +100,7 @@ index aa939d9..4f7ebf7 100644
  obj-$(CONFIG_SPI_SUN4I)			+= spi-sun4i.o
 diff --git a/drivers/spi/shiftbrite.c b/drivers/spi/shiftbrite.c
 new file mode 100644
-index 0000000..1a84d55
+index 000000000000..1a84d552ca67
 --- /dev/null
 +++ b/drivers/spi/shiftbrite.c
 @@ -0,0 +1,186 @@
@@ -291,5 +291,5 @@ index 0000000..1a84d55
 +MODULE_DESCRIPTION("ShiftBrite SPI LED driver");
 +MODULE_LICENSE("GPL");
 -- 
-2.9.3
+2.14.1
 
