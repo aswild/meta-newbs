@@ -3,7 +3,6 @@
 # but doesn't create a partition image for the root filesystem
 
 inherit image_types
-inherit linux-raspberrypi-base
 
 def kernel_initramfs_extension(d):
     image = d.getVar('INITRAMFS_IMAGE')
@@ -11,6 +10,18 @@ def kernel_initramfs_extension(d):
     if image and bundle == '1':
         return '-initramfs'
     return ''
+
+# from meta-raspberrypi's sdcard_image-rpi.bbclass
+def split_overlays(d, out):
+    dts = d.getVar("KERNEL_DEVICETREE")
+    if out:
+        overlays = oe.utils.str_filter_out('\S+\-overlay\.dtb$', dts, d)
+        overlays = oe.utils.str_filter_out('\S+\.dtbo$', overlays, d)
+    else:
+        overlays = oe.utils.str_filter('\S+\-overlay\.dtb$', dts, d) + \
+                   " " + oe.utils.str_filter('\S+\.dtbo$', dts, d)
+
+    return overlays
 
 IMAGE_BOOTLOADER ?= "bcm2835-bootfiles"
 
@@ -49,10 +60,10 @@ IMAGE_CMD_newbs-bootimg() {
     rm -vf ${DEPLOY_DIR_IMAGE}/${IMAGE_BOOTLOADER}/*.stamp
 
     # copy device tree files
-    DTS="${@get_dts(d, d.getVar('KERNEL_VERSION_BASE'))}"
+    DTS="${KERNEL_DEVICETREE}"
     if [ -n "$DTS" ]; then
-        DT_OVERLAYS="${@split_overlays(d, 0, d.getVar('KERNEL_VERSION_BASE'))}"
-        DT_ROOT="${@split_overlays(d, 1, d.getVar('KERNEL_VERSION_BASE'))}"
+        DT_OVERLAYS="${@split_overlays(d, 0)}"
+        DT_ROOT="${@split_overlays(d, 1)}"
 
         for DTB in $DT_ROOT; do
             dtb_basename=$(basename $DTB)
