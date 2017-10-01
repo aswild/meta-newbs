@@ -42,6 +42,7 @@ do_image_newbs_bootimg[depends] += " \
     xz-native:do_populate_sysroot \
     virtual/kernel:do_deploy \
     ${IMAGE_BOOTLOADER}:do_deploy \
+    ${@bb.utils.contains('RPI_USE_U_BOOT', '1', 'u-boot:do_deploy', '',d)} \
 "
 
 DEPLOY_BOOTIMG_NAME    = "${IMAGE_NAME}.boot.vfat"
@@ -52,8 +53,6 @@ IMAGE_CMD_newbs-bootimg() {
     BOOT_DIR=${WORKDIR}/boot
     rm -rf ${BOOT_DIR}
     install -d $BOOT_DIR
-    install -m 644 ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}${@kernel_initramfs_extension(d)}-${MACHINE}.bin \
-                   $BOOT_DIR/${KERNEL_NAME}
 
     # copy bootloader files
     install -t $BOOT_DIR ${DEPLOY_DIR_IMAGE}/${IMAGE_BOOTLOADER}/*
@@ -78,6 +77,24 @@ IMAGE_CMD_newbs-bootimg() {
             install -m 644 ${DEPLOY_DIR_IMAGE}/${DTB_DEPLOYDIR}/$dtbname $BOOT_DIR/overlays/$dtb_basename
         done
     fi
+
+    # copy U-boot files and kernel
+    if [ "${RPI_USE_U_BOOT}" = "1" ]; then
+        # install u-boot as kernel*.img
+        install -m 644 ${DEPLOY_DIR_IMAGE}/u-boot.bin $BOOT_DIR/${KERNEL_NAME}
+        # install kernel as *Image
+        install -m 644 ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}${@kernel_initramfs_extension(d)}-${MACHINE}.bin \
+                       $BOOT_DIR/${KERNEL_IMAGETYPE}
+        # install boot script
+        install -m 644 ${DEPLOY_DIR_IMAGE}/boot.scr $BOOT_DIR/boot.scr
+    else
+        # install kernel as kernel*.img
+        install -m 644 ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}${@kernel_initramfs_extension(d)}-${MACHINE}.bin \
+                       $BOOT_DIR/${KERNEL_NAME}
+    fi
+
+    # Image name stamp file
+    echo "${IMAGE_NAME}" >$BOOT_DIR/version
 
     rm -f ${DEPLOY_BOOTIMG}
     mkfs.vfat -n ${BOOTIMG_LABEL} -S 512 -C ${DEPLOY_BOOTIMG} ${BOOTIMG_SIZE}

@@ -250,6 +250,9 @@ EXTRA_CONFIG_TXT = ""
 # clobbers local.conf by default
 #PREFERRED_PROVIDER_virtual/kernel_raspberrypi3 = "linux-raspberrypi-newbs-upstream"
 
+# uncomment to use U-boot
+#RPI_USE_U_BOOT = "1"
+
 # Enable packagemanagement and ad-hoc feeds
 #IMAGE_FEATURES += "package-management"
 #FEED_DEPLOYDIR_BASE_URI = "http://server/newbs-ipk"
