@@ -72,3 +72,12 @@ newbs_rootfs_postprocess() {
     ln -sfv run/media ${IMAGE_ROOTFS}/media
 }
 ROOTFS_POSTPROCESS_COMMAND_append = " newbs_rootfs_postprocess;"
+
+# Don't spam DEPLOYDIR with testdata.json files. Unfortunately for us,
+# rootfs-postcommands.bbclass adds "write_image_test_data ;" and that space makes it so
+# that typical _remove syntax doesn't work right
+python __anonymous() {
+    cmd = d.getVar('ROOTFS_POSTPROCESS_COMMAND')
+    cmd = cmd.replace('write_image_test_data ;', '')
+    d.setVar('ROOTFS_POSTPROCESS_COMMAND', cmd)
+}
