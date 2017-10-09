@@ -23,7 +23,9 @@ DTB_DEPLOYDIR = "dtb"
 # kernel commandline
 NEWBS_ROOT ?= "/dev/mmcblk0p2"
 NEWBS_ROOT_TYPE ?= "squashfs-xz"
-CMDLINE = "dwc_otg.lpm_enable=0 console=tty1 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk"
+# FIXME systemd breaks and kernel panics if console=tty1 and no HDMI connected
+#CMDLINE = "dwc_otg.lpm_enable=0 console=tty1 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk"
+CMDLINE = "dwc_otg.lpm_enable=0 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk"
 CMDLINE_append_debug = " debug"
 SERIAL_CONSOLE = "115200 ttyAMA0"
 
