@@ -2,6 +2,10 @@
 
 inherit core-image
 
+# BCJ filters for squashfs
+EXTRA_IMAGECMD_squashfs-xz_append_arm = "-Xbcj arm"
+EXTRA_IMAGECMD_squashfs-xz_append_aarch64 = "-Xbcj arm"
+
 copy_ssh_host_keys() {
     install -d ${IMAGE_ROOTFS}${sysconfdir}/ssh
     if [ -n "${SSH_HOST_KEYS}" ]; then
