@@ -1,0 +1,491 @@
+From 60025b922046e82aa651d09e16013fcecdd49ec2 Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Fri, 17 Mar 2017 01:05:08 -0400
+Subject: [PATCH 14/19] neostrip: add support for multiple pixels
+
+TODO:
+ * re-implement ioctls
+ * add color_raw in sysfs
+ * add per-pixel sysfs files
+---
+ .../boot/dts/overlays/spi0-neostrip-overlay.dts    |  10 +-
+ drivers/spi/Kconfig                                |  13 ++
+ drivers/spi/neostrip.c                             | 243 +++++++++++++++------
+ 3 files changed, 200 insertions(+), 66 deletions(-)
+
+diff --git a/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
+index 9edb38b5e699..0bb27a79e272 100644
+--- a/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
++++ b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
+@@ -39,12 +39,16 @@
+             };
+ 
+             neostrip0: neostrip@0 {
++                status = "okay";
+                 compatible = "neostrip";
+                 reg = <0>;      /* CE0 */
+-                spi-max-frequency = <2400000>;
+-                latch-gpio = <9>;
+-                status = "okay";
++                spi-max-frequency = <3000000>;
++                strip-length = <1>;
+             };
+         };
+     };
++
++    __overrides__ {
++        neostrip0_length = <&neostrip0>,"strip-length:0";
++    };
+ };
+diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+index edea8dc3875e..302df6d5cc0a 100644
+--- a/drivers/spi/Kconfig
++++ b/drivers/spi/Kconfig
+@@ -800,6 +800,19 @@ config SPI_NEOSTRIP
+ 	help
+ 	    Driver to control "NeoPixel" RGB LEDs using SPI hardware
+ 
++if SPI_NEOSTRIP
++config SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
++	bool "Use a one-time-allocated buffer for the strip's SPI data"
++	default y
++	help
++		The SPI data buffer must be 3 bytes for each byte of color data.
++		Enabling this option allocates that buffer when the driver loads
++		and re-uses it across transfers. Otherwise, the SPI buffer is
++		malloc'd and free'd for each write of the strip.
++
++		Memory-constrained systems may want to say no here.
++endif
++
+ config SPI_TLE62X0
+ 	tristate "Infineon TLE62X0 (for power switching)"
+ 	depends on SYSFS
+diff --git a/drivers/spi/neostrip.c b/drivers/spi/neostrip.c
+index e945b4342fbc..60a0c0532a46 100644
+--- a/drivers/spi/neostrip.c
++++ b/drivers/spi/neostrip.c
+@@ -23,6 +23,7 @@
+ #include <linux/of_device.h>
+ #include <linux/spinlock.h>
+ #include <linux/spi/spi.h>
++#include <linux/string.h>
+ #include <asm/uaccess.h>
+ #include <uapi/spi/neostrip.h>
+ 
+@@ -33,6 +34,10 @@
+ // This corresponds to 336 and 672 ns pulses
+ #define NEOSTRIP_SPEED_HZ   3000000
+ 
++// It takes 3 bytes of SPI data to transmit 1 byte of ws2812 color data
++// and 3 bytes of color data per pixel
++#define NEOSTRIP_SPIBUF_LENGTH(__strip_len) ((__strip_len) * 9)
++
+ struct neostrip_chip {
+     dev_t               devt;
+     struct device       *dev;
+@@ -42,8 +47,13 @@ struct neostrip_chip {
+     int                 in_use;
+     struct mutex        in_use_lock;
+ 
+-    spinlock_t          lock;
+-    u32                 color;    // 24-bit 0xRRGGBB value
++    struct mutex        lock;
++    u32                 *colors;    // 24-bit 0xRRGGBB value
++    int                 strip_len;
++
++#ifdef CONFIG_SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
++    u8                  *spi_buf;
++#endif
+ };
+ 
+ // static globals
+@@ -98,36 +108,42 @@ static int neostrip_write(struct neostrip_chip *chip)
+ {
+     struct spi_device   *spi = chip->spi;
+     struct spi_message  msg;
+-    u8                  buf[9*8]; // 3 SPI bits per color bit, 24 * 3 / 8 = 9
++    u8                  *buf;
++    size_t              buf_len;
+     int                 i, ret = 0;
+     struct spi_transfer xfer = {
+-        .tx_buf     = buf,
+-        .len        = 9*8,
+         .speed_hz   = NEOSTRIP_SPEED_HZ,
+     };
+ 
+-    // It seems that the bcm2835 SPI hardware pulls data low for 1 clock cycle
+-    // after each byte transfered, which can cause bits to be interpreted by the
+-    // WS2812 when we have 2 consecutive "1" bits representing a long high pulse.
+-    // The way our colors are expanded, this happens between the 2nd and 3rd bytes
+-    // of each 3-byte chunk (per byte of color data) This means that if bit
+-    // 2 of a data byte is set, the problem will occur. (if that bit is zero,
+-    // a little extra low time doesn't hurt). Therefore mask out that bit and
+-    // don't allow it to be set.
+-    //   1 x 0 1 x 0 1 x  |  0 1 x 0 1 x 0 1  |  X 0 1 x 0 1 x 0
+-    chip->color &= 0xfbfbfb;
+-
+-    dev_dbg(chip->dev, "writing 0x%06x\n", chip->color);
+-
+-    neostrip_expand_color(buf, chip->color);
++    buf_len = NEOSTRIP_SPIBUF_LENGTH(chip->strip_len);
++#ifdef CONFIG_SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
++    buf = chip->spi_buf;
++#else
++    buf = kmalloc(buf_len, GFP_KERNEL);
++    if (!buf)
++        return -ENOMEM;
++#endif
+ 
+-    for (i = 1; i < 8; i++)
++    for (i = 0; i < chip->strip_len; i++)
+     {
+-        memcpy(&buf[i*9], &buf[0], 9);
++        // It seems that the bcm2835 SPI hardware pulls data low for 1 clock cycle
++        // after each byte transfered, which can cause bits to be interpreted by the
++        // WS2812 when we have 2 consecutive "1" bits representing a long high pulse.
++        // The way our colors are expanded, this happens between the 2nd and 3rd bytes
++        // of each 3-byte chunk (per byte of color data) This means that if bit
++        // 2 of a data byte is set, the problem will occur. (if that bit is zero,
++        // a little extra low time doesn't hurt). Therefore mask out that bit and
++        // don't allow it to be set.
++        //   1 x 0 1 x 0 1 x  |  0 1 x 0 1 x 0 1  |  X 0 1 x 0 1 x 0
++        chip->colors[i] &= 0xfbfbfb;
++
++        neostrip_expand_color(&buf[i*9], chip->colors[i]);
+     }
+ 
+     //print_hex_dump(KERN_INFO, "neostrip buf: ", DUMP_PREFIX_OFFSET, 16, 1, buf, sizeof(buf), 0);
+ 
++    xfer.tx_buf = buf;
++    xfer.len = buf_len;
+     spi_message_init(&msg);
+     spi_message_add_tail(&xfer, &msg);
+ 
+@@ -137,38 +153,84 @@ static int neostrip_write(struct neostrip_chip *chip)
+         dev_err(chip->dev, "spi_sync failed (%d)\n", ret);
+     }
+ 
+-    udelay(50);
++    // you don't really need 50us to reset the strip
++    udelay(20);
+ 
+     return ret;
+ }
+ 
+-static int neostrip_set_color_from_str(struct neostrip_chip *chip, const char *buf)
++static int neostrip_set_color_from_str(struct neostrip_chip *chip, const char *strbuf)
+ {
+-    unsigned long value;
+-    int err;
++    int             ret;
++    int             count = 0;
+ 
+-    if (strncmp(buf, "refresh", 7))
++    if (!strncmp(strbuf, "clear", 5))
++    {
++        // if the input is "clear" zero out the strip
++        memset(chip->colors, 0, chip->strip_len * sizeof(*chip->colors));
++    }
++    else if (!strncmp(strbuf, "refresh", 7))
+     {
+-        err = kstrtoul(buf, 16, &value);
+-        if (err)
+-            return err;
+-        err = 1;
++        // if the input is "refresh" don't update anything
++        // (just call neostrip_write below)
+     }
+     else
+     {
+-        err = 0;
++        char *str, *word;
++        u32  *colors;
++
++        // duplicate the string since strsep mangles it
++        str = kstrdup(strbuf, GFP_KERNEL);
++        if (!str)
++            return -ENOMEM;
++
++        colors = kmalloc(sizeof(*colors) * chip->strip_len, GFP_KERNEL);
++        if (!colors)
++        {
++            kfree(str);
++            return -ENOMEM;
++        }
++
++        count = 0;
++        while ((word = strsep(&str, " \t")) != NULL)
++        {
++            if (word[0] == '\0')
++                continue; // ignore multiple delimiters
++
++            ret = kstrtou32(word, 16, &colors[count]);
++            if (ret)
++            {
++                kfree(str);
++                kfree(colors);
++                return -EINVAL;
++            }
++            pr_debug("set colors[%d] to 0x%06x\n", count, colors[count]);
++            count++;
++        }
++
++        dev_dbg(chip->dev, "set color from string '%s'\n", strbuf);
++        dev_dbg(chip->dev, "got %d colors. will copy %u bytes\n", count, count * sizeof(*colors));
++
++        // only update the values we read in
++        if (count)
++            memcpy(chip->colors, colors, count * sizeof(*colors));
+     }
+ 
+-    dev_dbg(chip->dev, "set color from string '%s'\n", buf);
++    return neostrip_write(chip);
++}
+ 
+-    spin_lock(&chip->lock);
+-    // err=1 means to update the value, otherwise just refresh it
+-    if (err)
+-        chip->color = value;
+-    err = neostrip_write(chip);
+-    spin_unlock(&chip->lock);
++static ssize_t neostrip_colors_str(struct neostrip_chip *chip, char *buf, ssize_t buf_len)
++{
++    int i;
++    ssize_t count = 0;
++
++    for (i = 0; i < chip->strip_len; i++)
++    {
++        count += scnprintf(buf + count, buf_len, "0x%06x%s",
++                           chip->colors[i], (i != chip->strip_len - 1) ? " " : "\n");
++    }
+ 
+-    return err;
++    return count;
+ }
+ 
+ // sysfs functions
+@@ -178,13 +240,13 @@ static ssize_t neostrip_sysfs_show_color(struct device *dev,
+                                            char *buf)
+ {
+     struct neostrip_chip    *chip = dev_get_drvdata(dev);
+-    unsigned long           value;
++    ssize_t                 count = 0;
+ 
+-    spin_lock(&chip->lock);
+-    value = chip->color;
+-    spin_unlock(&chip->lock);
++    mutex_lock(&chip->lock);
++    count = neostrip_colors_str(chip, buf, 4096);
++    mutex_unlock(&chip->lock);
+ 
+-    return sprintf(buf, "0x%06lx\n", value);
++    return count;
+ }
+ 
+ static ssize_t neostrip_sysfs_set_color(struct device *dev,
+@@ -194,11 +256,11 @@ static ssize_t neostrip_sysfs_set_color(struct device *dev,
+     struct neostrip_chip *chip = dev_get_drvdata(dev);
+     int err;
+ 
++    mutex_lock(&chip->lock);
+     err = neostrip_set_color_from_str(chip, buf);
+-    if (err)
+-        return err;
++    mutex_unlock(&chip->lock);
+ 
+-    return count;
++    return err ? err : count;
+ }
+ static DEVICE_ATTR(color, 0644, neostrip_sysfs_show_color, neostrip_sysfs_set_color);
+ 
+@@ -261,26 +323,32 @@ static int neostrip_cdev_release(struct inode *inode, struct file *fp)
+ static ssize_t neostrip_cdev_read(struct file *fp, char *buf, size_t count, loff_t *offset)
+ {
+     struct neostrip_chip    *chip;
+-    u32                     value;
+-    size_t                  len;
+-    char                    tbuf[16];
++    size_t                  len, tbuf_len;
++    char                    *tbuf;
+ 
+     chip = fp->private_data;
+ 
+-    spin_lock(&chip->lock);
+-    value = chip->color;
+-    spin_unlock(&chip->lock);
++    // each pixel is printed as "0x123456 " (or \n instead of a space)
++    // plus a nullbyte
++    tbuf_len = chip->strip_len * 9 + 1;
++    tbuf = kmalloc(tbuf_len, GFP_KERNEL);
++    if (!tbuf)
++        return -ENOMEM;
+ 
+-    len = snprintf(tbuf, sizeof(tbuf), "0x%06x\n", value);
++    mutex_lock(&chip->lock);
++    len = neostrip_colors_str(chip, tbuf, tbuf_len);
++    mutex_unlock(&chip->lock);
+ 
+     if (*offset >= len)
+         return 0;
++
+     if (*offset + count > len)
+         count = len - *offset;
+ 
+     if (copy_to_user(buf, tbuf + *offset, count))
+         return -EFAULT;
+ 
++    kfree(tbuf);
+     *offset += count;
+     return count;
+ }
+@@ -306,7 +374,9 @@ static ssize_t neostrip_cdev_write(struct file *fp, const char *buf, size_t size
+     }
+     tbuf[size] = '\0';
+ 
++    mutex_lock(&chip->lock);
+     ret = neostrip_set_color_from_str(chip, tbuf);
++    mutex_unlock(&chip->lock);
+ 
+ out:
+     kfree(tbuf);
+@@ -317,16 +387,16 @@ long neostrip_cdev_ioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ {
+     struct neostrip_chip    *chip;
+     long                    ret = 0;
+-    u32                     value;
+ 
+     chip = fp->private_data;
+ 
+     switch (cmd)
+     {
+         case NEOSTRIP_IOC_HELLO:
+-            pr_info("neostrip: ioctl hello with arg 0x%lX\n", arg);
++            dev_info(chip->dev, "ioctl hello with arg 0x%lX\n", arg);
+             break;
+ 
++#if 0
+         case NEOSTRIP_IOC_RCOLOR24:
+             ret = __put_user(chip->color, (__u32 __user *)arg);
+             break;
+@@ -335,12 +405,13 @@ long neostrip_cdev_ioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+             ret = __get_user(value, (u32 __user *)arg);
+             if (!ret)
+             {
+-                spin_lock(&chip->lock);
++                mutex_lock(&chip->lock);
+                 chip->color = value;
+                 ret = neostrip_write(chip);
+-                spin_unlock(&chip->lock);
++                mutex_unlock(&chip->lock);
+             }
+             break;
++#endif
+         default:
+             pr_err("neostrip: unknown ioctl\n");
+             ret = -ENOTTY;
+@@ -371,6 +442,7 @@ static int neostrip_probe(struct spi_device *spi)
+     struct device           *dev;
+     unsigned long           minor;
+     int                     sysfs_i, ret;
++    struct property         *strip_len_prop;
+ 
+     // verify DT compatible string
+     if (spi->dev.of_node && !of_match_device(neostrip_dt_ids, &spi->dev))
+@@ -391,11 +463,46 @@ static int neostrip_probe(struct spi_device *spi)
+     // initialize  data
+     spi_set_drvdata(spi, chip);
+     chip->spi = spi;
+-    chip->color = 0;
+-    spin_lock_init(&chip->lock);
++    mutex_init(&chip->lock);
+     mutex_init(&chip->in_use_lock);
+     INIT_LIST_HEAD(&chip->device_entry);
+ 
++    // get the strip length from DT
++    strip_len_prop = of_find_property(spi->dev.of_node, "strip-length", NULL);
++    if (strip_len_prop)
++    {
++        chip->strip_len = be32_to_cpu(*(__be32 *)strip_len_prop->value);
++    }
++    else
++    {
++        dev_warn(&spi->dev, "couldn't find DT property 'strip-length'\n");
++        chip->strip_len = 1;
++    }
++
++    if (chip->strip_len < 1)
++    {
++        dev_err(&spi->dev, "Invalid strip length: %d\n", chip->strip_len);
++        ret = -EINVAL;
++        goto fail_dealloc;
++    }
++
++    // allocate color buffer
++    chip->colors = kzalloc(chip->strip_len * sizeof(*chip->colors), GFP_KERNEL);
++    if (!chip->colors)
++    {
++        ret = -ENOMEM;
++        goto fail_dealloc;
++    }
++
++#ifdef CONFIG_SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
++    chip->spi_buf = kzalloc(NEOSTRIP_SPIBUF_LENGTH(chip->strip_len), GFP_KERNEL);
++    if (!chip->spi_buf)
++    {
++        ret = -ENOMEM;
++        goto fail_dealloc;
++    }
++#endif
++
+     // get a minor device number
+     mutex_lock(&device_list_lock);
+     minor = find_first_zero_bit(minors, N_NEOSTRIP_MINORS);
+@@ -448,7 +555,7 @@ static int neostrip_probe(struct spi_device *spi)
+     }
+ 
+     // Done!
+-    dev_info(chip->dev, "neostrip driver initialized\n");
++    dev_info(chip->dev, "neostrip driver initialized (%d pixels)\n", chip->strip_len);
+     return 0;
+ 
+ fail_destroy_sysfs:
+@@ -463,6 +570,12 @@ static int neostrip_probe(struct spi_device *spi)
+     mutex_unlock(&device_list_lock);
+ 
+ fail_dealloc:
++#ifdef CONFIG_SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
++    if (chip && chip->spi_buf)
++        kfree(chip->spi_buf);
++#endif
++    if (chip && chip->colors)
++        kfree(chip->colors);
+     spi_set_drvdata(spi, NULL);
+     kfree(chip);
+ 
+@@ -479,9 +592,9 @@ static int neostrip_remove(struct spi_device *spi)
+     for (i = 0; i < sizeof(neostrip_sysfs_attrs)/sizeof(neostrip_sysfs_attrs[0]); i++)
+         device_remove_file(chip->dev, neostrip_sysfs_attrs[i]);
+ 
+-    spin_lock_irq(&chip->lock);
++    mutex_lock(&chip->lock);
+     chip->spi = NULL;
+-    spin_unlock_irq(&chip->lock);
++    mutex_unlock(&chip->lock);
+ 
+     mutex_lock(&device_list_lock);
+     list_del(&chip->device_entry);
+@@ -489,6 +602,10 @@ static int neostrip_remove(struct spi_device *spi)
+     clear_bit(MINOR(chip->devt), minors);
+     mutex_unlock(&device_list_lock);
+ 
++#ifdef CONFIG_SPI_NEOSTRIP_SPIBUF_MALLOC_ONCE
++    kfree(chip->spi_buf);
++#endif
++    kfree(chip->colors);
+     spi_set_drvdata(spi, NULL);
+     kfree(chip);
+     dev_info(&spi->dev, "neostrip driver unloaded\n");
+-- 
+2.14.2
+

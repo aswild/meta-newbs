@@ -1,0 +1,254 @@
+From b82632067f41cf90b3483c43862e99fa3b02dd6b Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Sat, 11 Mar 2017 22:02:35 -0500
+Subject: [PATCH 10/19] shiftbrite: use GPIO for latch instead of SPI CS
+
+Apparently the SPI APIs like to toggle CS in between transfers, which
+causes crazy things to happen on the shiftbrite (despite working most of
+the time). Better to use a dedicated GPIO touched only by the shiftbrite
+driver itself.
+
+Since it doesn't really make sense to have other SPI devices on the same
+bus as a shiftbrite chain, we can re-purpose the SPI MISO pin, which is
+GPIO 9 and conveneniently right between clock and data.
+
+Set "dtparam=shiftbrite0_latch=xx" to use gpio xx for the latch pin.
+(todo: could use a module param or dynamic attribute to change without
+needing a reboot)
+---
+ .../dts/overlays/pi3-spi-shiftbrite-overlay.dts    | 49 ++++++++++-------
+ drivers/spi/shiftbrite.c                           | 64 ++++++++++++++++------
+ 2 files changed, 76 insertions(+), 37 deletions(-)
+
+diff --git a/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
+index f21777bec661..029f1f481a45 100644
+--- a/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
++++ b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
+@@ -8,45 +8,56 @@
+ 
+ / {
+     compatible = "brcm,bcm2835", "brcm,bcm2708", "brcm,bcm2709";
+-    /* disable spi-dev for spi0.0 & spi0.1 */
+-    fragment@0 {
+-        target = <&spi0>;
+-        __overlay__ {
+-            status = "okay";
+-
+-            spidev@0{
+-                status = "disabled";
+-            };
+-            spidev@1{
+-                status = "disabled";
+-            };
+-        };
+-    };
+ 
+-    fragment@1 {
++    fragment@0 {
+         target = <&gpio>;
+         __overlay__ {
+             spi0_pins: spi0_pins {
+-                brcm,pins = <8 9 10 11>;
+-                brcm,function = <4>; /* alt0 */
++                /*
++                 * shiftbrite needs 3 pins - latch, data, clock
++                 * Can't use SPI chip-select because it will toggle in the
++                 * middle of transfers, so use a separate GPIO for latch.
++                 *
++                 * Because shiftbrite doesn't respond to a chip-select, it doesn't
++                 * make sense to have other devices on the same SPI bus, therefore
++                 * we can re-purpose the SPI MISO pin (9) as the latch output GPIO
++                 */
++                brcm,pins = <9 10 11>;
++                brcm,function = <1 4 4>; /* output (latch), alt0 (spi) */
+             };
+         };
+     };
+ 
+-    fragment@2 {
++    fragment@1 {
+         target = <&spi0>;
+         __overlay__ {
+             #address-cells = <1>;
+             #size-cells = <0>;
++
++            status = "okay";
+             pinctrl-names = "default";
+             pinctrl-0 = <&spi0_pins>;
+ 
+-            shiftbrite@0 {
++            /* disable spi-dev for spi0.0 & spi0.1 */
++            spidev@0 {
++                status = "disabled";
++            };
++            spidev@1 {
++                status = "disabled";
++            };
++
++            shiftbrite0: shiftbrite@0 {
+                 compatible = "shiftbrite";
+                 reg = <0>;      /* CE0 */
+                 spi-max-frequency = <500000>;
++                latch-gpio = <9>;
+                 status = "okay";
+             };
+         };
+     };
++
++    __overrides__ {
++        shiftbrite0_latch = <&spi0_pins>,"brcm,pins:0",
++                            <&shiftbrite0>,"latch-gpio:0";
++    };
+ };
+diff --git a/drivers/spi/shiftbrite.c b/drivers/spi/shiftbrite.c
+index 20d39a0d1205..1f7afaed5477 100644
+--- a/drivers/spi/shiftbrite.c
++++ b/drivers/spi/shiftbrite.c
+@@ -64,6 +64,7 @@ struct shiftbrite_chip {
+     struct device       *dev;
+     struct spi_device   *spi;
+     struct list_head    device_entry;
++    int                 latch_gpio;
+ 
+     int                 in_use;
+     struct mutex        in_use_lock;
+@@ -87,18 +88,9 @@ static struct class     *shiftbrite_class;
+ 
+ // Internal Core Functions
+ 
+-static void shiftbrite_set_latch(struct shiftbrite_chip *chip, int value)
++static inline void shiftbrite_set_latch(struct shiftbrite_chip *chip, int value)
+ {
+-    struct spi_device *spi = chip->spi;
+-    if (gpio_is_valid(spi->cs_gpio))
+-    {
+-        //dev_info(&spi->dev, "spi.cs_gpio is valid. Setting latch/cs to %d\n", value);
+-        gpio_set_value(spi->cs_gpio, value);
+-    }
+-    else
+-    {
+-        dev_err(&spi->dev, "unable to latch, spi.cs_gpio is not valid\n");
+-    }
++    gpio_set_value(chip->latch_gpio, value);
+ }
+ 
+ static int shiftbrite_write_u32(struct shiftbrite_chip *chip, u32 value)
+@@ -113,7 +105,7 @@ static int shiftbrite_write_u32(struct shiftbrite_chip *chip, u32 value)
+     struct spi_message msg;
+     int ret = 0;
+ 
+-    //dev_info(&spi->dev, "writing 0x%08x\n", value);
++    dev_dbg(chip->dev, "writing 0x%08x\n", value);
+ 
+     buf[0] = value >> 24;
+     buf[1] = (value & 0x00FF0000) >> 16;
+@@ -126,7 +118,7 @@ static int shiftbrite_write_u32(struct shiftbrite_chip *chip, u32 value)
+     ret = spi_sync(spi, &msg);
+     if (ret)
+     {
+-        dev_err(&spi->dev, "spi_sync failed\n");
++        dev_err(chip->dev, "spi_sync failed\n");
+         return ret;
+     }
+ 
+@@ -166,6 +158,8 @@ static int shiftbrite_set_color_from_str(struct shiftbrite_chip *chip, const cha
+         err = 0;
+     }
+ 
++    dev_dbg(chip->dev, "set color from string '%s'\n", buf);
++
+     spin_lock(&chip->lock);
+     // err=1 means to update the value, otherwise just refresh it
+     if (err)
+@@ -411,12 +405,26 @@ static struct file_operations shiftbrite_cdev_fops = {
+ 
+ // Init/Exit Functions
+ 
++static const struct of_device_id shiftbrite_dt_ids[] = {
++    { .compatible = "shiftbrite" },
++    {},
++};
++MODULE_DEVICE_TABLE(of, shiftbrite_dt_ids);
++
+ static int shiftbrite_probe(struct spi_device *spi)
+ {
+     struct shiftbrite_chip  *chip;
+     struct device           *dev;
+     unsigned long           minor;
+     int                     sysfs_i, ret;
++    struct property         *latch_gpio_prop;
++
++    // verify DT compatible string
++    if (spi->dev.of_node && !of_match_device(shiftbrite_dt_ids, &spi->dev))
++    {
++        dev_err(&spi->dev, "buggy DT!\n");
++        WARN_ON(spi->dev.of_node && !of_match_device(shiftbrite_dt_ids, &spi->dev));
++    }
+ 
+     // allocate shiftbrite data
+     chip = kzalloc(sizeof(*chip), GFP_KERNEL);
+@@ -435,6 +443,26 @@ static int shiftbrite_probe(struct spi_device *spi)
+     mutex_init(&chip->in_use_lock);
+     INIT_LIST_HEAD(&chip->device_entry);
+ 
++    // get the latch GPIO number from the device tree
++    latch_gpio_prop = of_find_property(spi->dev.of_node, "latch-gpio", NULL);
++    if (latch_gpio_prop == NULL)
++    {
++        dev_err(&spi->dev, "couldn't find latch-gpio DT property\n");
++        ret = -EINVAL;
++        goto fail_dealloc;
++    }
++
++    // value is big-endian 32 bit
++    chip->latch_gpio = be32_to_cpu(*(__be32 *)latch_gpio_prop->value);
++    if (!gpio_is_valid(chip->latch_gpio))
++    {
++        dev_err(&spi->dev, "Latch GPIO is invalid\n");
++        ret = -EINVAL;
++        goto fail_dealloc;
++    }
++    gpio_direction_output(chip->latch_gpio, 0);
++
++
+     // get a minor device number
+     mutex_lock(&device_list_lock);
+     minor = find_first_zero_bit(minors, N_SHIFTBRITE_MINORS);
+@@ -469,7 +497,7 @@ static int shiftbrite_probe(struct spi_device *spi)
+         ret = device_create_file(chip->dev, shiftbrite_sysfs_attrs[sysfs_i]);
+         if (ret)
+         {
+-            dev_err(&spi->dev, "Failed to create sysfs file %s\n", shiftbrite_sysfs_attrs[sysfs_i]->attr.name);
++            dev_err(chip->dev, "Failed to create sysfs file %s\n", shiftbrite_sysfs_attrs[sysfs_i]->attr.name);
+             ret = -EFAULT;
+             goto fail_destroy_sysfs;
+         }
+@@ -482,13 +510,12 @@ static int shiftbrite_probe(struct spi_device *spi)
+     ret = spi_setup(spi);
+     if (ret < 0)
+     {
+-        dev_err(&spi->dev, "spi_setup failed\n");
++        dev_err(chip->dev, "spi_setup failed\n");
+         goto fail_destroy_sysfs;
+     }
+ 
+     // Done!
+-    dev_info(&spi->dev, "Shiftbrite driver initialized\n");
+-    //dev_info(&spi->dev, "chip=%p shiftbrite_device=%p\n", chip, shiftbrite_device);
++    dev_info(chip->dev, "Shiftbrite driver initialized (latch gpio %d)\n", chip->latch_gpio);
+     return 0;
+ 
+ fail_destroy_sysfs:
+@@ -538,7 +565,8 @@ static int shiftbrite_remove(struct spi_device *spi)
+ static struct spi_driver shiftbrite_spi_driver = {
+     .driver = {
+         .name = "shiftbrite",
+-        .owner = THIS_MODULE
++        .owner = THIS_MODULE,
++        .of_match_table = of_match_ptr(shiftbrite_dt_ids),
+     },
+     .probe  = shiftbrite_probe,
+     .remove = shiftbrite_remove,
+-- 
+2.14.2
+

@@ -1,0 +1,124 @@
+From 0d05883038c9ff8e8be2e4633efed5996dca67c7 Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Tue, 14 Mar 2017 23:33:07 -0400
+Subject: [PATCH 13/19] neostrip: tweak to workaround SPI hardware resetting
+ data in between bites
+
+---
+ drivers/spi/neostrip.c      | 30 ++++++++++++++++++++----------
+ include/uapi/spi/neostrip.h | 25 +++++++++++++++++++++++++
+ 2 files changed, 45 insertions(+), 10 deletions(-)
+ create mode 100644 include/uapi/spi/neostrip.h
+
+diff --git a/drivers/spi/neostrip.c b/drivers/spi/neostrip.c
+index e6882e3292a0..e945b4342fbc 100644
+--- a/drivers/spi/neostrip.c
++++ b/drivers/spi/neostrip.c
+@@ -24,12 +24,14 @@
+ #include <linux/spinlock.h>
+ #include <linux/spi/spi.h>
+ #include <asm/uaccess.h>
++#include <uapi/spi/neostrip.h>
+ 
+ // definitions
+ 
+-#define NEOSTRIP_SPEED_HZ   2400000
+-#define NEOSTRIP_PACKET_LEN 9
+-#define NEOSTRIP_CHUNK_LEN  3
++// with a clock speed of 250MHz, a 3MHz SPI clock uses cdiv=84
++// and an actual speed of 2.97619 MHz
++// This corresponds to 336 and 672 ns pulses
++#define NEOSTRIP_SPEED_HZ   3000000
+ 
+ struct neostrip_chip {
+     dev_t               devt;
+@@ -104,18 +106,28 @@ static int neostrip_write(struct neostrip_chip *chip)
+         .speed_hz   = NEOSTRIP_SPEED_HZ,
+     };
+ 
+-    dev_info(chip->dev, "writing 0x%06x\n", chip->color);
++    // It seems that the bcm2835 SPI hardware pulls data low for 1 clock cycle
++    // after each byte transfered, which can cause bits to be interpreted by the
++    // WS2812 when we have 2 consecutive "1" bits representing a long high pulse.
++    // The way our colors are expanded, this happens between the 2nd and 3rd bytes
++    // of each 3-byte chunk (per byte of color data) This means that if bit
++    // 2 of a data byte is set, the problem will occur. (if that bit is zero,
++    // a little extra low time doesn't hurt). Therefore mask out that bit and
++    // don't allow it to be set.
++    //   1 x 0 1 x 0 1 x  |  0 1 x 0 1 x 0 1  |  X 0 1 x 0 1 x 0
++    chip->color &= 0xfbfbfb;
+ 
+-    neostrip_expand_color(buf, chip->color);
++    dev_dbg(chip->dev, "writing 0x%06x\n", chip->color);
+ 
+-    //print_hex_dump(KERN_INFO, "neostrip buf: ", DUMP_PREFIX_OFFSET,
+-                   //16, 1, buf, sizeof(buf), 0);
++    neostrip_expand_color(buf, chip->color);
+ 
+     for (i = 1; i < 8; i++)
+     {
+         memcpy(&buf[i*9], &buf[0], 9);
+     }
+ 
++    //print_hex_dump(KERN_INFO, "neostrip buf: ", DUMP_PREFIX_OFFSET, 16, 1, buf, sizeof(buf), 0);
++
+     spi_message_init(&msg);
+     spi_message_add_tail(&xfer, &msg);
+ 
+@@ -305,13 +317,12 @@ long neostrip_cdev_ioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ {
+     struct neostrip_chip    *chip;
+     long                    ret = 0;
+-    //u32                     value;
++    u32                     value;
+ 
+     chip = fp->private_data;
+ 
+     switch (cmd)
+     {
+-#if 0
+         case NEOSTRIP_IOC_HELLO:
+             pr_info("neostrip: ioctl hello with arg 0x%lX\n", arg);
+             break;
+@@ -330,7 +341,6 @@ long neostrip_cdev_ioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+                 spin_unlock(&chip->lock);
+             }
+             break;
+-#endif
+         default:
+             pr_err("neostrip: unknown ioctl\n");
+             ret = -ENOTTY;
+diff --git a/include/uapi/spi/neostrip.h b/include/uapi/spi/neostrip.h
+new file mode 100644
+index 000000000000..2e62aa565a1e
+--- /dev/null
++++ b/include/uapi/spi/neostrip.h
+@@ -0,0 +1,25 @@
++/***********************************************************************
++ * WS2812 "NeoPixel" RGB LED driver
++ *
++ * Copyright (C) 2017 Allen Wild <allenwild93@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, version 2.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ ***********************************************************************/
++
++#ifndef _NEOSTRIP_H_
++#define _NEOSTRIP_H_
++
++#include <linux/ioctl.h>
++
++#define NEOSTRIP_IOC_HELLO    _IO('N', 1)
++#define NEOSTRIP_IOC_RCOLOR24 _IOR('N', 2, unsigned long)
++#define NEOSTRIP_IOC_WCOLOR24 _IOW('N', 3, unsigned long)
++
++#endif // _NEOSTRIP_H_
+-- 
+2.14.2
+

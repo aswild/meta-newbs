@@ -1,0 +1,407 @@
+From 95069fa516da50d318c50454b71357b0472f06ed Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Sat, 11 Mar 2017 15:22:12 -0500
+Subject: [PATCH 07/19] shiftbrite: big probe/release refactoring - follow
+ spidev paradigm
+
+---
+ drivers/spi/shiftbrite.c      | 274 +++++++++++++++++++++++++++++-------------
+ include/uapi/spi/shiftbrite.h |   2 +-
+ 2 files changed, 191 insertions(+), 85 deletions(-)
+
+diff --git a/drivers/spi/shiftbrite.c b/drivers/spi/shiftbrite.c
+index fb9246de9945..bdcf7773e0cf 100644
+--- a/drivers/spi/shiftbrite.c
++++ b/drivers/spi/shiftbrite.c
+@@ -60,13 +60,30 @@
+ #define RGB24_TO_CONFIG(value)  (0x40000000 | (RGB24_TO_RGB32(value) & CONFIG_MASK))
+ 
+ struct shiftbrite_chip {
+-    u32                 value24;    // 24-bit 0xRRGGBB value
+-    u32                 config24;   // Control register which holds scaling values
+-                                    // Stored as a 24-bit 0xRRGGBB value
++    dev_t               devt;
+     struct spi_device   *spi;
++    struct list_head    device_entry;
++
++    int                 in_use;
++    struct mutex        in_use_lock;
++
+     spinlock_t          lock;
++    u32                 value24;    // 24-bit 0xRRGGBB value
++    u32                 config24;   // Control register which holds scaling values
+ };
+ 
++// static globals
++
++#define N_SHIFTBRITE_MINORS 8
++
++static DECLARE_BITMAP(minors, N_SHIFTBRITE_MINORS);
++static LIST_HEAD(device_list);
++static DEFINE_MUTEX(device_list_lock);
++
++static int              shiftbrite_major; // dynamically allocated major number
++static struct class     *shiftbrite_class;
++
++
+ // Internal Core Functions
+ 
+ static void shiftbrite_set_latch(struct shiftbrite_chip *chip, int value)
+@@ -240,12 +257,57 @@ static const struct device_attribute *shiftbrite_sysfs_attrs[] = {
+ };
+ 
+ // device node
+-static dev_t            shiftbrite_dev;
+-static struct cdev      shiftbrite_cdev;
+-static struct class     *shiftbrite_class;
+-static struct device    *shiftbrite_device;
+ 
+-static ssize_t shiftbrite_cdev_read(struct file *filep, char *buf, size_t count, loff_t *offset)
++static int shiftbrite_cdev_open(struct inode *inode, struct file *fp)
++{
++    struct shiftbrite_chip  *chip;
++    int                     ret = -ENXIO;
++
++    // find the driver data
++    list_for_each_entry(chip, &device_list, device_entry)
++    {
++        if (chip->devt == inode->i_rdev)
++        {
++            ret = 0;
++            break;
++        }
++    }
++    if (ret)
++    {
++        pr_err("shiftbrite: device not found\n");
++        return ret;
++    }
++
++    mutex_lock(&chip->in_use_lock);
++    if (chip->in_use)
++    {
++        ret = -EBUSY;
++        goto out;
++    }
++
++    chip->in_use = 1;
++    fp->private_data = chip;
++    nonseekable_open(inode, fp);
++
++out:
++    mutex_unlock(&chip->in_use_lock);
++    return ret;
++}
++
++static int shiftbrite_cdev_release(struct inode *inode, struct file *fp)
++{
++    struct shiftbrite_chip  *chip;
++
++    chip = fp->private_data;
++    fp->private_data = NULL;
++    mutex_lock(&chip->in_use_lock);
++    chip->in_use = 0;
++    mutex_unlock(&chip->in_use_lock);
++
++    return 0;
++}
++
++static ssize_t shiftbrite_cdev_read(struct file *fp, char *buf, size_t count, loff_t *offset)
+ {
+     const char message[] = "hello from shiftbrite_cdev_read()\n";
+ 
+@@ -264,19 +326,20 @@ static ssize_t shiftbrite_cdev_read(struct file *filep, char *buf, size_t count,
+     return count;
+ }
+ 
+-static ssize_t shiftbrite_cdev_write(struct file *filep, const char *buf, size_t size, loff_t *offset)
++static ssize_t shiftbrite_cdev_write(struct file *fp, const char *buf, size_t size, loff_t *offset)
+ {
+     printk("%s: user wrote %u bytes: '%.*s'\n", __func__, size, size, buf);
+     return size;
+ }
+ 
+-long shiftbrite_cdev_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
++long shiftbrite_cdev_ioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+ {
++    //struct shiftbrite_chip *chip;
+     long ret = 0;
+ 
+     switch (cmd)
+     {
+-        case SHIFTBRITE_IOCQHELLO:
++        case SHIFTBRITE_IOC_HELLO:
+             pr_info("shiftbrite: ioctl hello with arg 0x%lX\n", arg);
+             break;
+         default:
+@@ -288,6 +351,8 @@ long shiftbrite_cdev_ioctl(struct file *filep, unsigned int cmd, unsigned long a
+ }
+ 
+ static struct file_operations shiftbrite_cdev_fops = {
++    .open           = shiftbrite_cdev_open,
++    .release        = shiftbrite_cdev_release,
+     .read           = shiftbrite_cdev_read,
+     .write          = shiftbrite_cdev_write,
+     .unlocked_ioctl = shiftbrite_cdev_ioctl,
+@@ -297,105 +362,98 @@ static struct file_operations shiftbrite_cdev_fops = {
+ 
+ static int shiftbrite_probe(struct spi_device *spi)
+ {
+-    struct shiftbrite_chip *chip;
+-    int i, ret;
++    struct shiftbrite_chip  *chip;
++    struct device           *dev;
++    unsigned long           minor;
++    int                     sysfs_i, ret;
+ 
+-    // Set up SPI
+-    spi->bits_per_word = 8;
+-    spi->mode = SPI_MODE_0 | SPI_CS_HIGH;
+-
+-    ret = spi_setup(spi);
+-    if (ret < 0)
+-        goto fail;
+-
+-    // Set up shiftbrite data
+-    chip = devm_kzalloc(&spi->dev, sizeof(struct shiftbrite_chip), GFP_KERNEL);
++    // allocate shiftbrite data
++    chip = kzalloc(sizeof(*chip), GFP_KERNEL);
+     if (!chip)
+-        return -ENOMEM;
++    {
++        dev_err(&spi->dev, "kzalloc failed\n");
++        ret = -ENOMEM;
++        goto fail;
++    }
+ 
++    // initialize  data
+     spi_set_drvdata(spi, chip);
+     chip->spi = spi;
+     chip->value24 = 0;
+-
+     spin_lock_init(&chip->lock);
++    mutex_init(&chip->in_use_lock);
++    INIT_LIST_HEAD(&chip->device_entry);
+ 
+-    ret = shiftbrite_write_config(chip);
+-    if (ret)
++    // get a minor device number
++    mutex_lock(&device_list_lock);
++    minor = find_first_zero_bit(minors, N_SHIFTBRITE_MINORS);
++    if (minor >= N_SHIFTBRITE_MINORS)
+     {
+-        dev_err(&spi->dev, "Failed writing config: %d\n", ret);
++        dev_err(&spi->dev, "unable to get minor device number\n");
++        ret = -ENODEV;
++        mutex_unlock(&device_list_lock);
+         goto fail_dealloc;
+     }
+ 
+-    // write zero values to SPI
+-    ret = shiftbrite_write(chip);
+-    if (ret)
++    // create device node
++    chip->devt = MKDEV(shiftbrite_major, minor);
++    dev = device_create(shiftbrite_class, &spi->dev, chip->devt, chip, "shiftbrite%lu", minor);
++    if (IS_ERR(dev))
+     {
+-        dev_err(&spi->dev, "Failed writing: %d\n", ret);
+-        return ret;
++        dev_err(&spi->dev, "device_create() failed\n");
++        ret = PTR_ERR_OR_ZERO(dev);
++        mutex_unlock(&device_list_lock);
++        goto fail_dealloc;
+     }
+ 
++    // add device to the list
++    set_bit(minor, minors);
++    list_add(&chip->device_entry, &device_list);
++
++    mutex_unlock(&device_list_lock);
++
+     // create sysfs files
+-    for (i = 0; i < sizeof(shiftbrite_sysfs_attrs)/sizeof(shiftbrite_sysfs_attrs[0]); i++)
++    for (sysfs_i = 0; sysfs_i < sizeof(shiftbrite_sysfs_attrs)/sizeof(shiftbrite_sysfs_attrs[0]); sysfs_i++)
+     {
+-        ret = device_create_file(&spi->dev, shiftbrite_sysfs_attrs[i]);
++        ret = device_create_file(&spi->dev, shiftbrite_sysfs_attrs[sysfs_i]);
+         if (ret)
+         {
+-            dev_err(&spi->dev, "Failed to create sysfs file %s\n", shiftbrite_sysfs_attrs[i]->attr.name);
++            dev_err(&spi->dev, "Failed to create sysfs file %s\n", shiftbrite_sysfs_attrs[sysfs_i]->attr.name);
++            ret = -EFAULT;
+             goto fail_destroy_sysfs;
+         }
+     }
+ 
+-    // create device node
+-    ret = alloc_chrdev_region(&shiftbrite_dev, 0, 1, "shiftbrite");
+-    if (ret)
+-    {
+-        dev_err(&spi->dev, "alloc_chrdev_region() failed\n");
+-        goto fail_destroy_sysfs;
+-    }
+-
+-    shiftbrite_class = class_create(THIS_MODULE, "shiftbrite");
+-    if (shiftbrite_class == NULL)
+-    {
+-        dev_err(&spi->dev, "class_create() failed\n");
+-        ret = -1;
+-        goto fail_unregister_region;
+-    }
++    // Set up SPI
++    spi->bits_per_word = 8;
++    spi->mode = SPI_MODE_0 | SPI_CS_HIGH;
+ 
+-    cdev_init(&shiftbrite_cdev, &shiftbrite_cdev_fops);
+-    ret = cdev_add(&shiftbrite_cdev, shiftbrite_dev, 1);
++    ret = spi_setup(spi);
+     if (ret < 0)
+     {
+-        dev_err(&spi->dev, "cdev_add() failed\n");
+-        goto fail_class_destroy;
+-    }
+-
+-    shiftbrite_device = device_create(shiftbrite_class, NULL, shiftbrite_dev, NULL, "shiftbrite");
+-    if (shiftbrite_device == NULL)
+-    {
+-        ret = -1;
+-        dev_err(&spi->dev, "device_create() failed\n");
+-        goto fail_cdev_del;
++        dev_err(&spi->dev, "spi_setup failed\n");
++        goto fail_destroy_sysfs;
+     }
+ 
+     // Done!
+-    dev_info(&spi->dev, "Shiftbrite driver initialized");
++    dev_info(&spi->dev, "Shiftbrite driver initialized\n");
++    //dev_info(&spi->dev, "chip=%p shiftbrite_device=%p\n", chip, shiftbrite_device);
+     return 0;
+ 
+-fail_cdev_del:
+-    cdev_del(&shiftbrite_cdev);
+-
+-fail_class_destroy:
+-    class_destroy(shiftbrite_class);
+-
+-fail_unregister_region:
+-    unregister_chrdev_region(shiftbrite_dev, 1);
+-
+ fail_destroy_sysfs:
+-    for (i--; i >= 0; i--)
+-        device_remove_file(&spi->dev, shiftbrite_sysfs_attrs[i]);
++    for (sysfs_i--; sysfs_i >= 0; sysfs_i--)
++        device_remove_file(&spi->dev, shiftbrite_sysfs_attrs[sysfs_i]);
++
++//fail_device_destroy:
++    mutex_lock(&device_list_lock);
++    list_del(&chip->device_entry);
++    device_destroy(shiftbrite_class, chip->devt);
++    clear_bit(MINOR(chip->devt), minors);
++    mutex_unlock(&device_list_lock);
+ 
+ fail_dealloc:
+-    devm_kfree(&spi->dev, chip);
++    spi_set_drvdata(spi, NULL);
++    kfree(chip);
+ 
+ fail:
+     dev_err(&spi->dev, "Shiftbrite initialization failed (%d)\n", ret);
+@@ -407,17 +465,21 @@ static int shiftbrite_remove(struct spi_device *spi)
+     struct shiftbrite_chip *chip = spi_get_drvdata(spi);
+     int i;
+ 
+-    device_destroy(shiftbrite_class, shiftbrite_dev);
+-    cdev_del(&shiftbrite_cdev);
+-    class_destroy(shiftbrite_class);
+-    unregister_chrdev_region(shiftbrite_dev, 1);
+-
+     for (i = 0; i < sizeof(shiftbrite_sysfs_attrs)/sizeof(shiftbrite_sysfs_attrs[0]); i++)
+         device_remove_file(&spi->dev, shiftbrite_sysfs_attrs[i]);
+ 
+-    spi_set_drvdata(spi, NULL);
++    spin_lock_irq(&chip->lock);
++    chip->spi = NULL;
++    spin_unlock_irq(&chip->lock);
++
++    mutex_lock(&device_list_lock);
++    list_del(&chip->device_entry);
++    device_destroy(shiftbrite_class, chip->devt);
++    clear_bit(MINOR(chip->devt), minors);
++    mutex_unlock(&device_list_lock);
+ 
+-    devm_kfree(&spi->dev, chip);
++    spi_set_drvdata(spi, NULL);
++    kfree(chip);
+     dev_info(&spi->dev, "Shiftbrite driver unloaded\n");
+     return 0;
+ }
+@@ -430,8 +492,52 @@ static struct spi_driver shiftbrite_spi_driver = {
+     .probe  = shiftbrite_probe,
+     .remove = shiftbrite_remove,
+ };
+-module_spi_driver(shiftbrite_spi_driver);
++
++static int __init shiftbrite_init(void)
++{
++    int ret;
++
++    // get a major device number
++    shiftbrite_major = register_chrdev(0, "shiftbrite", &shiftbrite_cdev_fops);
++    if (shiftbrite_major < 0)
++        return shiftbrite_major;
++
++    // create shiftbrite class
++    shiftbrite_class = class_create(THIS_MODULE, "shiftbrite");
++    if (IS_ERR(shiftbrite_class))
++    {
++        pr_err("%s: class_create() failed\n", __func__);
++        ret = -1;
++        goto fail_unregister;
++    }
++
++    // register the SPI protocol driver
++    ret = spi_register_driver(&shiftbrite_spi_driver);
++    if (ret < 0)
++    {
++        pr_err("%s: spi_register_driver() failed\n", __func__);
++        goto fail_class_destroy;
++    }
++
++    return 0;
++
++fail_class_destroy:
++    class_destroy(shiftbrite_class);
++fail_unregister:
++    unregister_chrdev(shiftbrite_major, "shiftbrite");
++    return ret;
++}
++module_init(shiftbrite_init);
++
++static void __exit shiftbrite_exit(void)
++{
++    spi_unregister_driver(&shiftbrite_spi_driver);
++    class_destroy(shiftbrite_class);
++    unregister_chrdev(shiftbrite_major, "shiftbrite");
++}
++module_exit(shiftbrite_exit);
+ 
+ MODULE_AUTHOR("Allen Wild <allenwild93@gmail.com>");
+ MODULE_DESCRIPTION("ShiftBrite SPI LED driver");
+ MODULE_LICENSE("GPL");
++MODULE_ALIAS("spi:shiftbrite");
+diff --git a/include/uapi/spi/shiftbrite.h b/include/uapi/spi/shiftbrite.h
+index d309f73383bd..717b2c5bc627 100644
+--- a/include/uapi/spi/shiftbrite.h
++++ b/include/uapi/spi/shiftbrite.h
+@@ -18,6 +18,6 @@
+ 
+ #include <linux/ioctl.h>
+ 
+-#define SHIFTBRITE_IOCQHELLO    _IO('S', 1)
++#define SHIFTBRITE_IOC_HELLO    _IO('S', 1)
+ 
+ #endif // _SHIFTBRITE_H_
+-- 
+2.14.2
+

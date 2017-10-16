@@ -1,0 +1,7 @@
+# These patches aren't needed for Yocto builds since they don't add any code
+#patch 0001-Makefile-allow-setting-INSTALL_HDR_PATH-through-the-.patch
+#patch 0002-scripts-add-helper-scripts-for-raspberrypi-developme.patch
+
+patch 0003-thermal-enable-broadcom-menu-for-arm64-bcm2835.patch
+#patch 0004-scripts-nconf-support-mouse-events-in-nconfig.patch
+patch 0005-fs-proc-add-exversion.gz-for-extended-version-info.patch
