@@ -15,7 +15,7 @@ BBMASK .= "|meta-kodi/recipes-core/llvm/.*"
 
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
-PREFERRED_VERSION_linux-raspberrypi-newbs ?= "4.12%"
+PREFERRED_VERSION_linux-raspberrypi-newbs ?= "4.13%"
 KERNEL_IMAGETYPE_arm = "zImage"
 KERNEL_IMAGETYPE_aarch64 = "Image"
 DTB_DEPLOYDIR = "dtb"
