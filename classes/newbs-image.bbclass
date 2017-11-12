@@ -77,6 +77,13 @@ newbs_rootfs_postprocess() {
 }
 ROOTFS_POSTPROCESS_COMMAND_append = " newbs_rootfs_postprocess;"
 
+symlink_dd_to_sdcard() {
+    if [ ! -e "${DEPLOY_DIR_IMAGE}/dd-to-sdcard.sh" ]; then
+        ln -sv "${NEWBSROOT}/meta-newbs/dd-to-sdcard.sh" ${DEPLOY_DIR_IMAGE}
+    fi
+}
+IMAGE_POSTPROCESS_COMMAND_append = " symlink_dd_to_sdcard;"
+
 # Don't spam DEPLOYDIR with testdata.json files. Unfortunately for us,
 # rootfs-postcommands.bbclass adds "write_image_test_data ;" and that space makes it so
 # that typical _remove syntax doesn't work right
