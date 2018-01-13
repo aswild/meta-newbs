@@ -1,7 +1,7 @@
-From df95baad62e0ac87eda697f433c23645870ddba4 Mon Sep 17 00:00:00 2001
+From 3efbd549fd2331786b2ff273b307b6e56b5eb9c6 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 21:15:00 -0400
-Subject: [PATCH 2/5] scripts: add helper scripts for raspberrypi development
+Subject: [PATCH 2/4] scripts: add helper scripts for raspberrypi development
 
 ---
  scripts/create-patches.sh    |  8 +++++
@@ -163,5 +163,5 @@ index 000000000000..8d99125bdd2c
 +    rsync $RSYNC_OPTS -r MODULES_INSTALL/ $USER@$IP:/
 +fi
 -- 
-2.14.2
+2.15.1
 

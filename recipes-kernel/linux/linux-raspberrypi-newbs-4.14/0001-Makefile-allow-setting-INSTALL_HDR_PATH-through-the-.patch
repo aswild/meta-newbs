@@ -1,7 +1,7 @@
-From 0b35b545ea0b519bc00747c71fdcfcc8a2d6dca6 Mon Sep 17 00:00:00 2001
+From 9250efc71cc7613ffc9a1941d7b54df128fb741f Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 10 Mar 2017 21:08:19 -0500
-Subject: [PATCH 1/5] Makefile: allow setting INSTALL_HDR_PATH through the
+Subject: [PATCH 1/4] Makefile: allow setting INSTALL_HDR_PATH through the
  environment
 
 ---
@@ -9,10 +9,10 @@ Subject: [PATCH 1/5] Makefile: allow setting INSTALL_HDR_PATH through the
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 9e1af1af327b..a728dcfc02af 100644
+index a67c5179052a..68816b981928 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1142,7 +1142,7 @@ firmware_install:
+@@ -1141,7 +1141,7 @@ headerdep:
  # Kernel headers
  
  #Default location for installed headers
@@ -22,5 +22,5 @@ index 9e1af1af327b..a728dcfc02af 100644
  # If we do an all arch process set dst to include/arch-$(hdr-arch)
  hdr-dst = $(if $(KBUILD_HEADERS), dst=include/arch-$(hdr-arch), dst=include)
 -- 
-2.14.2
+2.15.1
 

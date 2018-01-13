@@ -1,7 +1,7 @@
-From 0ab42a053fcd9e4e7c90932eebe023f67ac78864 Mon Sep 17 00:00:00 2001
+From 1ee9f5983a2f8ea6c217f962f58c48acecf16660 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Mon, 4 Sep 2017 01:00:42 -0400
-Subject: [PATCH 5/5] fs: proc: add exversion.gz for extended version info
+Subject: [PATCH 4/4] fs: proc: add exversion.gz for extended version info
 
 ---
  fs/proc/.gitignore  |  6 +++++
@@ -69,10 +69,10 @@ index 1ade1206bb89..02045c287d41 100644
 +
 +endif
 diff --git a/fs/proc/Makefile b/fs/proc/Makefile
-index 12c6922c913c..43a3cae44b8d 100644
+index f7456c4e7d0f..42f414aa108b 100644
 --- a/fs/proc/Makefile
 +++ b/fs/proc/Makefile
-@@ -31,3 +31,36 @@ proc-$(CONFIG_PROC_KCORE)	+= kcore.o
+@@ -32,3 +32,36 @@ proc-$(CONFIG_PROC_KCORE)	+= kcore.o
  proc-$(CONFIG_PROC_VMCORE)	+= vmcore.o
  proc-$(CONFIG_PRINTK)	+= kmsg.o
  proc-$(CONFIG_PROC_PAGE_MONITOR)	+= page.o
@@ -191,5 +191,5 @@ index 000000000000..a91cf4d82365
 +MODULE_AUTHOR("Allen Wild");
 +MODULE_DESCRIPTION("Echo extended version information built with the kernel");
 -- 
-2.14.2
+2.15.1
 

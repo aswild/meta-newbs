@@ -1,7 +1,7 @@
-From 630c491c8b6e6734bbaa7312a750c091c3c61a3b Mon Sep 17 00:00:00 2001
+From 66a2b218ab1195d956d399e18820df3234e660eb Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 3 Sep 2017 23:43:00 -0400
-Subject: [PATCH 4/5] scripts: nconf: support mouse events in nconfig
+Subject: [PATCH 3/4] scripts: nconf: support mouse events in nconfig
 
 Single-click a menu item to highlight, and double-click to cycle the
 value or enter a submenu (equivalent to pressing enter)
@@ -197,5 +197,5 @@ index 0d5261705ef5..36da9082ff68 100644
  		typeof(a) _a = a;\
  		typeof(b) _b = b;\
 -- 
-2.14.2
+2.15.1
 
