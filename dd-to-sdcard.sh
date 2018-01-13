@@ -15,6 +15,9 @@ while [[ $# != 0 ]]; do
         mini)
             image=newbs-mini-image
             ;;
+        dev)
+            image=dev-image-newbs
+            ;;
         ext)
             rootfstype=ext4
             ;;
