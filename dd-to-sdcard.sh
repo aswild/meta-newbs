@@ -1,6 +1,6 @@
 #!/bin/bash
 
-disk=/dev/sdd
+disk=/dev/sdk
 image=core-image-newbs
 machine=raspberrypi3
 
