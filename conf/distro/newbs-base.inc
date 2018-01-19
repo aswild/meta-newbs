@@ -57,6 +57,8 @@ ALTERNATIVE_PRIORITY_linux-firmware-bcm43430 = "50"
 ##### Root FS stuff #####
 DISTRO_FEATURES += " \
     ipv6 \
+    ld-is-gold \
+    usrmerge \
 "
 
 # Enable systemd
