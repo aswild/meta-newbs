@@ -61,6 +61,8 @@ DISTRO_FEATURES += " \
     usrmerge \
 "
 
+NCURSES_ABI_VERSION = "6"
+
 # Enable systemd
 DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
 DISTRO_FEATURES += "systemd"
