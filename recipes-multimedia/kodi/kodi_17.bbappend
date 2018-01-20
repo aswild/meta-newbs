@@ -37,7 +37,19 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI += " \
     file://1000-raspberrypi-autoconf-fixes.patch \
     file://1001-graceful-shutdown-support.patch \
+    file://1002-ftpparse-use-std-string.patch \
+    file://1003-crossguid-fetch-tarball-with-yocto.patch \
+    \
+    http://mirrors.kodi.tv/build-deps/sources/crossguid-8f399e8bd4.tar.gz;name=crossguid;unpack=0 \
 "
+SRC_URI[crossguid.md5sum] = "7de3be575744da5f1098295485ef0741"
+SRC_URI[crossguid.sha256sum] = "3d77d09a5df0de510aeeb940df4cb534787ddff3bb1828779753f5dfa1229d10"
+
+do_configure_prepend() {
+    rm -rf tools/depends/target/crossguid/native
+    mkdir -p tools/depends/target/crossguid/native
+    tar --strip-components=1 -xf ${WORKDIR}/crossguid-8f399e8bd4.tar.gz -C tools/depends/target/crossguid/native
+}
 
 inherit python-dir
 do_install_append() {
@@ -50,6 +62,6 @@ do_install_append() {
                   ${D}${PYTHON_SITEPACKAGES_DIR}/kodi/
 }
 
-PACKAGES += "${PN}-send"
+PACKAGES =+ "${PN}-send"
 FILES_${PN}-send = "${bindir}/kodi-send ${PYTHON_SITEPACKAGES_DIR}/kodi/*"
 RDEPENDS_${PN}-send = "python python-io"
