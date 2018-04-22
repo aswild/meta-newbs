@@ -7,23 +7,19 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=f124bfaefacd4e1a4080065d403bc1d4"
 NEWBS_SRCNAME = "newbs-init"
 inherit newbs-localsrc
 
-PACKAGES += "${PN}-util"
-FILES_${PN} = " \
+ALLOW_EMPTY_${PN} = "1"
+PACKAGES =+ "${PN}-init ${PN}-util"
+FILES_${PN}-init = " \
     ${base_sbindir}/newbs-init \
     /init \
     /dev/console \
     /usr/share/newbs.default.txt \
 "
 FILES_${PN}-util = "${base_sbindir}/newbs-util"
-RDEPENDS_${PN} = "busybox udev ${PN}-util"
+RDEPENDS_${PN}-init = "busybox udev ${PN}-util"
 
 do_configure() {
     ./configure PV="${DISTRO_VERSION}"
-}
-
-do_compile() {
-    # use -e flag to use CC/CFLAGS/LDFLAGS from the environment
-    oe_runmake -e
 }
 
 do_install() {

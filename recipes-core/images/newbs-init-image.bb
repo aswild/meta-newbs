@@ -12,7 +12,7 @@ PACKAGE_INSTALL_remove = " \
 "
 
 PACKAGE_INSTALL_append = " \
-    newbs-init \
+    newbs-init-init \
 "
 
 export IMAGE_BASENAME = "newbs-init-image"
