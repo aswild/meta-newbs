@@ -1,0 +1,9 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+SRC_URI += "file://after-local-fs.conf"
+
+do_install_append() {
+    # systemd-networkd should wait for newbs-nvram (local-fs.target) so that it
+    # gets the bind-mounted /etc/systemd/network files
+    install -Dm644 ${WORKDIR}/after-local-fs.conf \
+        ${D}${systemd_unitdir}/system/systemd-networkd.service.d/after-local-fs.conf
+}
