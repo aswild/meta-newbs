@@ -43,6 +43,9 @@ while (($#)); do
         64)
             machine=raspberrypi3-64
             ;;
+        a53)
+            machine=raspberrypi3-a53
+            ;;
         *)
             echo "Unknown option: $1"
             exit 1
