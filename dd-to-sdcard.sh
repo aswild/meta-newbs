@@ -20,8 +20,13 @@
 
 disk=/dev/sdk
 image=core-image-newbs
-machine=raspberrypi3
 rootfstype=squashfs-xz
+
+machine=$(sed -n 's#.*/tmp/deploy/images/\([^/]*\).*#\1#p' <<<"$PWD")
+if [[ -z "$machine" ]]; then
+    echo >&2 "warning: couldn't auto-detect machine from current directory"
+    machine=raspberrypi3
+fi
 
 while (($#)); do
     case $1 in
@@ -40,12 +45,6 @@ while (($#)); do
         ext)
             rootfstype=ext4
             ;;
-        64)
-            machine=raspberrypi3-64
-            ;;
-        a53)
-            machine=raspberrypi3-a53
-            ;;
         *)
             echo "Unknown option: $1"
             exit 1
@@ -53,6 +52,11 @@ while (($#)); do
     esac
     shift
 done
+
+if grep -q "^${disk}" /proc/mounts; then
+    echo "Error: something on $disk appears to be mounted. Aborting"
+    exit 1
+fi
 
 set -xe
 [[ -e ${disk}1 ]]
