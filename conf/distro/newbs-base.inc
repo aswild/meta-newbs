@@ -80,4 +80,4 @@ IMAGE_CLASSES = "newbs-bootimg image-buildinfo"
 IMAGE_FEATURES += " \
     read-only-rootfs \
 "
-IMAGE_FSTYPES = "ext4 squashfs-xz tar.xz newbs-bootimg"
+IMAGE_FSTYPES = "ext4 squashfs-xz newbs-bootimg"
