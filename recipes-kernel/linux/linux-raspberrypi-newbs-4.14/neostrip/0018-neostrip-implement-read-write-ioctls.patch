@@ -1,11 +1,11 @@
-From 5292766929269e94976c7ed8c424aba2de5de9eb Mon Sep 17 00:00:00 2001
+From 7c9fb0c2b3c44d13602614fd0625efbf9fd1386b Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 26 Mar 2017 02:53:35 -0400
 Subject: [PATCH 18/19] neostrip: implement read/write ioctls
 
 ---
- drivers/spi/neostrip.c      | 69 ++++++++++++++++++++++++++++++++++++---------
- include/uapi/spi/neostrip.h | 18 ++++++++++--
+ drivers/spi/neostrip.c      | 69 +++++++++++++++++++++++++++++--------
+ include/uapi/spi/neostrip.h | 18 ++++++++--
  2 files changed, 70 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/spi/neostrip.c b/drivers/spi/neostrip.c
@@ -129,5 +129,5 @@ index 2e62aa565a1e..7ad0415d590e 100644
  
  #endif // _NEOSTRIP_H_
 -- 
-2.14.2
+2.17.0
 

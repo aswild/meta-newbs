@@ -1,4 +1,4 @@
-From b82632067f41cf90b3483c43862e99fa3b02dd6b Mon Sep 17 00:00:00 2001
+From eac994189fa5d7ad658b8fbda3dd9456e76b15f6 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 22:02:35 -0500
 Subject: [PATCH 10/19] shiftbrite: use GPIO for latch instead of SPI CS
@@ -16,8 +16,8 @@ Set "dtparam=shiftbrite0_latch=xx" to use gpio xx for the latch pin.
 (todo: could use a module param or dynamic attribute to change without
 needing a reboot)
 ---
- .../dts/overlays/pi3-spi-shiftbrite-overlay.dts    | 49 ++++++++++-------
- drivers/spi/shiftbrite.c                           | 64 ++++++++++++++++------
+ .../overlays/pi3-spi-shiftbrite-overlay.dts   | 49 ++++++++------
+ drivers/spi/shiftbrite.c                      | 64 +++++++++++++------
  2 files changed, 76 insertions(+), 37 deletions(-)
 
 diff --git a/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
@@ -250,5 +250,5 @@ index 20d39a0d1205..1f7afaed5477 100644
      .probe  = shiftbrite_probe,
      .remove = shiftbrite_remove,
 -- 
-2.14.2
+2.17.0
 

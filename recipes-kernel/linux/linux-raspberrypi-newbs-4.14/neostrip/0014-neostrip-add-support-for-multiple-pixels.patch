@@ -1,4 +1,4 @@
-From 60025b922046e82aa651d09e16013fcecdd49ec2 Mon Sep 17 00:00:00 2001
+From aac7c7e21de70c67c8431802a2a4819b286c3cca Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 17 Mar 2017 01:05:08 -0400
 Subject: [PATCH 14/19] neostrip: add support for multiple pixels
@@ -8,9 +8,9 @@ TODO:
  * add color_raw in sysfs
  * add per-pixel sysfs files
 ---
- .../boot/dts/overlays/spi0-neostrip-overlay.dts    |  10 +-
- drivers/spi/Kconfig                                |  13 ++
- drivers/spi/neostrip.c                             | 243 +++++++++++++++------
+ .../dts/overlays/spi0-neostrip-overlay.dts    |  10 +-
+ drivers/spi/Kconfig                           |  13 +
+ drivers/spi/neostrip.c                        | 243 +++++++++++++-----
  3 files changed, 200 insertions(+), 66 deletions(-)
 
 diff --git a/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts b/arch/arm/boot/dts/overlays/spi0-neostrip-overlay.dts
@@ -38,10 +38,10 @@ index 9edb38b5e699..0bb27a79e272 100644
 +    };
  };
 diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-index edea8dc3875e..302df6d5cc0a 100644
+index 256e2b645456..b2aefe437a11 100644
 --- a/drivers/spi/Kconfig
 +++ b/drivers/spi/Kconfig
-@@ -800,6 +800,19 @@ config SPI_NEOSTRIP
+@@ -799,6 +799,19 @@ config SPI_NEOSTRIP
  	help
  	    Driver to control "NeoPixel" RGB LEDs using SPI hardware
  
@@ -487,5 +487,5 @@ index e945b4342fbc..60a0c0532a46 100644
      kfree(chip);
      dev_info(&spi->dev, "neostrip driver unloaded\n");
 -- 
-2.14.2
+2.17.0
 

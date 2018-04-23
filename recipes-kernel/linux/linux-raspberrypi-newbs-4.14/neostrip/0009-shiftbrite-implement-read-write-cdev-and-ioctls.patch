@@ -1,11 +1,11 @@
-From 48cf53dc3f0c11fea85dc5a705b45cd4a0de5f68 Mon Sep 17 00:00:00 2001
+From eccd9cc05d9903a908a39044a561e24e258fa6ce Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 18:17:38 -0500
 Subject: [PATCH 09/19] shiftbrite: implement read/write cdev and ioctls
 
 ---
- drivers/spi/shiftbrite.c      | 82 ++++++++++++++++++++++++++++++++++---------
- include/uapi/spi/shiftbrite.h |  2 ++
+ drivers/spi/shiftbrite.c      | 82 ++++++++++++++++++++++++++++-------
+ include/uapi/spi/shiftbrite.h |  2 +
  2 files changed, 68 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/spi/shiftbrite.c b/drivers/spi/shiftbrite.c
@@ -150,5 +150,5 @@ index 717b2c5bc627..b3e93ffa5c5a 100644
  
  #endif // _SHIFTBRITE_H_
 -- 
-2.14.2
+2.17.0
 

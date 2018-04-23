@@ -1,10 +1,10 @@
-From 63de7dfde5091264ac4729fcf8f4bf010bab1842 Mon Sep 17 00:00:00 2001
+From 53eac72828e468f7960d296740c1c471d9dbbacd Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 10 Mar 2017 00:25:35 -0500
 Subject: [PATCH 05/19] shiftbrite: add hello-world chrdev
 
 ---
- drivers/spi/shiftbrite.c | 110 ++++++++++++++++++++++++++++++++++++++++++++---
+ drivers/spi/shiftbrite.c | 110 ++++++++++++++++++++++++++++++++++++---
  1 file changed, 104 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/spi/shiftbrite.c b/drivers/spi/shiftbrite.c
@@ -189,5 +189,5 @@ index 54db711cb818..600c8d81f3ea 100644
          device_remove_file(&spi->dev, shiftbrite_sysfs_attrs[i]);
  
 -- 
-2.14.2
+2.17.0
 

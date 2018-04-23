@@ -1,4 +1,4 @@
-From e309d5495b8a8a9a09a6328231c44578dac09955 Mon Sep 17 00:00:00 2001
+From 84ca980b5fce02e9c04acbcbcc70e9d1f5f5b757 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 24 Mar 2017 00:06:03 -0400
 Subject: [PATCH 17/19] neostrip: add per-pixel sysfs entries
@@ -7,7 +7,7 @@ Plus:
  * use attribute_group stuff to create the static attributes
  * add comments for vim folding
 ---
- drivers/spi/neostrip.c | 149 +++++++++++++++++++++++++++++++++++++++++--------
+ drivers/spi/neostrip.c | 149 ++++++++++++++++++++++++++++++++++-------
  1 file changed, 125 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/spi/neostrip.c b/drivers/spi/neostrip.c
@@ -263,5 +263,5 @@ index 30fa7a1df359..ab59c3dddd53 100644
      ret = spi_register_driver(&neostrip_spi_driver);
      if (ret < 0)
 -- 
-2.14.2
+2.17.0
 

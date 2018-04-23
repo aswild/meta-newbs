@@ -1,11 +1,11 @@
-From 95069fa516da50d318c50454b71357b0472f06ed Mon Sep 17 00:00:00 2001
+From cb20c40f1c71550780a7f1fe1fe2d4c68ace5c3c Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 15:22:12 -0500
 Subject: [PATCH 07/19] shiftbrite: big probe/release refactoring - follow
  spidev paradigm
 
 ---
- drivers/spi/shiftbrite.c      | 274 +++++++++++++++++++++++++++++-------------
+ drivers/spi/shiftbrite.c      | 274 +++++++++++++++++++++++-----------
  include/uapi/spi/shiftbrite.h |   2 +-
  2 files changed, 191 insertions(+), 85 deletions(-)
 
@@ -403,5 +403,5 @@ index d309f73383bd..717b2c5bc627 100644
  
  #endif // _SHIFTBRITE_H_
 -- 
-2.14.2
+2.17.0
 

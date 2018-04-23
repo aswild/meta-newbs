@@ -1,4 +1,4 @@
-From ef8ac6b427d9f5f24080a2b5c834ed20bfc2ee14 Mon Sep 17 00:00:00 2001
+From bd5918b4d06dcf755612894bda69d8dfe002717b Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 15:39:09 -0500
 Subject: [PATCH 08/19] shiftbrite: move sysfs files to the shiftbrite device
@@ -59,5 +59,5 @@ index bdcf7773e0cf..73de5525f244 100644
      spin_lock_irq(&chip->lock);
      chip->spi = NULL;
 -- 
-2.14.2
+2.17.0
 
