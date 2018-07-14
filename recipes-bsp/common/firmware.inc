@@ -1,9 +1,9 @@
 # Overlay of firmware.inc in meta-raspberrypi
 # Set the same variables, but use the latest version
 
-RPIFW_DATE = "20180328"
-RPIFW_MD5 = "213b1fae403da2a51841e2af3203e104"
-RPIFW_SHA256 = "44731225495bb211353dd86fbead980f8bb62930a3ec6711ed7094aff2397758"
+RPIFW_DATE = "20180619"
+RPIFW_MD5 = "6c7ff9536cee52253e5fbe54ad963a8b"
+RPIFW_SHA256 = "e657478923220947321503ef980f3a6772d6f1e11b48c5c359bdb5e3d49355d9"
 
 SRC_URI = "https://github.com/raspberrypi/firmware/archive/1.${RPIFW_DATE}.tar.gz"
 SRC_URI[md5sum] = "${RPIFW_MD5}"
