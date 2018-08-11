@@ -4,7 +4,11 @@ set -e
 branch=rpi-4.14.y
 repo_url='https://github.com/raspberrypi/linux'
 
-rev=$(git ls-remote --heads $repo_url | awk "/refs\\/heads\\/${branch//./\\.}\$/{print \$1}")
+rev=$(git ls-remote $repo_url refs/heads/$branch | cut -f1)
+if [[ -z $rev ]]; then
+    echo "Error: revision for branch $branch not found"
+    exit 1
+fi
 makehead=$(curl -s "https://raw.githubusercontent.com/raspberrypi/linux/${rev}/Makefile" | egrep '^(VERSION|PATCHLEVEL|SUBLEVEL)')
 
 ver=$(awk '/VERSION/{print $NF}' <<<"$makehead")
