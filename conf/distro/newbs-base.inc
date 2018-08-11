@@ -10,8 +10,8 @@ BB_DANGLINGAPPENDS_WARNONLY = "1"
 
 BBMASK ?= "fake-bbmask-string-that-wont-match-anything"
 
-# FIXME meta-kodi has broken bbappends for llvm on OE's master
-BBMASK .= "|meta-kodi/recipes-core/llvm/.*"
+# mask dangling appends in meta-raspberrypi
+BBMASK .= "|meta-raspberrypi/recipes-multimedia/gstreamer/.*"
 
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
