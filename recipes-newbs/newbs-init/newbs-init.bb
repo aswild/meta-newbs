@@ -4,7 +4,7 @@ DESCRIPTION = "NEWBS init and utils"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=f124bfaefacd4e1a4080065d403bc1d4"
 
-NEWBS_SRCNAME = "newbs-init"
+NEWBS_SRCNAME = "init"
 inherit newbs-localsrc
 
 ALLOW_EMPTY_${PN} = "1"
