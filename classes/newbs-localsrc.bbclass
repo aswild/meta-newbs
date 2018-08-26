@@ -3,8 +3,11 @@
 NEWBS_SRCDIR ?= "${NEWBSROOT}/newbs-source"
 NEWBS_SRCNAME ?= "YOU_MUST_SET_NEWBS_SRCNAME"
 
-FILESEXTRAPATHS_prepend = "${NEWBS_SRCDIR}:"
-SRC_URI = "file://${NEWBS_SRCNAME}"
+NEWBS_SRCDIR_DIR = "${@os.path.dirname(d.getVar('NEWBS_SRCDIR'))}"
+NEWBS_SRCDIR_BASE = "${@os.path.basename(d.getVar('NEWBS_SRCDIR'))}"
+
+FILESEXTRAPATHS_prepend = "${NEWBS_SRCDIR_DIR}:"
+SRC_URI = "file://${NEWBS_SRCDIR_BASE}/${NEWBS_SRCNAME}"
 SRCREV = "${AUTOREV}"
 PV_append = "+newbslocal"
-S = "${WORKDIR}/${NEWBS_SRCNAME}"
+S = "${WORKDIR}/${NEWBS_SRCDIR_BASE}/${NEWBS_SRCNAME}"
