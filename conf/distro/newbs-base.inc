@@ -13,6 +13,12 @@ BBMASK ?= "fake-bbmask-string-that-wont-match-anything"
 # mask dangling appends in meta-raspberrypi
 BBMASK .= "|meta-raspberrypi/recipes-multimedia/gstreamer/.*"
 
+# selectively mask some recipes that should only be build for certain distros
+BBMASK_MCE = "|meta-newbs/recipes-multimedia/kodi/.*|meta-newbs/recipes-core/images/newbs-mce-image\.bb"
+BBMASK_UNIFI = "|meta-newbs/recipes-unifi/.*|meta-newbs/recipes-core/images/newbs-unifi-image\.bb"
+BBMASK .= "${@bb.utils.contains('DISTRO', 'newbs-mce', '', '${BBMASK_MCE}', d)}"
+BBMASK .= "${@bb.utils.contains('DISTRO', 'newbs-unifi', '', '${BBMASK_UNIFI}', d)}"
+
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
 PREFERRED_VERSION_linux-raspberrypi-newbs ?= "4.14%"
@@ -58,6 +64,7 @@ ALTERNATIVE_PRIORITY_linux-firmware-bcm43430 = "50"
 DISTRO_FEATURES += " \
     ipv6 \
     ld-is-gold \
+    pam \
     usrmerge \
 "
 
