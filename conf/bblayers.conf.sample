@@ -1,3 +1,4 @@
+# vim: ft=bitbake
 # LAYER_CONF_VERSION is increased each time build/conf/bblayers.conf
 # changes incompatibly
 LCONF_VERSION = "5"
@@ -5,16 +6,19 @@ LCONF_VERSION = "5"
 BBPATH = "${TOPDIR}"
 BBFILES ?= ""
 
-BBLAYERS ?= "##OEROOT##/meta"
-BBLAYERS =+ "##NEWBSROOT##/meta-openembedded/meta-oe"
-BBLAYERS =+ "##NEWBSROOT##/meta-openembedded/meta-filesystems"
-BBLAYERS =+ "##NEWBSROOT##/meta-openembedded/meta-multimedia"
-BBLAYERS =+ "##NEWBSROOT##/meta-openembedded/meta-networking"
-BBLAYERS =+ "##NEWBSROOT##/meta-openembedded/meta-python"
-BBLAYERS =+ "##NEWBSROOT##/meta-kodi"
-BBLAYERS =+ "##NEWBSROOT##/meta-raspberrypi"
-
-BBLAYERS =+ "##NEWBSROOT##/meta-wild-common"
-BBLAYERS =+ "##NEWBSROOT##/meta-newbs"
+NEWBSROOT  = "##NEWBSROOT##"
 
 BBLAYERS_NON_REMOVABLE ?= "##OEROOT##/meta"
+
+BBLAYERS ?= "##OEROOT##/meta"
+BBLAYERS =+ "${NEWBSROOT}/meta-openembedded/meta-oe"
+BBLAYERS =+ "${NEWBSROOT}/meta-openembedded/meta-filesystems"
+BBLAYERS =+ "${NEWBSROOT}/meta-openembedded/meta-multimedia"
+BBLAYERS =+ "${NEWBSROOT}/meta-openembedded/meta-networking"
+BBLAYERS =+ "${NEWBSROOT}/meta-openembedded/meta-python"
+BBLAYERS =+ "${NEWBSROOT}/meta-java"
+BBLAYERS =+ "${NEWBSROOT}/meta-kodi"
+BBLAYERS =+ "${NEWBSROOT}/meta-raspberrypi"
+
+BBLAYERS =+ "${NEWBSROOT}/meta-wild-common"
+BBLAYERS =+ "${NEWBSROOT}/meta-newbs"

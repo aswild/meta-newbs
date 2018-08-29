@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/hint/bash
 
 thisdir=$(pwd)
 
@@ -9,18 +9,33 @@ if [[ ! -d $thisdir/meta-newbs ]]; then
 fi
 NEWBSROOT=$(readlink -f $thisdir)
 
-if [[ -n $MACHINE ]]; then
-    echo "MACHINE set to $MACHINE"
-else
-    echo "No MACHINE given, defaulting to raspberrypi3"
-    export MACHINE=raspberrypi3
-fi
+while (($#)); do
+    case "$1" in
+        64)
+            MACHINE=raspberrypi3-64
+            ;;
+        build-*)
+            BUILD_DIR="$1"
+            ;;
+        mce)
+            DISTRO="newbs-mce"
+            ;;
+        unifi)
+            DISTRO="newbs-unifi"
+            ;;
+        *)
+            echo "Warning: unknown build option '$1'"
+            ;;
+    esac
+    shift
+done
 
-if [[ -n $1 ]]; then
-    BUILD_DIR="$1"
-else
-    BUILD_DIR="build-$MACHINE"
-fi
+# defaults, if not set above
+: ${DISTRO:=newbs}
+: ${BUILD_DIR:=build-${MACHINE}}
+: ${MACHINE:=raspberrypi3-64}
+
+echo "Using MACHINE $MACHINE"
 echo "Using BUILD_DIR $BUILD_DIR"
 
 DOWNLOAD_DIR=/var/oe-downloads
@@ -63,21 +78,23 @@ BB_CONF="conf/bblayers.conf"
 LOCAL_CONF="conf/local.conf"
 NEWBS_MARKER="### NEWBS ###"
 
-sed -i "s|##NEWBSROOT##|$NEWBSROOT|g" $BB_CONF
-sed -i "s|##NEWBSROOT##|$NEWBSROOT|g" $LOCAL_CONF
-
-# set the distro
-if [[ -z "$DISTRO" ]]; then
-    DISTRO="newbs"
-fi
-sed -i "s|##DISTRO##|$DISTRO|g" $LOCAL_CONF
+sed_subst_args=()
+for _var in {NEWBSROOT,MACHINE,DISTRO}; do
+    eval _val="\$$_var"
+    sed_subst_args+=(-e "s|##$_var##|$_val|g")
+done
+sed -i "${sed_subst_args[@]}" $BB_CONF $LOCAL_CONF
+unset sed_subst_args _val _var
 
 if /usr/bin/env python --version 2>&1 | grep -q "Python 3"; then
     echo "Enabling Host Python3 compatibility override"
     sed -i '/HOST_DEFAULT_PYTHON3 = /s/^#//' $LOCAL_CONF
 fi
 
-sed -i "/$NEWBS_MARKER/,\$s|^MACHINE.*|MACHINE = \"$MACHINE\"|" $LOCAL_CONF
+if [[ -r /etc/os-release ]]  && grep -q 'Arch Linux' /etc/os-release; then
+    echo "Arch Linux build host: dnabling meta-arch-buildhacks layer"
+    echo 'BBLAYERS =+ "${NEWBSROOT}/meta-wild-common/meta-arch-buildhacks"' >>$BB_CONF
+fi
 
 # unset unused variables
-unset thisdir _apply_patch_answer TEMPLATECONF BB_CONF LOCAL_CONF NEWBS_MARKER DOWNLOAD_DIR
+unset thisdir _apply_patch_answer TEMPLATECONF BB_CONF LOCAL_CONF NEWBS_MARKER DOWNLOAD_DIR BUILD_DIR MACHINE

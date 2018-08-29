@@ -1,3 +1,4 @@
+# vim: ft=bitbake
 #
 # This file is your local configuration file and is where all local user settings
 # are placed. The comments in this file give some guide to the options a new user
@@ -222,11 +223,10 @@ BB_NUMBER_THREADS  = "${@oe.utils.cpu_count()}"
 PARALLEL_MAKE   = "-j${@oe.utils.cpu_count()}"
 
 ### NEWBS ###
-NEWBSROOT  = "##NEWBSROOT##"
 DL_DIR     = "${NEWBSROOT}/downloads"
 SSTATE_DIR = "${NEWBSROOT}/sstate-cache"
 
-MACHINE = "raspberrypi3"
+MACHINE = "##MACHINE##"
 DISTRO = "##DISTRO##"
 
 # Run bitbake with a lower priority
