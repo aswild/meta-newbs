@@ -42,6 +42,9 @@ while (($#)); do
         dev)
             image=dev-image-newbs
             ;;
+        unifi)
+            image=newbs-unifi-image
+            ;;
         ext)
             rootfstype=ext4
             ;;
