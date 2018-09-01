@@ -39,7 +39,9 @@ SERIAL_CONSOLE = "115200 ttyAMA0"
 SYSDTB ??= ""
 SYSDTB_raspberrypi2 = "bcm2709-rpi-2-b.dtb"
 SYSDTB_raspberrypi3 = "bcm2710-rpi-3-b.dtb"
-SYSDTB_raspberrypi3-64 = "broadcom/bcm2710-rpi-3-b.dtb broadcom/bcm2837-rpi-3-b.dtb"
+SYSDTB_raspberrypi3-64 = "broadcom/bcm2710-rpi-3-b.dtb \
+                          broadcom/bcm2710-rpi-3-b-plus.dtb \
+                          broadcom/bcm2837-rpi-3-b.dtb"
 DTOVERLAYS ??= ""
 NEOSTRIP_OVERLAYS = " \
     overlays/spi0-shiftbrite.dtbo \
