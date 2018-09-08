@@ -1,0 +1,17 @@
+[Unit]
+Description=Redirect port 80/443 to 8080/8443
+Before=network-pre.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
+ExecStart=/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 8443
+ExecStop=/sbin/iptables  -t nat -D PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
+ExecStop=/sbin/iptables  -t nat -D PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 8443
+
+[Install]
+WantedBy=multi-user.target
+
+# vim: ft=systemd
