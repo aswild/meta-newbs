@@ -47,7 +47,11 @@ do_image_newbs_bootimg[depends] += " \
 
 DEPLOY_BOOTIMG_NAME    = "${IMAGE_NAME}.boot.vfat"
 DEPLOY_BOOTIMG         = "${IMGDEPLOYDIR}/${DEPLOY_BOOTIMG_NAME}"
-DEPLOY_BOOTIMG_SYMLINK = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}-${MACHINE}.boot.vfat"
+DEPLOY_BOOTIMG_SYMLINK = "${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.boot.vfat"
+
+DEPLOY_BOOTTAR_NAME    = "${IMAGE_NAME}.boot.tar.xz"
+DEPLOY_BOOTTAR         = "${IMGDEPLOYDIR}/${DEPLOY_BOOTTAR_NAME}"
+DEPLOY_BOOTTAR_SYMLINK = "${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.boot.tar.xz"
 
 IMAGE_CMD_newbs-bootimg() {
     BOOT_DIR=${WORKDIR}/boot
@@ -104,10 +108,8 @@ IMAGE_CMD_newbs-bootimg() {
         mcopy -v -i ${DEPLOY_BOOTIMG} -s $file ::/$(echo $file | sed "s|${BOOT_DIR}||")
     done
 
-    DEPLOY_TARBALL=$(echo ${DEPLOY_BOOTIMG} | sed 's|\.boot\.vfat|.boot.tar.xz|')
-    DEPLOY_TARBALL_SYMLINK=$(echo ${DEPLOY_BOOTIMG_SYMLINK} | sed 's|\.boot\.vfat|.boot.tar.xz|')
-    tar cvf - -C $BOOT_DIR . | xz -z -c --threads=0 >${DEPLOY_TARBALL}
+    tar cvf - -C $BOOT_DIR . | xz -z -c --threads=0 >${DEPLOY_BOOTTAR}
 
     ln -sfv $(basename ${DEPLOY_BOOTIMG}) ${DEPLOY_BOOTIMG_SYMLINK}
-    ln -sfv $(basename ${DEPLOY_TARBALL}) ${DEPLOY_TARBALL_SYMLINK}
+    ln -sfv $(basename ${DEPLOY_BOOTTAR}) ${DEPLOY_BOOTTAR_SYMLINK}
 }

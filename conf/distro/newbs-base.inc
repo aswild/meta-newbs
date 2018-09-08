@@ -85,8 +85,8 @@ DISTRO_FEATURES += "libc-locales libc-charsets libc-locale-code"
 DISTROOVERRIDES .= "${@bb.utils.contains('HOST_DEFAULT_PYTHON3', 'y', ':hostpython3', '', d)}"
 
 ##### Image stuff #####
-IMAGE_CLASSES = "newbs-bootimg image-buildinfo"
+IMAGE_CLASSES = "nimage image-buildinfo"
+IMAGE_FSTYPES = "ext4 squashfs-xz nimage"
 IMAGE_FEATURES += " \
     read-only-rootfs \
 "
-IMAGE_FSTYPES = "ext4 squashfs-xz newbs-bootimg"
