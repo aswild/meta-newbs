@@ -8,6 +8,7 @@ RDEPENDS_${PN}-core = " \
     packagegroup-wild-core \
     newbs-nvram \
     newbs-init-util \
+    newbs-swdl \
     udev-extraconf \
     ${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', 'linux-newbs-headers-dev neostrip-demo', '', d)} \
 "
