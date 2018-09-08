@@ -17,7 +17,7 @@ def nimg_fstypes(d):
     return (t for t in fstypes if nimg_fsmatch.match(t))
 
 do_image_nimage[depends] += " \
-    mknImage-native:do_populate_sysroot \
+    mknimage-native:do_populate_sysroot \
     ${PN}:do_image_newbs_bootimg \
     ${@' '.join('${PN}:do_image_%s'%t.replace('-', '_') for t in nimg_fstypes(d))} \
 "
