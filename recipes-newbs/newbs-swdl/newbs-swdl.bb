@@ -21,7 +21,7 @@ RPROVIDES_${PN}-mknImage += "mknImage"
 INSANE_SKIP_${PN}-mknImage = "file-rdeps"
 
 # runtime dependencies on the target
-RDEPENDS_${PN} = "mknImage curl bash"
+RDEPENDS_${PN} = "curl tar gzip xz"
 
 # not sure why yocto checks RDEPENDS for native recipes
 RDEPENDS_${PN}_class-native = ""
