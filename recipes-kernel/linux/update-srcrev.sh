@@ -9,11 +9,11 @@ if [[ -z $rev ]]; then
     echo "Error: revision for branch $branch not found"
     exit 1
 fi
-makehead=$(curl -s "https://raw.githubusercontent.com/raspberrypi/linux/${rev}/Makefile" | egrep '^(VERSION|PATCHLEVEL|SUBLEVEL)')
+makefile=$(curl -sSL "https://raw.githubusercontent.com/raspberrypi/linux/${rev}/Makefile")
 
-ver=$(awk '/VERSION/{print $NF}' <<<"$makehead")
-patch=$(awk '/PATCHLEVEL/{print $NF}' <<<"$makehead")
-sub=$(awk '/SUBLEVEL/{print $NF}' <<<"$makehead")
+ver=$(awk '/^VERSION/{print $NF}' <<<"$makefile")
+patch=$(awk '/^PATCHLEVEL/{print $NF}' <<<"$makefile")
+sub=$(awk '/^SUBLEVEL/{print $NF}' <<<"$makefile")
 linux_version="${ver}.${patch}.${sub}"
 
 sed -i -e "s/^LINUX_VERSION.*/LINUX_VERSION = \"${linux_version}\"/" \
