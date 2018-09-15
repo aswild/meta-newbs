@@ -16,6 +16,7 @@ RDEPENDS_${PN}-core = " \
 PACKAGES += "${PN}-full-cmdline"
 RDEPENDS_${PN}-full-cmdline = " \
     ${PN}-core \
-    i2c-tools \
     packagegroup-wild-utils \
+    i2c-tools \
+    squashfs-tools \
 "
