@@ -3,7 +3,8 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://pi-serial-number.c;endline=20;md5=856230a0b6476c6a466d75c76e25ca5b"
 
 COMPATIBLE_MACHINE = "^rpi$"
-DEPENDS = "userland"
+DEPENDS = "virtual/userland"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRC_URI = "file://pi-serial-number.c"
 S = "${WORKDIR}"

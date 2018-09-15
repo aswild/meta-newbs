@@ -11,6 +11,7 @@ RDEPENDS_${PN}-core = " \
     newbs-swdl \
     udev-extraconf \
     ${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', 'linux-newbs-headers-dev neostrip-demo', '', d)} \
+    userland \
 "
 
 PACKAGES += "${PN}-full-cmdline"
