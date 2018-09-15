@@ -59,6 +59,9 @@ KERNEL_DEVICETREE = " \
     ${DTOVERLAYS} \
 "
 
+EXTRA_CONFIG_TXT_append = "${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', \
+                             'dtoverlay=spi0-neostrip\ndtparam=neostrip0_length=8\n', '', d)}"
+
 # Wifi firmware
 ALTERNATIVE_PRIORITY_linux-firmware-bcm43430 = "50"
 
