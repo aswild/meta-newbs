@@ -32,8 +32,8 @@ done
 
 # defaults, if not set above
 : ${DISTRO:=newbs}
-: ${BUILD_DIR:=build-${MACHINE}}
 : ${MACHINE:=raspberrypi3-64}
+: ${BUILD_DIR:=build-${MACHINE}}
 
 echo "Using MACHINE $MACHINE"
 echo "Using BUILD_DIR $BUILD_DIR"
@@ -83,6 +83,10 @@ for _var in {NEWBSROOT,MACHINE,DISTRO}; do
     eval _val="\$$_var"
     sed_subst_args+=(-e "s|##$_var##|$_val|g")
 done
+if [[ $DISTRO != "newbs-mce" ]]; then
+    # remove meta-kodi unless we're using the mce distro
+    sed_subst_args+=(-e 's/^BBLAYERS.*meta-kodi.*/#\0/')
+fi
 sed -i "${sed_subst_args[@]}" $BB_CONF $LOCAL_CONF
 unset sed_subst_args _val _var
 
