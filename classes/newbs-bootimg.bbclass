@@ -42,6 +42,7 @@ do_image_newbs_bootimg[depends] += " \
     xz-native:do_populate_sysroot \
     virtual/kernel:do_deploy \
     ${IMAGE_BOOTLOADER}:do_deploy \
+    rpi-config:do_deploy \
     ${@bb.utils.contains('RPI_USE_U_BOOT', '1', 'u-boot:do_deploy', '',d)} \
 "
 
