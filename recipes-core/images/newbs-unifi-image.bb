@@ -8,3 +8,11 @@ IMAGE_INSTALL += " \
     iptables \
     unifi \
 "
+
+HOSTNAME ?= "UniPi"
+
+unipi_set_hostname() {
+    bbnote "Set hostname to ${HOSTNAME}"
+    echo "${HOSTNAME}" > ${IMAGE_ROOTFS}${sysconfdir}/hostname
+}
+ROOTFS_POSTPROCESS_COMMAND += "unipi_set_hostname;"
