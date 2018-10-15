@@ -8,6 +8,7 @@ if [[ ! -d $thisdir/meta-newbs ]]; then
     return 1
 fi
 NEWBSROOT=$(readlink -f $thisdir)
+unset thisdir
 
 while (($#)); do
     case "$1" in
@@ -38,62 +39,30 @@ done
 echo "Using MACHINE $MACHINE"
 echo "Using BUILD_DIR $BUILD_DIR"
 
-DOWNLOAD_DIR=/var/oe-downloads
-if [[ ! -d ./downloads ]] && [[ -d $DOWNLOAD_DIR ]]; then
-    echo "symlinking downloads to $DOWNLOAD_DIR"
-    ln -s $DOWNLOAD_DIR downloads
-fi
+source meta-wild-common/common-envsetup
+_wild_yocto_apply_patches
+_wild_yocto_symlink_cache_dir downloads
+_wild_yocto_symlink_cache_dir sstate-cache
 
-if ( ! git -C openembedded-core symbolic-ref HEAD &>/dev/null ) && \
-        [[ -x meta-wild-common/yocto-patches/apply-patches.sh ]]; then
-    echo -ne "\nopenembedded-core is in a detached HEAD. Apply patches from meta-wild-common? (Y/n) "
-    read _apply_patch_answer
-    if [[ -z $_apply_patch_answer ]] || [[ $_apply_patch_answer == [yY]* ]]; then
-        meta-wild-common/yocto-patches/apply-patches.sh
-    fi
-fi
-
-# Python version check - oe-buildenv-internal will error out if python3 is the default, so
-# modify PATH here to overlay a python2 wrapper script
-if /usr/bin/env python --version 2>&1 | grep -q "Python 3"; then
-    echo "NOTE: The current default python version is python3. Adding an overlay wrapper to make python2 default"
-    _NEWBS_ORIG_PATH="$PATH"
-    export PATH="$NEWBSROOT/meta-newbs/python2-overlay:$PATH"
-    resetpath() {
-        if [[ -n "$_NEWBS_ORIG_PATH" ]]; then
-            export PATH="$_NEWBS_ORIG_PATH"
-        fi
-        unset _NEWBS_ORIG_PATH
-        unset -f resetpath
-    }
-fi
-
+_wild_yocto_python3_hack pre
 export TEMPLATECONF="$NEWBSROOT/meta-newbs/conf"
 echo $TEMPLATECONF
 source openembedded-core/oe-init-build-env $BUILD_DIR
+unset TEMPLATECONF
+_wild_yocto_python3_hack post
 
-# now we're in the build directory and should have bblayers.conf.sample and local.conf.sample
-# from meta-newbs/conf
+# now we're in the build directory and should have bblayers.conf and local.conf
 BB_CONF="conf/bblayers.conf"
 LOCAL_CONF="conf/local.conf"
-NEWBS_MARKER="### NEWBS ###"
 
-sed_subst_args=()
-for _var in {NEWBSROOT,MACHINE,DISTRO}; do
-    eval _val="\$$_var"
-    sed_subst_args+=(-e "s|##$_var##|$_val|g")
-done
+# post-process conf files
+_wild_yocto_subst_confvars $BB_CONF $LOCAL_CONF -- NEWBSROOT MACHINE DISTRO
+
+# remove meta-kodi unless we're using the mce distro
 if [[ $DISTRO != "newbs-mce" ]]; then
-    # remove meta-kodi unless we're using the mce distro
-    sed_subst_args+=(-e 's/^BBLAYERS.*meta-kodi.*/#\0/')
-fi
-sed -i "${sed_subst_args[@]}" $BB_CONF $LOCAL_CONF
-unset sed_subst_args _val _var
-
-if /usr/bin/env python --version 2>&1 | grep -q "Python 3"; then
-    echo "Enabling Host Python3 compatibility override"
-    sed -i '/HOST_DEFAULT_PYTHON3 = /s/^#//' $LOCAL_CONF
+    sed -i 's/^BBLAYERS.*meta-kodi.*/#\0/' $BB_CONF
 fi
 
 # unset unused variables
-unset thisdir _apply_patch_answer TEMPLATECONF BB_CONF LOCAL_CONF NEWBS_MARKER DOWNLOAD_DIR BUILD_DIR MACHINE
+unset BB_CONF LOCAL_CONF NEWBSROOT MACHINE DISTRO
+_wild_yocto_unset_functions
