@@ -1,0 +1,199 @@
+From d201d736352fa35c23afa66fbecd37fa793bde30 Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Mon, 20 Feb 2017 22:56:12 -0500
+Subject: [PATCH 04/19] shiftbrite: use spinlock instead of mutex
+
+---
+ drivers/spi/shiftbrite.c | 86 +++++++++++++++++++++-------------------
+ 1 file changed, 45 insertions(+), 41 deletions(-)
+
+diff --git a/drivers/spi/shiftbrite.c b/drivers/spi/shiftbrite.c
+index df4717f485f6..54db711cb818 100644
+--- a/drivers/spi/shiftbrite.c
++++ b/drivers/spi/shiftbrite.c
+@@ -17,7 +17,7 @@
+ #include <linux/init.h>
+ #include <linux/delay.h>
+ #include <linux/module.h>
+-#include <linux/mutex.h>
++#include <linux/spinlock.h>
+ #include <linux/of_device.h>
+ #include <linux/of_gpio.h>
+ #include <linux/spi/spi.h>
+@@ -58,7 +58,7 @@ struct shiftbrite_chip {
+     u32                 config24;   // Control register which holds scaling values
+                                     // Stored as a 24-bit 0xRRGGBB value
+     struct spi_device   *spi;
+-    struct mutex        lock;
++    spinlock_t          lock;
+ };
+ 
+ // Internal Core Functions
+@@ -124,6 +124,33 @@ static inline int shiftbrite_write_config(struct shiftbrite_chip *chip)
+     return shiftbrite_write_u32(chip, RGB24_TO_CONFIG(chip->config24));
+ }
+ 
++static int shiftbrite_set_color_from_str(struct shiftbrite_chip *chip, const char *buf)
++{
++    unsigned long value;
++    int err;
++
++    if (strncmp(buf, "refresh", 7))
++    {
++        err = kstrtoul(buf, 16, &value);
++        if (err)
++            return err;
++        err = 1;
++    }
++    else
++    {
++        err = 0;
++    }
++
++    spin_lock(&chip->lock);
++    // err=1 means to update the value, otherwise just refresh it
++    if (err)
++        chip->value24 = value;
++    err = shiftbrite_write(chip);
++    spin_unlock(&chip->lock);
++
++    return err;
++}
++
+ // sysfs functions
+ 
+ static ssize_t shiftbrite_sysfs_show_color(struct device *dev,
+@@ -133,9 +160,9 @@ static ssize_t shiftbrite_sysfs_show_color(struct device *dev,
+     struct shiftbrite_chip *chip = dev_get_drvdata(dev);
+     unsigned long value;
+ 
+-    mutex_lock(&chip->lock);
++    spin_lock(&chip->lock);
+     value = chip->value24;
+-    mutex_unlock(&chip->lock);
++    spin_unlock(&chip->lock);
+ 
+     return sprintf(buf, "0x%06lx\n", value);
+ }
+@@ -145,27 +172,11 @@ static ssize_t shiftbrite_sysfs_set_color(struct device *dev,
+                                           const char *buf, size_t count)
+ {
+     struct shiftbrite_chip *chip = dev_get_drvdata(dev);
+-    unsigned long value;
+     int err;
+ 
+-    if (strncmp(buf, "refresh", 7))
+-    {
+-        err = kstrtoul(buf, 16, &value);
+-        if (err)
+-            return err;
+-        err = 1;
+-    }
+-    else
+-    {
+-        err = 0;
+-    }
+-
+-    mutex_lock(&chip->lock);
+-    // err=1 means to update the value, otherwise just refresh it
++    err = shiftbrite_set_color_from_str(chip, buf);
+     if (err)
+-        chip->value24 = value;
+-    shiftbrite_write(chip);
+-    mutex_unlock(&chip->lock);
++        return err;
+ 
+     return count;
+ }
+@@ -178,9 +189,9 @@ static ssize_t shiftbrite_sysfs_show_config(struct device *dev,
+     struct shiftbrite_chip *chip = dev_get_drvdata(dev);
+     unsigned long value;
+ 
+-    mutex_lock(&chip->lock);
++    spin_lock(&chip->lock);
+     value = chip->config24;
+-    mutex_unlock(&chip->lock);
++    spin_unlock(&chip->lock);
+ 
+     return sprintf(buf, "0x%06lx\n", value);
+ }
+@@ -205,12 +216,12 @@ static ssize_t shiftbrite_sysfs_set_config(struct device *dev,
+         err = 0;
+     }
+ 
+-    mutex_lock(&chip->lock);
++    spin_lock(&chip->lock);
+     // err=1 means to update the value, otherwise just refresh it
+     if (err)
+         chip->config24 = value;
+     shiftbrite_write_config(chip);
+-    mutex_unlock(&chip->lock);
++    spin_unlock(&chip->lock);
+ 
+     return count;
+ }
+@@ -244,20 +255,20 @@ static int shiftbrite_probe(struct spi_device *spi)
+     chip->spi = spi;
+     chip->value24 = 0;
+ 
+-    mutex_init(&chip->lock);
++    spin_lock_init(&chip->lock);
+ 
+     ret = shiftbrite_write_config(chip);
+     if (ret)
+     {
+         dev_err(&spi->dev, "Failed writing config: %d\n", ret);
+-        goto exit_destroy;
++        return ret;
+     }
+ 
+     ret = shiftbrite_write(chip);
+     if (ret)
+     {
+         dev_err(&spi->dev, "Failed writing: %d\n", ret);
+-        goto exit_destroy;
++        return ret;
+     }
+ 
+     for (i = 0; i < sizeof(shiftbrite_sysfs_attrs)/sizeof(shiftbrite_sysfs_attrs[0]); i++)
+@@ -266,21 +277,15 @@ static int shiftbrite_probe(struct spi_device *spi)
+         if (ret)
+         {
+             dev_err(&spi->dev, "Failed to create sysfs file %s\n", shiftbrite_sysfs_attrs[i]->attr.name);
+-            goto exit_remove_sysfs;
++            for (i--; i >= 0; i--)
++                device_remove_file(&spi->dev, shiftbrite_sysfs_attrs[i]);
++
++            return ret;
+         }
+     }
+ 
+     dev_info(&spi->dev, "Shiftbrite driver initialized");
+     return 0;
+-
+-exit_remove_sysfs:
+-    // if errors, unload all previous sysfs files
+-    for (i--; i >= 0; i--)
+-        device_remove_file(&spi->dev, shiftbrite_sysfs_attrs[i]);
+-
+-exit_destroy:
+-    mutex_destroy(&chip->lock);
+-    return ret;
+ }
+ 
+ static int shiftbrite_remove(struct spi_device *spi)
+@@ -291,10 +296,9 @@ static int shiftbrite_remove(struct spi_device *spi)
+     for (i = 0; i < sizeof(shiftbrite_sysfs_attrs)/sizeof(shiftbrite_sysfs_attrs[0]); i++)
+         device_remove_file(&spi->dev, shiftbrite_sysfs_attrs[i]);
+ 
+-    mutex_destroy(&chip->lock);
+     spi_set_drvdata(spi, NULL);
+ 
+-    kfree(chip);
++    devm_kfree(&spi->dev, chip);
+     dev_info(&spi->dev, "Shiftbrite driver unloaded\n");
+     return 0;
+ }
+-- 
+2.19.1
+

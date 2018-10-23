@@ -1,0 +1,193 @@
+From 4d5a9a6c9f3f5076a841aeccabcb9c4df3651530 Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Fri, 10 Mar 2017 00:25:35 -0500
+Subject: [PATCH 05/19] shiftbrite: add hello-world chrdev
+
+---
+ drivers/spi/shiftbrite.c | 110 ++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 104 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/spi/shiftbrite.c b/drivers/spi/shiftbrite.c
+index 54db711cb818..600c8d81f3ea 100644
+--- a/drivers/spi/shiftbrite.c
++++ b/drivers/spi/shiftbrite.c
+@@ -15,12 +15,15 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/init.h>
++#include <linux/cdev.h>
+ #include <linux/delay.h>
++#include <linux/fs.h>
+ #include <linux/module.h>
+ #include <linux/spinlock.h>
+ #include <linux/of_device.h>
+ #include <linux/of_gpio.h>
+ #include <linux/spi/spi.h>
++#include <asm/uaccess.h>
+ 
+ #define RED24(value)    ((value & 0x00FF0000) >> 16)
+ #define GREEN24(value)  ((value & 0x0000FF00) >> 8)
+@@ -233,6 +236,42 @@ static const struct device_attribute *shiftbrite_sysfs_attrs[] = {
+     &dev_attr_config
+ };
+ 
++// device node
++static dev_t            shiftbrite_dev;
++static struct cdev      shiftbrite_cdev;
++static struct class     *shiftbrite_class;
++static struct device    *shiftbrite_device;
++
++static ssize_t shiftbrite_cdev_read(struct file *filep, char *buf, size_t count, loff_t *offset)
++{
++    const char message[] = "hello from shiftbrite_cdev_read()\n";
++
++    if (*offset >= sizeof(message))
++        return 0;
++
++    if (*offset + count > sizeof(message))
++        count = sizeof(message) - *offset;
++
++    if (copy_to_user(buf, message + *offset, count))
++    {
++        pr_err("%s: copy_to_user() failed\n", __func__);
++        return -EFAULT;
++    }
++    *offset += count;
++    return count;
++}
++
++static ssize_t shiftbrite_cdev_write(struct file *filep, const char *buf, size_t size, loff_t *offset)
++{
++    printk("%s: user wrote %u bytes: '%.*s'\n", __func__, size, size, buf);
++    return size;
++}
++
++static struct file_operations shiftbrite_cdev_fops = {
++    .read = shiftbrite_cdev_read,
++    .write = shiftbrite_cdev_write,
++};
++
+ // Init/Exit Functions
+ 
+ static int shiftbrite_probe(struct spi_device *spi)
+@@ -240,13 +279,15 @@ static int shiftbrite_probe(struct spi_device *spi)
+     struct shiftbrite_chip *chip;
+     int i, ret;
+ 
++    // Set up SPI
+     spi->bits_per_word = 8;
+     spi->mode = SPI_MODE_0 | SPI_CS_HIGH;
+ 
+     ret = spi_setup(spi);
+     if (ret < 0)
+-        return ret;
++        goto fail;
+ 
++    // Set up shiftbrite data
+     chip = devm_kzalloc(&spi->dev, sizeof(struct shiftbrite_chip), GFP_KERNEL);
+     if (!chip)
+         return -ENOMEM;
+@@ -261,9 +302,10 @@ static int shiftbrite_probe(struct spi_device *spi)
+     if (ret)
+     {
+         dev_err(&spi->dev, "Failed writing config: %d\n", ret);
+-        return ret;
++        goto fail_dealloc;
+     }
+ 
++    // write zero values to SPI
+     ret = shiftbrite_write(chip);
+     if (ret)
+     {
+@@ -271,21 +313,72 @@ static int shiftbrite_probe(struct spi_device *spi)
+         return ret;
+     }
+ 
++    // create sysfs files
+     for (i = 0; i < sizeof(shiftbrite_sysfs_attrs)/sizeof(shiftbrite_sysfs_attrs[0]); i++)
+     {
+         ret = device_create_file(&spi->dev, shiftbrite_sysfs_attrs[i]);
+         if (ret)
+         {
+             dev_err(&spi->dev, "Failed to create sysfs file %s\n", shiftbrite_sysfs_attrs[i]->attr.name);
+-            for (i--; i >= 0; i--)
+-                device_remove_file(&spi->dev, shiftbrite_sysfs_attrs[i]);
+-
+-            return ret;
++            goto fail_destroy_sysfs;
+         }
+     }
+ 
++    // create device node
++    ret = alloc_chrdev_region(&shiftbrite_dev, 0, 1, "shiftbrite");
++    if (ret)
++    {
++        dev_err(&spi->dev, "alloc_chrdev_region() failed\n");
++        goto fail_destroy_sysfs;
++    }
++
++    shiftbrite_class = class_create(THIS_MODULE, "shiftbrite");
++    if (shiftbrite_class == NULL)
++    {
++        dev_err(&spi->dev, "class_create() failed\n");
++        ret = -1;
++        goto fail_unregister_region;
++    }
++
++    cdev_init(&shiftbrite_cdev, &shiftbrite_cdev_fops);
++    ret = cdev_add(&shiftbrite_cdev, shiftbrite_dev, 1);
++    if (ret < 0)
++    {
++        dev_err(&spi->dev, "cdev_add() failed\n");
++        goto fail_class_destroy;
++    }
++
++    shiftbrite_device = device_create(shiftbrite_class, NULL, shiftbrite_dev, NULL, "shiftbrite");
++    if (shiftbrite_device == NULL)
++    {
++        ret = -1;
++        dev_err(&spi->dev, "device_create() failed\n");
++        goto fail_cdev_del;
++    }
++
++    // Done!
+     dev_info(&spi->dev, "Shiftbrite driver initialized");
+     return 0;
++
++fail_cdev_del:
++    cdev_del(&shiftbrite_cdev);
++
++fail_class_destroy:
++    class_destroy(shiftbrite_class);
++
++fail_unregister_region:
++    unregister_chrdev_region(shiftbrite_dev, 1);
++
++fail_destroy_sysfs:
++    for (i--; i >= 0; i--)
++        device_remove_file(&spi->dev, shiftbrite_sysfs_attrs[i]);
++
++fail_dealloc:
++    devm_kfree(&spi->dev, chip);
++
++fail:
++    dev_err(&spi->dev, "Shiftbrite initialization failed (%d)\n", ret);
++    return ret;
+ }
+ 
+ static int shiftbrite_remove(struct spi_device *spi)
+@@ -293,6 +386,11 @@ static int shiftbrite_remove(struct spi_device *spi)
+     struct shiftbrite_chip *chip = spi_get_drvdata(spi);
+     int i;
+ 
++    device_destroy(shiftbrite_class, shiftbrite_dev);
++    cdev_del(&shiftbrite_cdev);
++    class_destroy(shiftbrite_class);
++    unregister_chrdev_region(shiftbrite_dev, 1);
++
+     for (i = 0; i < sizeof(shiftbrite_sysfs_attrs)/sizeof(shiftbrite_sysfs_attrs[0]); i++)
+         device_remove_file(&spi->dev, shiftbrite_sysfs_attrs[i]);
+ 
+-- 
+2.19.1
+
