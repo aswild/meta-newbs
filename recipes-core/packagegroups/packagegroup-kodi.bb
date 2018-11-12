@@ -6,5 +6,5 @@ RDEPENDS_${PN} = " \
     kodi \
     kodi-autostart \
     libkodiplatform \
-    userland \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'vc4graphics', 'userland-nogl', 'userland', d)} \
 "
