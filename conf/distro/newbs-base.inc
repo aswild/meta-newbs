@@ -87,8 +87,6 @@ DISTRO_FEATURES += "libc-locales libc-charsets libc-locale-code"
 
 DISTROOVERRIDES .= "${@bb.utils.contains('HOST_DEFAULT_PYTHON3', 'y', ':hostpython3', '', d)}"
 
-PREFERRED_PROVIDER_virtual/userland = "${@bb.utils.contains('MACHINE_FEATURES', 'vc4graphics', 'userland-nographics', 'userland', d)}"
-
 ##### Image stuff #####
 IMAGE_CLASSES = "nimage image-buildinfo"
 IMAGE_FSTYPES = "ext4 squashfs-xz nimage"
