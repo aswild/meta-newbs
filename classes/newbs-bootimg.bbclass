@@ -70,16 +70,14 @@ IMAGE_CMD_newbs-bootimg() {
         DT_ROOT="${@split_overlays(d, 1)}"
 
         for DTB in $DT_ROOT; do
-            dtb_basename=$(basename $DTB)
-            dtbname=${KERNEL_IMAGETYPE}-$dtb_basename
-            install -m 644 ${DEPLOY_DIR_IMAGE}/${DTB_DEPLOYDIR}/$dtbname $BOOT_DIR/$dtb_basename
+            dtbname=$(basename $DTB)
+            install -m 644 ${DEPLOY_DIR_IMAGE}/${DTB_DEPLOYDIR}/$dtbname $BOOT_DIR/$dtbname
         done
 
         install -d $BOOT_DIR/overlays
         for DTB in ${DT_OVERLAYS}; do
-            dtb_basename=$(basename $DTB)
-            dtbname=${KERNEL_IMAGETYPE}-$dtb_basename
-            install -m 644 ${DEPLOY_DIR_IMAGE}/${DTB_DEPLOYDIR}/$dtbname $BOOT_DIR/overlays/$dtb_basename
+            dtbname=$(basename $DTB)
+            install -m 644 ${DEPLOY_DIR_IMAGE}/${DTB_DEPLOYDIR}/$dtbname $BOOT_DIR/overlays/$dtbname
         done
     fi
 
