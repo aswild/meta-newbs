@@ -41,6 +41,10 @@ echo "Using BUILD_DIR $BUILD_DIR"
 
 source meta-wild-common/common-envsetup
 _wild_yocto_apply_patches
+if [[ $? != 0 ]]; then
+    echo "ERROR: failed to apply yocto patches"
+    return
+fi
 _wild_yocto_symlink_cache_dir downloads
 _wild_yocto_symlink_cache_dir sstate-cache
 
