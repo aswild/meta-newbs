@@ -21,7 +21,7 @@ BBMASK .= "${@bb.utils.contains('DISTRO', 'newbs-unifi', '', '${BBMASK_UNIFI}', 
 
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
-PREFERRED_VERSION_linux-raspberrypi-newbs ?= "4.14%"
+PREFERRED_VERSION_linux-raspberrypi-newbs ?= "4.19%"
 KERNEL_IMAGETYPE_arm = "zImage"
 KERNEL_IMAGETYPE_aarch64 = "Image"
 DTB_DEPLOYDIR = "dtb"
