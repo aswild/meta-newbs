@@ -83,8 +83,6 @@ GLIBC_GENERATE_LOCALES = "en_US.UTF-8"
 IMAGE_LINGUAS = "en-us"
 DISTRO_FEATURES += "libc-locales libc-charsets libc-locale-code"
 
-DISTROOVERRIDES .= "${@bb.utils.contains('HOST_DEFAULT_PYTHON3', 'y', ':hostpython3', '', d)}"
-
 ##### Image stuff #####
 IMAGE_CLASSES = "nimage image-buildinfo"
 IMAGE_FSTYPES = "ext4 squashfs-xz nimage"
