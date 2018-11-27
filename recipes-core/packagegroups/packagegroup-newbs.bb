@@ -10,8 +10,8 @@ RDEPENDS_${PN}-core = " \
     newbs-init-util \
     newbs-swdl \
     udev-extraconf \
+    userland \
     ${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', 'linux-newbs-headers-dev neostrip-demo', '', d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'vc4graphics', 'userland-nogl', 'userland', d)} \
 "
 
 PACKAGES += "${PN}-full-cmdline"
