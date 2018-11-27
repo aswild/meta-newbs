@@ -8,6 +8,4 @@ IMAGE_INSTALL = " \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
 
-IMAGE_INSTALL_append_raspberrypi3 = " packagegroup-rpi3-wifi"
-
 inherit newbs-image

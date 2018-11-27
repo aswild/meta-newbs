@@ -60,16 +60,23 @@ KERNEL_DEVICETREE = " \
 EXTRA_CONFIG_TXT_append = "${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', \
                              'dtoverlay=spi0-neostrip\ndtparam=neostrip0_length=8\n', '', d)}"
 
-# Wifi firmware
-ALTERNATIVE_PRIORITY_linux-firmware-bcm43430 = "50"
-
 ##### Root FS stuff #####
 DISTRO_FEATURES += " \
     ipv6 \
     ld-is-gold \
     pam \
+    usbhost \
     usrmerge \
 "
+
+# add wifi to rpi3 distro
+DISTRO_FEATURES_append_raspberrypi3 = " wifi"
+
+# remove unwanted machine features from meta-raspberrypi
+MACHINE_FEATURES_remove = "apm touchscreen alsa bluetooth"
+
+# remove misc recommended packages I don't want
+BAD_RECOMMENDATIONS = "vim-tutor"
 
 NCURSES_ABI_VERSION = "6"
 

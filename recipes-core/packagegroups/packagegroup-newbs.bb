@@ -5,6 +5,7 @@ inherit packagegroup
 
 PACKAGES += "${PN}-core"
 RDEPENDS_${PN}-core = " \
+    packagegroup-base \
     packagegroup-wild-core \
     newbs-nvram \
     newbs-init-util \
