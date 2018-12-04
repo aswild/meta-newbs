@@ -1,1 +1,1 @@
-RDEPENDS_${PN}_remove = "libegl"
+RDEPENDS_${PN}_remove = "libegl1"
