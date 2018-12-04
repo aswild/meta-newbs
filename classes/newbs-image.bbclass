@@ -1,7 +1,6 @@
 # Common NEWBS image rootfs features
 
-inherit core-image
-inherit wild-image-postprocess
+inherit wild-image
 
 # BCJ filters for squashfs
 EXTRA_IMAGECMD_squashfs-xz_append_arm = "-Xbcj arm"
