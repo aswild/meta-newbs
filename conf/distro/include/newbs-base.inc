@@ -1,14 +1,19 @@
 # NEWBS distro configuration
 
-##### Yocto Configuration #####
+require conf/distro/wild-generic.conf
 
-# don't append -glibc to TMPDIR
-TCLIBCAPPEND = ""
+# DISTRO_FEATURES_DEFAULT, minus some things
+DISTRO_FEATURES = "acl argp ext2 largefile usbhost xattr ${DISTRO_FEATURES_LIBC}"
 
-# don't fail because of dangling appends
-BB_DANGLINGAPPENDS_WARNONLY = "1"
+# extra features
+DISTRO_FEATURES += "ld-is-gold pam usrmerge"
+DISTRO_FEATURES_append_raspberrypi3 = " wifi"
 
-BBMASK ?= "fake-bbmask-string-that-wont-match-anything"
+# remove unwanted machine features from meta-raspberrypi
+MACHINE_FEATURES_remove = "apm touchscreen alsa bluetooth"
+
+# remove misc recommended packages I don't want
+BAD_RECOMMENDATIONS = "vim-tutor"
 
 # mask dangling appends in meta-raspberrypi
 BBMASK .= "|meta-raspberrypi/recipes-multimedia/gstreamer/.*"
@@ -60,35 +65,6 @@ KERNEL_DEVICETREE = " \
 EXTRA_CONFIG_TXT_append = "${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', \
                              'dtoverlay=spi0-neostrip\ndtparam=neostrip0_length=8\n', '', d)}"
 
-##### Root FS stuff #####
-DISTRO_FEATURES += " \
-    ipv6 \
-    ld-is-gold \
-    pam \
-    usbhost \
-    usrmerge \
-"
-
-# add wifi to rpi3 distro
-DISTRO_FEATURES_append_raspberrypi3 = " wifi"
-
-# remove unwanted machine features from meta-raspberrypi
-MACHINE_FEATURES_remove = "apm touchscreen alsa bluetooth"
-
-# remove misc recommended packages I don't want
-BAD_RECOMMENDATIONS = "vim-tutor"
-
-NCURSES_ABI_VERSION = "6"
-
-# Enable systemd
-DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
-DISTRO_FEATURES += "systemd"
-VIRTUAL-RUNTIME_init_manager = "systemd"
-
-# locales
-GLIBC_GENERATE_LOCALES = "en_US.UTF-8"
-IMAGE_LINGUAS = "en-us"
-DISTRO_FEATURES += "libc-locales libc-charsets libc-locale-code"
 
 ##### Image stuff #####
 IMAGE_CLASSES = "nimage image-buildinfo"
