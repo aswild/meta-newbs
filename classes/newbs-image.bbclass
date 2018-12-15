@@ -26,6 +26,10 @@ newbs_rootfs_postprocess() {
         sed -i '/^\(#[[:space:]]*\)\?PermitRootLogin/c\PermitRootLogin ${SSHD_CONFIG_PERMIT_ROOT_LOGIN}' \
                ${IMAGE_ROOTFS}${sysconfdir}/ssh/sshd_config
     fi
+
+    # we use systemd-networkd, not ifupdown
+    bbnote "Removing /etc/network"
+    rm -rf ${IMAGE_ROOTFS}${sysconfdir}/network
 }
 ROOTFS_POSTPROCESS_COMMAND_append = " newbs_rootfs_postprocess;"
 
