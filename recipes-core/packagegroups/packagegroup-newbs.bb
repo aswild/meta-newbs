@@ -21,5 +21,6 @@ RDEPENDS_${PN}-full-cmdline = " \
     packagegroup-wild-utils \
     packagegroup-wild-network-utils \
     i2c-tools \
+    minicom \
     squashfs-tools \
 "
