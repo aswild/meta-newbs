@@ -1,7 +1,14 @@
 #!/bin/bash
 set -e
 
+if [[ $1 == -c || $1 == --commit ]]; then
+    COMMIT=y
+    shift
+fi
+
 kvers=${1:-4.14 4.19}
+commitmsg='kernel: bump to '
+bbfiles_commit=()
 
 for kver in $kvers; do
     branch=rpi-${kver}.y
@@ -19,9 +26,21 @@ for kver in $kvers; do
     sub=$(awk '/^SUBLEVEL/{print $NF}' <<<"$makefile")
     linux_version="${ver}.${patch}.${sub}"
 
+    bbfile=linux-raspberrypi-newbs_${kver}.bb
+    oldversion=$(perl -ne 'print if s/^LINUX_VERSION\s*=\s*"(.*)"/\1/' $bbfile)
+    if [[ $oldversion != $linux_version ]]; then
+        commitmsg+="$linux_version, "
+        bbfiles_commit+=($bbfile)
+    fi
+
     sed -i -e "s/^LINUX_VERSION.*/LINUX_VERSION = \"${linux_version}\"/" \
            -e "s/^SRCREV.*/SRCREV = \"${rev}\"/" \
-           linux-raspberrypi-newbs_${kver}.bb
+           $bbfile
 
     echo "set version to ${linux_version} rev ${rev}"
 done
+
+if [[ $COMMIT == y && -n $bbfiles_commit ]]; then
+    commitmsg="${commitmsg%, }"
+    git commit -m "$commitmsg"  "${bbfiles_commit[@]}"
+fi
