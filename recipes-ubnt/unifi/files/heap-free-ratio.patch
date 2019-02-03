@@ -1,0 +1,12 @@
+Index: 5.9.29-r0/unifi.env
+===================================================================
+--- 5.9.29-r0.orig/unifi.env
++++ 5.9.29-r0/unifi.env
+@@ -1,4 +1,6 @@
+ # This is the systemd environment file for unifi.service
+ 
+ # Options to pass to the java command, e.g. for controlling heap properties
+-JAVA_ARGS=
++# For the Raspberry Pi, set low limits on MaxHeapFreeRatio to make Java
++# release more memory back to the OS during GC.
++JAVA_ARGS="-XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=25"
