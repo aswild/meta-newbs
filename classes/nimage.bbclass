@@ -18,6 +18,7 @@ def nimg_fstypes(d):
 
 do_image_nimage[depends] += " \
     mknimage-native:do_populate_sysroot \
+    xz-native:do_populate_sysroot \
     ${PN}:do_image_newbs_bootimg \
     ${@' '.join('${PN}:do_image_%s'%t.replace('-', '_') for t in nimg_fstypes(d))} \
 "
@@ -37,12 +38,15 @@ rootfs_ptype() {
 
 IMAGE_CMD_nimage() {
     set -x
+    bootimg_xz=${WORKDIR}/boot.img.xz
+    rm -f $bootimg_xz
+    xz -c ${DEPLOY_BOOTIMG_SYMLINK} >$bootimg_xz
     for rootfstype in ${NIMG_FSTYPES}; do
         nimg_name="${IMAGE_NAME}.$rootfstype.nimg"
         bbnote "Creating nImage $nimg_name"
         mknImage create -o ${IMGDEPLOYDIR}/$nimg_name \
                         -n ${IMAGE_NAME}.$rootfstype \
-                        boot_tarxz:${DEPLOY_BOOTTAR_SYMLINK} \
+                        boot_img_xz:$bootimg_xz \
                         $(rootfs_ptype $rootfstype):${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.$rootfstype
 
         ln -svfT $nimg_name ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.$rootfstype.nimg
