@@ -30,9 +30,7 @@ KERNEL_NAME_raspberrypi3-64 = "kernel8.img"
 
 
 # 32 MB default boot partition (in 1K blocks)
-# 48 MB for 64-bit since the aarch64 kernel doesn't support zImage yet
 DEFAULT_BOOTIMG_SIZE = "32768"
-DEFAULT_BOOTIMG_SIZE_aarch64 = "49152"
 BOOTIMG_SIZE ?= "${DEFAULT_BOOTIMG_SIZE}"
 BOOTIMG_LABEL ?= "NEWBS"
 
