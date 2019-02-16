@@ -250,3 +250,6 @@ EXTRA_CONFIG_TXT = ""
 # Enable packagemanagement and ad-hoc feeds
 #IMAGE_FEATURES += "package-management"
 #FEED_DEPLOYDIR_BASE_URI = "http://server/newbs-ipk"
+
+# uncomment to use newbs-swdl source from the workspace rather than git
+#NEWBS_SWDL_LOCAL = "y"
