@@ -67,7 +67,7 @@ EXTRA_CONFIG_TXT_append = "${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', \
 
 
 ##### Image stuff #####
-IMAGE_CLASSES = "nimage image-buildinfo"
+IMAGE_CLASSES = "nimage"
 IMAGE_FSTYPES = "ext4 squashfs-xz nimage"
 IMAGE_FEATURES += " \
     read-only-rootfs \
