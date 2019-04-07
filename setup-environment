@@ -66,6 +66,9 @@ _wild_yocto_subst_confvars $BB_CONF $LOCAL_CONF -- NEWBSROOT MACHINE DISTRO
 if [[ $DISTRO != "newbs-mce" ]]; then
     sed -i 's/^BBLAYERS.*meta-kodi.*/#\0/' $BB_CONF
 fi
+if [[ $DISTRO != "newbs-unifi" ]]; then
+    sed -i 's/^BBLAYERS.*meta-java.*/#\0/' $BB_CONF
+fi
 
 # unset unused variables
 unset BB_CONF LOCAL_CONF NEWBSROOT MACHINE DISTRO
