@@ -15,15 +15,6 @@ MACHINE_FEATURES_remove = "apm touchscreen alsa bluetooth"
 # remove misc recommended packages I don't want
 BAD_RECOMMENDATIONS = "vim-tutor"
 
-# mask dangling appends in meta-raspberrypi
-BBMASK .= "|meta-raspberrypi/recipes-multimedia/gstreamer/.*"
-
-# selectively mask some recipes that should only be build for certain distros
-BBMASK_MCE = "|meta-newbs/recipes-multimedia/kodi/.*|meta-newbs/recipes-core/images/newbs-mce-image\.bb"
-BBMASK_UNIFI = "|meta-newbs/recipes-unifi/.*|meta-newbs/recipes-core/images/newbs-unifi-image\.bb"
-BBMASK .= "${@bb.utils.contains('DISTRO', 'newbs-mce', '', '${BBMASK_MCE}', d)}"
-BBMASK .= "${@bb.utils.contains('DISTRO', 'newbs-unifi', '', '${BBMASK_UNIFI}', d)}"
-
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
 PREFERRED_VERSION_linux-raspberrypi-newbs ?= "4.19%"
