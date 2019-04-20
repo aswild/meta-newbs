@@ -24,7 +24,6 @@ DTB_DEPLOYDIR = "dtb"
 
 # kernel commandline
 NEWBS_ROOT ?= "/dev/mmcblk0p2"
-NEWBS_ROOT_TYPE ?= "squashfs-xz"
 # FIXME systemd breaks and kernel panics if console=tty1 and no HDMI connected
 #CMDLINE = "dwc_otg.lpm_enable=0 console=tty1 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk"
 CMDLINE = "dwc_otg.lpm_enable=0 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk"
@@ -61,8 +60,8 @@ EXTRA_CONFIG_TXT_append = "${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', \
 
 
 ##### Image stuff #####
-IMAGE_CLASSES = "nimage"
-IMAGE_FSTYPES = "ext4 squashfs-xz nimage"
+IMAGE_CLASSES = "nimage squashfs-zstd"
+IMAGE_FSTYPES = "ext4 squashfs-zstd nimage"
 IMAGE_FEATURES += " \
     read-only-rootfs \
 "
