@@ -23,10 +23,6 @@ do_image_nimage[depends] += " \
     ${@' '.join('${PN}:do_image_%s'%t.replace('-', '_') for t in nimg_fstypes(d))} \
 "
 
-DEPLOY_NIMG_NAME    = "${IMAGE_NAME}.nimg"
-DEPLOY_NIMG         = "${IMGDEPLOYDIR}/${DEPLOY_NIMG_NAME}"
-DEPLOY_NIMG_SYMLINK = "${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.nimg"
-
 rootfs_ptype() {
     # shell function to translate Yocto image fstype to nImage part type
     case $1 in
@@ -37,13 +33,18 @@ rootfs_ptype() {
 }
 
 IMAGE_CMD_nimage() {
+    bootimg_name="$(basename ${DEPLOY_BOOTIMG_SYMLINK})"
+
     set -x
+    bbnote "Compressing $bootimg_name"
+    rm -f ${WORKDIR}/$bootimg_name
+    xz -c -T0 ${DEPLOY_BOOTIMG_SYMLINK} >${WORKDIR}/$bootimg_name
     for rootfstype in ${NIMG_FSTYPES}; do
         nimg_name="${IMAGE_NAME}.$rootfstype.nimg"
         bbnote "Creating nImage $nimg_name"
-        mknImage create -a -o ${IMGDEPLOYDIR}/$nimg_name \
+        mknImage create -o ${IMGDEPLOYDIR}/$nimg_name \
                         -n ${IMAGE_NAME}.$rootfstype \
-                        boot_img_xz:${DEPLOY_BOOTIMG_SYMLINK} \
+                        boot_img_xz:${WORKDIR}/$bootimg_name \
                         $(rootfs_ptype $rootfstype):${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.$rootfstype
 
         ln -svfT $nimg_name ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.$rootfstype.nimg
