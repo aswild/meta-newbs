@@ -15,6 +15,10 @@ MACHINE_FEATURES_remove = "apm touchscreen alsa bluetooth"
 # remove misc recommended packages I don't want
 BAD_RECOMMENDATIONS = "vim-tutor"
 
+# don't make /var/log a symlink to /var/volatile/log, we'll handle it manually
+# with a bind mount to /home/log (if it exists) or /var/volatile/log (which we'll make)
+VOLATILE_LOG_DIR = "no"
+
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
 PREFERRED_VERSION_linux-raspberrypi-newbs ?= "4.19%"

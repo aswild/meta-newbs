@@ -12,6 +12,7 @@ RDEPENDS_${PN}-core = " \
     newbs-swdl \
     udev-extraconf \
     userland \
+    var-log-mount \
     ${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', 'linux-newbs-headers-dev neostrip-demo', '', d)} \
 "
 
