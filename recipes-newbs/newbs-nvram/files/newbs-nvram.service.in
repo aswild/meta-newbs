@@ -8,7 +8,7 @@ Before=local-fs.target
 Type=oneshot
 RemainAfterExit=yes
 StandardOutput=journal+console
-ExecStart=/usr/sbin/newbs-nvram
+ExecStart=/usr/lib/newbs/newbs-nvram
 
 [Install]
 WantedBy=local-fs.target
