@@ -1,5 +1,8 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI += "file://after-local-fs.conf"
+SRC_URI += " \
+    file://after-local-fs.conf \
+    file://1001-rpi-serial-num-machine-id.patch \
+"
 
 do_install_append() {
     # systemd-networkd should wait for newbs-nvram (local-fs.target) so that it
