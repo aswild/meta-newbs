@@ -1,0 +1,137 @@
+diff --git a/src/core/machine-id-setup.c b/src/core/machine-id-setup.c
+index 11528f83c4..dc95312c3d 100644
+--- a/src/core/machine-id-setup.c
++++ b/src/core/machine-id-setup.c
+@@ -3,6 +3,7 @@
+ #include <fcntl.h>
+ #include <sched.h>
+ #include <sys/mount.h>
++#include <sys/stat.h>
+ #include <unistd.h>
+ 
+ #include "sd-id128.h"
+@@ -11,6 +12,7 @@
+ #include "fd-util.h"
+ #include "fs-util.h"
+ #include "id128-util.h"
++#include "khash.h"
+ #include "log.h"
+ #include "machine-id-setup.h"
+ #include "macro.h"
+@@ -24,6 +26,105 @@
+ #include "util.h"
+ #include "virt.h"
+ 
++static int read_file_contents(const char *path, char **buf_out, size_t *size_out) {
++        int r;
++        ssize_t nr;
++        struct stat statbuf;
++        _cleanup_close_ int fd = -1;
++        char *buf = NULL;
++
++        assert(path);
++        assert(buf_out);
++        assert(size_out);
++
++        fd = open(path, O_RDONLY|O_CLOEXEC|O_NOCTTY);
++        if (fd < 0) {
++                if (errno != ENOENT)
++                        return log_error_errno(-1, "Failed to open %s", path);
++                return -1; /* no error log if it doesn't exist */
++        }
++
++        if (fstat(fd, &statbuf) < 0)
++                return log_error_errno(-1, "Failed to stat %s", path);
++
++        if (statbuf.st_size == 0)
++                return log_error_errno(-1, "%s has size zero", path);
++
++        buf = malloc(statbuf.st_size);
++        if (buf == NULL)
++                return log_error_errno(-1, "Failed to malloc %zu bytes to read %s",
++                                       (size_t)statbuf.st_size, path);
++
++        nr = read(fd, buf, statbuf.st_size);
++        if (nr < 0) {
++                free(buf);
++                return log_error_errno(nr, "Failed to read %s", path);
++        } else if (nr < statbuf.st_size) {
++                free(buf);
++                log_error("Failed to read %s, got only %zd out of %zu bytes",
++                          path, nr, (size_t)statbuf.st_size);
++                return -1;
++        }
++
++        *buf_out = buf;
++        *size_out = statbuf.st_size;
++        return 0;
++}
++
++static int generate_rpi_machine_id(sd_id128_t *ret) {
++        /* Generate a machine ID based on hmac(md5) of the RPi's serial
++         * number in /proc/device-tree/serial-number.
++         * Useful for keeping persistent machine-id (journal) on a read-only rootfs
++         * without an initramfs pre-mounting /etc/machine-id */
++        _cleanup_free_ char *buf = NULL;
++        _cleanup_(khash_unrefp) khash *hash = NULL;
++        const void *hbuf = NULL;
++        size_t buf_size = 0;
++        int r;
++
++        /* read the model name from DT to verify we're actually a Pi */
++        r = read_file_contents("/proc/device-tree/model", &buf, &buf_size);
++        if (r < 0)
++                return -1;
++        if (strncmp(buf, "Raspberry Pi", 12))
++                return -1; /* successfully read model info but we're not a Pi */
++        free(buf);
++        buf = NULL;
++
++        /* read the serial number */
++        r = read_file_contents("/proc/device-tree/serial-number", &buf, &buf_size);
++        if (r < 0)
++                return -1;
++
++#if 0
++        if (khash_supported() <= 0) {
++                log_info("khash not supported, skipping RPi machine-id generation");
++                return -1;
++        }
++#endif
++
++        if (khash_new(&hash, "sha256") < 0) {
++                log_error("failed to initialize sha256 khash");
++                return -1;
++        }
++
++        if (khash_put(hash, buf, buf_size) < 0)
++                return log_error_errno(-1, "failed to send data to khash");
++
++        if (khash_digest_data(hash, &hbuf) < 0)
++                return log_error_errno(-1, "failed to retrieve digest from khash");
++
++        /* sha256 is twice as big as we need for a machine-id, just use the first half */
++        memcpy(ret, hbuf, sizeof(*ret));
++
++        /* make it a v4 UUID just like sd_id128_randomize, copied from sd-id128.c */
++        ret->bytes[6] = (ret->bytes[6] & 0x0F) | 0x40;
++        ret->bytes[8] = (ret->bytes[8] & 0x3F) | 0x80;
++
++        log_info("Generated machine-id from Raspberry Pi serial number");
++        return 0;
++}
++
+ static int generate_machine_id(const char *root, sd_id128_t *ret) {
+         const char *dbus_machine_id;
+         _cleanup_close_ int fd = -1;
+@@ -70,6 +171,10 @@ static int generate_machine_id(const char *root, sd_id128_t *ret) {
+                 }
+         }
+ 
++        /* If that didn't work, check if we're a Raspberry Pi and use its serial number */
++        if (generate_rpi_machine_id(ret) == 0)
++                return 0;
++
+         /* If that didn't work, generate a random machine id */
+         r = sd_id128_randomize(ret);
+         if (r < 0)
