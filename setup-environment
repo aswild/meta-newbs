@@ -12,6 +12,9 @@ unset thisdir
 
 while (($#)); do
     case "$1" in
+        32)
+            MACHINE=raspberrypi3
+            ;;
         64)
             MACHINE=raspberrypi3-64
             ;;
