@@ -3,9 +3,6 @@
 NEWBS_SRCNAME = "swdl"
 inherit newbs-localsrc
 
-PROVIDES += "newbs-swdl"
-RPROVIDES_${PN} += "newbs-swdl"
-
 do_configure_prepend() {
     # clean source directory before building in case I had build objects
     # in there from local development
