@@ -3,6 +3,7 @@ require core-image-newbs.bb
 IMAGE_FEATURES += "dev-pkgs doc-pkgs tools-sdk"
 IMAGE_INSTALL += " \
     packagegroup-core-buildessential \
+    gdb \
     kernel-devsrc \
     man \
     python3 \
