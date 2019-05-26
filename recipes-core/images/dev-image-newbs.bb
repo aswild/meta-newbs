@@ -7,6 +7,7 @@ IMAGE_INSTALL += " \
     kernel-devsrc \
     man \
     python3 \
+    strace \
 "
 
 symlink_pyth() {
