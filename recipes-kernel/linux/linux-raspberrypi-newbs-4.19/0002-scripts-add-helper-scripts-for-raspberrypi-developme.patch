@@ -1,15 +1,17 @@
-From 92f15b2a412b836965e4c864d09e6965933a8f82 Mon Sep 17 00:00:00 2001
+From 8b334352c9e55d15d8bd837cd24ad664f5097989 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 21:15:00 -0400
 Subject: [PATCH] scripts: add helper scripts for raspberrypi development
 
 Update 2018-10-22: make rsync-to-pi.sh handle arm64 too
+Update 2019-05-26: respect KBUILD_OUTPU in rsync-to-pi.sh to handle
+separate build directories
 ---
  scripts/create-patches.sh    |  8 ++++
  scripts/envsetup.sh          |  5 +++
  scripts/install-to-sdcard.sh | 76 ++++++++++++++++++++++++++++++++++++
- scripts/rsync-to-pi.sh       | 56 ++++++++++++++++++++++++++
- 4 files changed, 145 insertions(+)
+ scripts/rsync-to-pi.sh       | 58 +++++++++++++++++++++++++++
+ 4 files changed, 147 insertions(+)
  create mode 100755 scripts/create-patches.sh
  create mode 100644 scripts/envsetup.sh
  create mode 100755 scripts/install-to-sdcard.sh
@@ -124,14 +126,16 @@ index 000000000000..c757ab892c5e
 +sync
 diff --git a/scripts/rsync-to-pi.sh b/scripts/rsync-to-pi.sh
 new file mode 100755
-index 000000000000..21e72e0ce932
+index 000000000000..827cdeb05173
 --- /dev/null
 +++ b/scripts/rsync-to-pi.sh
-@@ -0,0 +1,56 @@
+@@ -0,0 +1,58 @@
 +#!/bin/bash -e
 +
 +: ${ARCH:=arm64}
-+: ${CROSS_COMPILE:=aarch64-linux-gnu}
++: ${CROSS_COMPILE:=aarch64-linux-gnu-}
++: ${KBUILD_OUTPUT:=.}
++export KBUILD_OUTPUT
 +
 +case $ARCH in
 +    arm)
@@ -163,27 +167,27 @@ index 000000000000..21e72e0ce932
 +        case $1 in
 +            sb|shiftbrite)
 +                kernelname=$(ssh $USER@$IP 'uname -r')
-+                rsync $RSYNC_OPTS drivers/spi/shiftbrite.ko \
++                rsync $RSYNC_OPTS $KBUILD_OUTPUT/drivers/spi/shiftbrite.ko \
 +                      $USER@$IP:/lib/modules/$kernelname/kernel/drivers/spi/shiftbrite.ko
 +            ;;
 +            ns|neostrip)
 +                kernelname=$(ssh $USER@$IP 'uname -r')
-+                rsync $RSYNC_OPTS drivers/spi/neostrip.ko \
++                rsync $RSYNC_OPTS $KBUILD_OUTPUT/drivers/spi/neostrip.ko \
 +                      $USER@$IP:/lib/modules/$kernelname/kernel/drivers/spi/neostrip.ko
 +            ;;
 +            dto)
-+                rsync $RSYNC_OPTS arch/$ARCH/boot/dts/overlays/pi3-spi-shiftbrite.dtbo \
++                rsync $RSYNC_OPTS $KBUILD_OUTPUT/arch/$ARCH/boot/dts/overlays/pi3-spi-shiftbrite.dtbo \
 +                      $USER@$IP:/boot/overlays/pi3-spi-shiftbrite.dtbo
 +        esac
 +        shift
 +    done
 +else
-+    make INSTALL_MOD_PATH=MODULES_INSTALL modules_install
-+    rsync $RSYNC_OPTS arch/$ARCH/boot/$KERNELTYPE $USER@$IP:/boot/$KERNELNAME
-+    rsync $RSYNC_OPTS $DTSDIR/*.dtb $USER@$IP:/boot/
-+    rsync $RSYNC_OPTS arch/$ARCH/boot/dts/overlays/*.dtb* $USER@$IP:/boot/overlays/
-+    rsync $RSYNC_OPTS -r MODULES_INSTALL/ $USER@$IP:/
++    make O=$KBUILD_OUTPUT INSTALL_MOD_PATH=MODULES_INSTALL modules_install
++    rsync $RSYNC_OPTS $KBUILD_OUTPUT/arch/$ARCH/boot/$KERNELTYPE $USER@$IP:/boot/$KERNELNAME
++    rsync $RSYNC_OPTS $KBUILD_OUTPUT/$DTSDIR/*.dtb $USER@$IP:/boot/
++    rsync $RSYNC_OPTS $KBUILD_OUTPUT/arch/$ARCH/boot/dts/overlays/*.dtb* $USER@$IP:/boot/overlays/
++    rsync $RSYNC_OPTS -r $KBUILD_OUTPUT/MODULES_INSTALL/ $USER@$IP:/
 +fi
 -- 
-2.19.1
+2.21.0
 
