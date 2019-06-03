@@ -20,7 +20,7 @@
 
 disk=/dev/sdk
 image=core-image-newbs
-rootfstype=squashfs-xz
+rootfstype=squashfs-zstd
 
 machine=$(sed -n 's#.*/tmp/deploy/images/\([^/]*\).*#\1#p' <<<"$PWD")
 if [[ -z "$machine" ]]; then

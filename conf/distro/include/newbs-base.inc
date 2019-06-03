@@ -1,6 +1,10 @@
 # NEWBS distro configuration
+# vim: ft=bitbake
 
 require conf/distro/wild-generic.conf
+
+# mask dangling appends in meta-raspberrypi
+BBMASK .= "|meta-raspberrypi/recipes-multimedia/gstreamer/.*"
 
 # DISTRO_FEATURES_DEFAULT, minus some things
 DISTRO_FEATURES = "acl argp ext2 largefile usbhost xattr ${DISTRO_FEATURES_LIBC}"

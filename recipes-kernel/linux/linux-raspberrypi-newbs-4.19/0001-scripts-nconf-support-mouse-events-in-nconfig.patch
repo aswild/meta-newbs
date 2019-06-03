@@ -1,4 +1,4 @@
-From e1e01ed4b4685ee6ba2fddc9ef55eceb7304f74b Mon Sep 17 00:00:00 2001
+From ad81fe6681e095d0132cc1bde1a6d9f569df3875 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 3 Sep 2017 23:43:00 -0400
 Subject: [PATCH] scripts: nconf: support mouse events in nconfig
@@ -14,7 +14,7 @@ If available (ncurses 6), scroll through lists with the mouse wheel.
  3 files changed, 115 insertions(+), 1 deletion(-)
 
 diff --git a/scripts/kconfig/nconf.c b/scripts/kconfig/nconf.c
-index 1ef232ae5ab9..d399232e6c12 100644
+index c8ff1c99dd5c..a7f271a7d5e4 100644
 --- a/scripts/kconfig/nconf.c
 +++ b/scripts/kconfig/nconf.c
 @@ -947,6 +947,89 @@ static void center_item(int selected_index, int *last_top_row)
@@ -145,10 +145,10 @@ index 1ef232ae5ab9..d399232e6c12 100644
  
  	getmaxyx(stdscr, lines, columns);
 diff --git a/scripts/kconfig/nconf.gui.c b/scripts/kconfig/nconf.gui.c
-index 88874acfda36..6a9fb597bdd5 100644
+index 820fc9256532..252f12001f28 100644
 --- a/scripts/kconfig/nconf.gui.c
 +++ b/scripts/kconfig/nconf.gui.c
-@@ -590,6 +590,10 @@ void show_scroll_win(WINDOW *main_window,
+@@ -591,6 +591,10 @@ void show_scroll_win(WINDOW *main_window,
  
  	win = newwin(win_lines, win_cols, y, x);
  	keypad(win, TRUE);
@@ -159,7 +159,7 @@ index 88874acfda36..6a9fb597bdd5 100644
  	/* show the help in the help window, and show the help panel */
  	(void) wattrset(win, attributes[SCROLLWIN_BOX]);
  	box(win, 0, 0);
-@@ -611,6 +615,18 @@ void show_scroll_win(WINDOW *main_window,
+@@ -612,6 +616,18 @@ void show_scroll_win(WINDOW *main_window,
  		wrefresh(win);
  
  		res = wgetch(win);
@@ -198,5 +198,5 @@ index 2b9e19f603c4..bb6439ef4b08 100644
  		typeof(a) _a = a;\
  		typeof(b) _b = b;\
 -- 
-2.19.1
+2.21.0
 
