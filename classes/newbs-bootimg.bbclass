@@ -23,11 +23,28 @@ def split_overlays(d, out):
 
     return overlays
 
+def get_initramfs_file(d):
+    initramfs_name = d.getVar('BOOTIMG_INITRAMFS')
+    if initramfs_name:
+        dd = d.createCopy()
+        dd.setVar('IMAGE_BASENAME', initramfs_name)
+        initramfs_link_name = dd.getVar('IMAGE_LINK_NAME') + '.cpio.gz'
+        return os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), initramfs_link_name)
+    return ''
+
+def get_initramfs_dependency(d):
+    initramfs_name = d.getVar('BOOTIMG_INITRAMFS')
+    if initramfs_name:
+        return initramfs_name + ':do_deploy'
+    return ''
+
 IMAGE_BOOTLOADER ?= "bcm2835-bootfiles"
+
+BOOTIMG_INITRAMFS ?= ""
+BOOTIMG_INITRAMFS_FILE = "${@get_initramfs_file(d)}"
 
 KERNEL_NAME = "kernel7.img"
 KERNEL_NAME_raspberrypi3-64 = "kernel8.img"
-
 
 # 32 MB default boot partition (in 1K blocks)
 DEFAULT_BOOTIMG_SIZE = "32768"
@@ -42,6 +59,7 @@ do_image_newbs_bootimg[depends] += " \
     ${IMAGE_BOOTLOADER}:do_deploy \
     rpi-config:do_deploy \
     ${@bb.utils.contains('RPI_USE_U_BOOT', '1', 'u-boot:do_deploy', '',d)} \
+    ${@get_initramfs_dependency(d)} \
 "
 
 DEPLOY_BOOTIMG_NAME    = "${IMAGE_NAME}.boot.vfat"
@@ -96,6 +114,17 @@ IMAGE_CMD_newbs-bootimg() {
 
     # Image name stamp file
     echo "${IMAGE_NAME}" >$BOOT_DIR/version
+
+    # copy initramfs and append to config.txt
+    if [ -n "${BOOTIMG_INITRAMFS}" ]; then
+        if [ ! -f "${BOOTIMG_INITRAMFS_FILE}" ]; then
+            bbfatal "BOOTIMG_INITRAMFS is set (${BOOTIMG_INITRAMFS}) but '${BOOTIMG_INITRAMFS_FILE}' doesn't exist"
+        fi
+
+        bbnote "Installing ${BOOTIMG_INITRAMFS_FILE} as initramfs"
+        install -m644 ${BOOTIMG_INITRAMFS_FILE} $BOOT_DIR/initramfs.cpio.gz
+        echo "initramfs initramfs.cpio.gz followkernel" >>$BOOT_DIR/config.txt
+    fi
 
     rm -f ${DEPLOY_BOOTIMG}
     mkfs.vfat -n ${BOOTIMG_LABEL} -S 512 -C ${DEPLOY_BOOTIMG} ${BOOTIMG_SIZE}
