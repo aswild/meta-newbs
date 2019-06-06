@@ -8,7 +8,6 @@ RDEPENDS_${PN}-core = " \
     packagegroup-base \
     packagegroup-wild-core \
     newbs-nvram \
-    newbs-init-util \
     newbs-swdl \
     udev-extraconf \
     userland \
