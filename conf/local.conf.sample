@@ -238,7 +238,7 @@ CORE_IMAGE_EXTRA_INSTALL = ""
 EXTRA_CONFIG_TXT = ""
 
 # Uncomment to enable an initramfs recipe
-#BOOTIMG_INITRAMFS = "newbs-initramfs"
+BOOTIMG_INITRAMFS = "newbs-initramfs"
 
 # Uncomment and set this to specify SSH host to copy to /etc/ssh on the
 # target. A whitespace-separated list and/or shell glob pattern will work
