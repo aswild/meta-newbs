@@ -1,0 +1,17 @@
+[Unit]
+Description=Mount /var/log
+DefaultDependencies=no
+RequiresMountsFor=/home/log /var/volatile
+Before=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+StandardOutput=journal+console
+ExecStart=/usr/lib/newbs/var-log-mount
+ExecStop=/usr/lib/newbs/var-log-mount unmount
+
+[Install]
+WantedBy=local-fs.target
+
+# vim: ft=systemd

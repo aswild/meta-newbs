@@ -12,6 +12,8 @@ SRC_URI = " \
     file://LICENSE \
     file://newbs-nvram \
     file://newbs-nvram.service.in \
+    file://var-log-mount.sh \
+    file://var-log-mount.service\
 "
 
 S = "${WORKDIR}"
@@ -28,15 +30,19 @@ do_install() {
 
     install -d ${D}${sysconfdir}/default
     echo "NEWBS_NVRAM_DIR=\"${NEWBS_NVRAM_DIR}\"" >${D}${sysconfdir}/default/newbs-nvram
+
+    bbnote "installing var-log-mount service"
+    install -Dm755 var-log-mount.sh ${D}${libdir}/newbs/var-log-mount
+    install -Dm644 var-log-mount.service ${D}${systemd_unitdir}/system/var-log-mount.service
 }
 
 FILES_${PN} = " \
-    ${libdir}/newbs/newbs-nvram \
+    ${libdir}/newbs/* \
     ${sysconfdir}/default/newbs-nvram \
-    ${systemd_unitdir}/system/newbs-nvram.service \
+    ${systemd_unitdir}/system/* \
 "
 
 RDEPENDS_${PN} = "bash volatile-binds"
 
 inherit allarch systemd
-SYSTEMD_SERVICE_${PN} = "newbs-nvram.service"
+SYSTEMD_SERVICE_${PN} = "newbs-nvram.service var-log-mount.service"
