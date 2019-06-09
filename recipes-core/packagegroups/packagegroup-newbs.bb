@@ -7,6 +7,7 @@ PACKAGES += "${PN}-core"
 RDEPENDS_${PN}-core = " \
     packagegroup-base \
     packagegroup-wild-core \
+    newbs-lastboot-timestamp \
     newbs-nvram \
     newbs-swdl \
     udev-extraconf \

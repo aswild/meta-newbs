@@ -12,15 +12,34 @@ EXTRA_OEMAKE = " \
  HOSTCFLAGS='${BUILD_CFLAGS}' \
  HOSTLDFLAGS='${BUILD_LDFLAGS}'"
 
-inherit deploy nopackages
-
-do_configure[noexec] = "1"
-do_install[noexec] = "1"
-
 do_compile_prepend() {
     oe_runmake clean || bbwarn "oe_runmake clean failed"
 }
 
+do_install() {
+    install -d ${D}${systemd_unitdir}/system
+    install -m644 lastboot-timestamp.service ${D}${systemd_unitdir}/system/
+
+    if [ "${DISTRO}" = "newbs-unifi" ]; then
+        # the unifi controller takes a while to stop, try not to write our timestamp
+        # until after it's shut down. This After= assignment implies the inverse
+        # when shutting down both units.
+        bbnote "UniFi distro, moving unifi.service after lastboot-timestamp.service"
+        install -d ${D}${systemd_unitdir}/system/unifi.service.d
+        echo -e '[Unit]\nAfter=lastboot-timestamp.service' \
+            >${D}${systemd_unitdir}/system/unifi.service.d/after-lastboot-timestamp.conf
+    fi
+}
+
+ALLOW_EMPTY_${PN} = "1"
+PACKAGES =+ "newbs-lastboot-timestamp"
+FILES_newbs-lastboot-timestamp = "${systemd_unitdir}/system/*"
+
+inherit systemd
+SYSTEMD_PACKAGES = "newbs-lastboot-timestamp"
+SYSTEMD_SERVICE_newbs-lastboot-timestamp = "lastboot-timestamp.service"
+
+inherit deploy
 do_deploy() {
     rm -rf ${DEPLOYDIR}
     install -d ${DEPLOYDIR}
