@@ -4,7 +4,6 @@
 # the regex NIMG_FSMATCH
 
 inherit image_types newbs-bootimg
-IMAGE_FSTYPES_prepend = "newbs-bootimg "
 
 NIMG_FSMATCH ?= "ext\d|squashfs.*"
 NIMG_FSTYPES = "${@' '.join(nimg_fstypes(d))}"
