@@ -38,6 +38,13 @@ def get_initramfs_dependency(d):
         return initramfs_name + ':do_deploy'
     return ''
 
+def volume_id(d):
+    """ construct a volume id (32-bit hex number) from the image name """
+    from hashlib import sha1
+    h = sha1()
+    h.update(d.getVar('IMAGE_NAME').encode('UTF-8'))
+    return h.hexdigest().upper()[:8]
+
 IMAGE_BOOTLOADER ?= "bcm2835-bootfiles"
 
 BOOTIMG_INITRAMFS ?= ""
@@ -49,7 +56,8 @@ KERNEL_NAME_raspberrypi3-64 = "kernel8.img"
 # 32 MB default boot partition (in 1K blocks)
 DEFAULT_BOOTIMG_SIZE = "32768"
 BOOTIMG_SIZE ?= "${DEFAULT_BOOTIMG_SIZE}"
-BOOTIMG_LABEL ?= "NEWBS"
+BOOTIMG_ID = "${@volume_id(d)}"
+BOOTIMG_LABEL = "NEWBS-${@volume_id(d)[4:]}"
 
 do_image_newbs_bootimg[depends] += " \
     mtools-native:do_populate_sysroot \
@@ -76,12 +84,11 @@ IMAGE_CMD_newbs-bootimg() {
     install -d $BOOT_DIR
 
     # copy bootloader files
-    install -t $BOOT_DIR ${DEPLOY_DIR_IMAGE}/${IMAGE_BOOTLOADER}/*
-    rm -vf ${DEPLOY_DIR_IMAGE}/${IMAGE_BOOTLOADER}/*.stamp
+    cp -av ${DEPLOY_DIR_IMAGE}/${IMAGE_BOOTLOADER}/* $BOOT_DIR
+    rm -vf $BOOT_DIR/*.stamp
 
     # copy device tree files
-    DTS="${KERNEL_DEVICETREE}"
-    if [ -n "$DTS" ]; then
+    if [ -n "${KERNEL_DEVICETREE}" ]; then
         DT_OVERLAYS="${@split_overlays(d, 0)}"
         DT_ROOT="${@split_overlays(d, 1)}"
 
@@ -127,14 +134,10 @@ IMAGE_CMD_newbs-bootimg() {
     fi
 
     rm -f ${DEPLOY_BOOTIMG}
-    mkfs.vfat -n ${BOOTIMG_LABEL} -S 512 -C ${DEPLOY_BOOTIMG} ${BOOTIMG_SIZE}
+    mkfs.vfat -n ${BOOTIMG_LABEL} -i ${BOOTIMG_ID} -S 512 -C ${DEPLOY_BOOTIMG} ${BOOTIMG_SIZE}
+    mcopy -i ${DEPLOY_BOOTIMG} -s $BOOT_DIR/* ::/
 
-    [ -n "${DTS}" ] && mmd -i ${DEPLOY_BOOTIMG} overlays
-    find $BOOT_DIR -type f | grep -v '.stamp$' | while read file; do
-        mcopy -v -i ${DEPLOY_BOOTIMG} -s $file ::/$(echo $file | sed "s|${BOOT_DIR}||")
-    done
-
-    tar cvf - -C $BOOT_DIR . | xz -z -c --threads=0 >${DEPLOY_BOOTTAR}
+    tar cvf - -C $(dirname $BOOT_DIR) $(basename $BOOT_DIR) | xz -z -c --threads=0 >${DEPLOY_BOOTTAR}
 
     ln -sfv $(basename ${DEPLOY_BOOTIMG}) ${DEPLOY_BOOTIMG_SYMLINK}
     ln -sfv $(basename ${DEPLOY_BOOTTAR}) ${DEPLOY_BOOTTAR_SYMLINK}
