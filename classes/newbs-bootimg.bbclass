@@ -51,10 +51,10 @@ BOOTIMG_INITRAMFS ?= ""
 BOOTIMG_INITRAMFS_FILE = "${@get_initramfs_file(d)}"
 
 KERNEL_NAME = "kernel7.img"
-KERNEL_NAME_raspberrypi3-64 = "kernel8.img"
+KERNEL_NAME_aarch64 = "kernel8.img"
 
-# 32 MB default boot partition (in 1K blocks)
-DEFAULT_BOOTIMG_SIZE = "32768"
+# 48 MB default boot partition (in 1K blocks)
+DEFAULT_BOOTIMG_SIZE = "49152"
 BOOTIMG_SIZE ?= "${DEFAULT_BOOTIMG_SIZE}"
 BOOTIMG_ID = "${@volume_id(d)}"
 BOOTIMG_LABEL = "NEWBS-${@volume_id(d)[4:]}"

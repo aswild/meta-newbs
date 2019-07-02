@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 SRCPV := "${@d.getVar('SRCREV')[:10]}"
 PV = "${LINUX_VERSION}+git${SRCPV}"
 
-COMPATIBLE_MACHINE = "^raspberrypi[23]$"
+COMPATIBLE_MACHINE = "^raspberrypi[234]$"
 KCONFIG_MODE ?= "allnoconfig"
 LINUX_VERSION_EXTENSION = "-newbs"
 DTB_DEPLOYDIR ?= ""
@@ -27,6 +27,7 @@ SRC_URI += " \
     file://newbs-patches.scc \
     ${@bb.utils.contains('DISTRO', 'newbs-mce', 'file://media-drivers.cfg', '', d)} \
 "
+SRC_URI_append_raspberrypi4-64 = " file://rpi4-64.cfg"
 
 do_deploy_append() {
     # deploy cmdline.txt

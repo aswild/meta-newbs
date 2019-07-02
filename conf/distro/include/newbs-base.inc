@@ -39,28 +39,20 @@ CMDLINE_append_debug = " debug"
 SERIAL_CONSOLE = "115200 ttyAMA0"
 
 # kernel device tree
-SYSDTB ??= ""
-SYSDTB_raspberrypi2 = "bcm2709-rpi-2-b.dtb"
-SYSDTB_raspberrypi3 = "bcm2710-rpi-3-b.dtb \
-                       bcm2710-rpi-3-b-plus.dtb"
-SYSDTB_raspberrypi3-64 = "broadcom/bcm2710-rpi-3-b.dtb \
-                          broadcom/bcm2710-rpi-3-b-plus.dtb"
-
-DTOVERLAYS ??= ""
+# KERNEL_DEVICETREE is populated from RPI_KERNEL_DEVICETREE and RPI_KERNEL_DEVICETREE_OVERLAYS
+# in meta-raspberrypi. KERNEL_DEVICETREE should be populated by the machine config, but customize
+# included overlays for newbs here.
 NEOSTRIP_OVERLAYS = " \
     overlays/spi0-shiftbrite.dtbo \
     overlays/spi1-shiftbrite.dtbo \
     overlays/spi0-neostrip.dtbo \
     overlays/spi1-neostrip.dtbo \
 "
-DTOVERLAYS_raspberrypi3 = " \
+
+RPI_KERNEL_DEVICETREE_OVERLAYS = " \
     overlays/pi3-disable-bt.dtbo \
     overlays/pi3-miniuart-bt.dtbo \
     ${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', '${NEOSTRIP_OVERLAYS}', '', d)} \
-"
-KERNEL_DEVICETREE = " \
-    ${SYSDTB} \
-    ${DTOVERLAYS} \
 "
 
 EXTRA_CONFIG_TXT_append = "${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', \
