@@ -24,7 +24,6 @@ NEWBS_DEFCONFIG_aarch64 = "defconfig-arm64.cfg"
 FILESEXTRAPATHS_prepend := "${THISDIR}/linux-raspberrypi-newbs-${@'.'.join(d.getVar('LINUX_VERSION').split('.')[:2])}:"
 SRC_URI += " \
     file://${NEWBS_DEFCONFIG} \
-    file://newbs-patches.scc \
     ${@bb.utils.contains('DISTRO', 'newbs-mce', 'file://media-drivers.cfg', '', d)} \
 "
 SRC_URI_append_raspberrypi4-64 = " file://rpi4-64.cfg"

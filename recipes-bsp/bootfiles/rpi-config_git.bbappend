@@ -13,3 +13,14 @@ ${@d.getVar('EXTRA_CONFIG_TXT').replace('\\n', '\n').strip()}
 EOF
 
 }
+
+do_deploy_append_raspberrypi4-64() {
+    tee ${DEPLOYDIR}/bcm2835-bootfiles/config.txt <<EOF
+#### NEWBS CONFIG ####
+dtoverlay=pi3-disable-bt
+armstub=armstub8-gic.bin
+enable_gic=1
+arm_64bit=1
+total_mem=1024
+EOF
+}

@@ -67,6 +67,7 @@ do_image_newbs_bootimg[depends] += " \
     ${IMAGE_BOOTLOADER}:do_deploy \
     rpi-config:do_deploy \
     ${@bb.utils.contains('RPI_USE_U_BOOT', '1', 'u-boot:do_deploy', '',d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'armstub', 'armstubs:do_deploy', '' ,d)} \
     ${@get_initramfs_dependency(d)} \
 "
 
@@ -117,6 +118,11 @@ IMAGE_CMD_newbs-bootimg() {
         # install kernel as kernel*.img
         install -m 644 ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}${@kernel_initramfs_extension(d)}-${MACHINE}.bin \
                        $BOOT_DIR/${KERNEL_NAME}
+    fi
+
+    # copy armstub
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'armstub', 'true', 'false', d)}; then
+        install -m644 ${DEPLOY_DIR_IMAGE}/armstubs/${ARMSTUB} $BOOT_DIR/
     fi
 
     # Image name stamp file

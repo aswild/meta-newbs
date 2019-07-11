@@ -1,0 +1,53 @@
+From a5ec666b5f8e1a6e16f5f54ff55d456204a4ae62 Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Wed, 10 Jul 2019 22:41:00 -0400
+Subject: [PATCH] arm64: dts: set DTC_FLAGS for BCM2835 in main Makefile
+
+Building the BCM2835 Raspberry Pi device trees requires `-@` in
+DTC_FLAGS, which is added by arch/arm64/boot/dts/broadcom/Makefile.
+
+However, subdirectories under boot/dts/ are only descended to when
+running `make dtbs` or `make all`. When building individual device tree
+files with `make xxx.dtb`, the upper level arch/arm64/boot/dts/Makefile
+gets included, but make does not recurse into subdirectories, so
+broadcom/Makefile never gets parsed, DTC_FLAGS isn't set, and the
+resulting dtb file is broken.
+
+Fix by setting DTC_FLAGS in the main boot/dts/Makefile rather than
+boot/dts/broadcom/Makefile.
+
+Signed-off-by: Allen Wild <allenwild93@gmail.com>
+---
+ arch/arm64/boot/dts/Makefile          | 5 +++++
+ arch/arm64/boot/dts/broadcom/Makefile | 5 -----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
+index cd9c79566ebe..165b40b3b9b0 100644
+--- a/arch/arm64/boot/dts/Makefile
++++ b/arch/arm64/boot/dts/Makefile
+@@ -28,3 +28,8 @@ subdir-y += xilinx
+ subdir-y += zte
+ 
+ subdir-y += overlays
++
++# Enable fixups to support overlays on BCM2835 platforms
++ifeq ($(CONFIG_ARCH_BCM2835),y)
++	DTC_FLAGS ?= -@
++endif
+diff --git a/arch/arm64/boot/dts/broadcom/Makefile b/arch/arm64/boot/dts/broadcom/Makefile
+index 33c8e599c1d7..d94e68f01b33 100644
+--- a/arch/arm64/boot/dts/broadcom/Makefile
++++ b/arch/arm64/boot/dts/broadcom/Makefile
+@@ -10,8 +10,3 @@ dtb-$(CONFIG_ARCH_BCM2835) += bcm2710-rpi-cm3.dtb
+ 
+ subdir-y	+= northstar2
+ subdir-y	+= stingray
+-
+-# Enable fixups to support overlays on BCM2835 platforms
+-ifeq ($(CONFIG_ARCH_BCM2835),y)
+-	DTC_FLAGS ?= -@
+-endif
+-- 
+2.22.0
+
