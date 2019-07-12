@@ -62,7 +62,7 @@ BOOTIMG_LABEL = "NEWBS-${@volume_id(d)[4:]}"
 do_image_newbs_bootimg[depends] += " \
     mtools-native:do_populate_sysroot \
     dosfstools-native:do_populate_sysroot \
-    xz-native:do_populate_sysroot \
+    zstd-native:do_populate_sysroot \
     virtual/kernel:do_deploy \
     ${IMAGE_BOOTLOADER}:do_deploy \
     rpi-config:do_deploy \
@@ -75,9 +75,9 @@ DEPLOY_BOOTIMG_NAME    = "${IMAGE_NAME}.boot.vfat"
 DEPLOY_BOOTIMG         = "${IMGDEPLOYDIR}/${DEPLOY_BOOTIMG_NAME}"
 DEPLOY_BOOTIMG_SYMLINK = "${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.boot.vfat"
 
-DEPLOY_BOOTTAR_NAME    = "${IMAGE_NAME}.boot.tar.xz"
+DEPLOY_BOOTTAR_NAME    = "${IMAGE_NAME}.boot.tar.zst"
 DEPLOY_BOOTTAR         = "${IMGDEPLOYDIR}/${DEPLOY_BOOTTAR_NAME}"
-DEPLOY_BOOTTAR_SYMLINK = "${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.boot.tar.xz"
+DEPLOY_BOOTTAR_SYMLINK = "${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.boot.tar.zst"
 
 IMAGE_CMD_newbs-bootimg() {
     BOOT_DIR=${WORKDIR}/boot
@@ -143,7 +143,7 @@ IMAGE_CMD_newbs-bootimg() {
     mkfs.vfat -n ${BOOTIMG_LABEL} -i ${BOOTIMG_ID} -S 512 -C ${DEPLOY_BOOTIMG} ${BOOTIMG_SIZE}
     mcopy -i ${DEPLOY_BOOTIMG} -s $BOOT_DIR/* ::/
 
-    tar cvf - -C $(dirname $BOOT_DIR) $(basename $BOOT_DIR) | xz -z -c --threads=0 >${DEPLOY_BOOTTAR}
+    tar cvf - -C $(dirname $BOOT_DIR) $(basename $BOOT_DIR) | zstd -15 -q -c -T0 >${DEPLOY_BOOTTAR}
 
     ln -sfv $(basename ${DEPLOY_BOOTIMG}) ${DEPLOY_BOOTIMG_SYMLINK}
     ln -sfv $(basename ${DEPLOY_BOOTTAR}) ${DEPLOY_BOOTTAR_SYMLINK}
