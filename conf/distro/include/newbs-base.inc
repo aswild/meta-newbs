@@ -12,6 +12,7 @@ DISTRO_FEATURES = "acl argp ext2 largefile usbhost xattr ${DISTRO_FEATURES_LIBC}
 # extra features
 DISTRO_FEATURES += "ld-is-gold pam usrmerge"
 DISTRO_FEATURES_append_raspberrypi3 = " wifi"
+DISTRO_FEATURES_append_raspberrypi4 = " wifi"
 
 # remove unwanted machine features from meta-raspberrypi
 MACHINE_FEATURES_remove = "apm touchscreen alsa bluetooth"

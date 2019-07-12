@@ -22,5 +22,6 @@ armstub=armstub8-gic.bin
 enable_gic=1
 arm_64bit=1
 total_mem=1024
+${@d.getVar('EXTRA_CONFIG_TXT').replace('\\n', '\n').strip()}
 EOF
 }
