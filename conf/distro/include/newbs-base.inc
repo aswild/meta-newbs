@@ -37,7 +37,7 @@ NEWBS_ROOT ?= "/dev/mmcblk0p2"
 #CMDLINE = "dwc_otg.lpm_enable=0 console=tty1 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk"
 CMDLINE = "dwc_otg.lpm_enable=0 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk"
 CMDLINE_append_debug = " debug"
-SERIAL_CONSOLE = "115200 ttyAMA0"
+SERIAL_CONSOLES = "115200;ttyAMA0"
 
 # kernel device tree
 # KERNEL_DEVICETREE is populated from RPI_KERNEL_DEVICETREE and RPI_KERNEL_DEVICETREE_OVERLAYS
@@ -51,8 +51,8 @@ NEOSTRIP_OVERLAYS = " \
 "
 
 RPI_KERNEL_DEVICETREE_OVERLAYS = " \
-    overlays/pi3-disable-bt.dtbo \
-    overlays/pi3-miniuart-bt.dtbo \
+    overlays/disable-bt.dtbo \
+    overlays/miniuart-bt.dtbo \
     ${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', '${NEOSTRIP_OVERLAYS}', '', d)} \
 "
 
