@@ -1,4 +1,4 @@
-From 736c6adccd0b714ce71a61209350a3fe79cdfbd9 Mon Sep 17 00:00:00 2001
+From d523106248d72b63b116f0db14822427f3adcf69 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 18 Mar 2017 16:05:52 -0400
 Subject: [PATCH 15/19] fix pin numbers in spi0-neostrip and spi1-shiftbrite
@@ -36,5 +36,5 @@ index b22f6de69a95..14069b4a7d29 100644
              };
          };
 -- 
-2.19.1
+2.23.0
 

@@ -1,4 +1,4 @@
-From 30f7c8e8d71c4c3c66ee0745ef741ab6fff8baf1 Mon Sep 17 00:00:00 2001
+From 3b51cf366fb26731ddb44675b388e679df1339c6 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 26 Mar 2017 02:53:35 -0400
 Subject: [PATCH 18/19] neostrip: implement read/write ioctls
@@ -129,5 +129,5 @@ index 2e62aa565a1e..7ad0415d590e 100644
  
  #endif // _NEOSTRIP_H_
 -- 
-2.19.1
+2.23.0
 

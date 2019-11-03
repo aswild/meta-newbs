@@ -1,4 +1,4 @@
-From 3e642c8a2928700a5fe11a504cc1d377a95fd6ac Mon Sep 17 00:00:00 2001
+From b1fa5d7f4f2bb4c3adeed872359cb49d43af6c41 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 17 Mar 2017 01:05:08 -0400
 Subject: [PATCH 14/19] neostrip: add support for multiple pixels
@@ -487,5 +487,5 @@ index e945b4342fbc..60a0c0532a46 100644
      kfree(chip);
      dev_info(&spi->dev, "neostrip driver unloaded\n");
 -- 
-2.19.1
+2.23.0
 

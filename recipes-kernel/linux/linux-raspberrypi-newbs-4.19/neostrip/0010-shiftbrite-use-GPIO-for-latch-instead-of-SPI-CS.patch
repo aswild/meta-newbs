@@ -1,4 +1,4 @@
-From 943af429e96443156d0ed12bfb12f1bee0d0a460 Mon Sep 17 00:00:00 2001
+From 7e3ae34a7edba9d638e1349a40e9da05c14a5e7d Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 22:02:35 -0500
 Subject: [PATCH 10/19] shiftbrite: use GPIO for latch instead of SPI CS
@@ -250,5 +250,5 @@ index 20d39a0d1205..1f7afaed5477 100644
      .probe  = shiftbrite_probe,
      .remove = shiftbrite_remove,
 -- 
-2.19.1
+2.23.0
 

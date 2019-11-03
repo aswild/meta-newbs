@@ -1,4 +1,4 @@
-From ece4fa2959c1f228b23043a0e5fd74f135907285 Mon Sep 17 00:00:00 2001
+From 0e176c1557e766a666fc87e5af6e7cad061c197c Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 29 Jan 2017 22:15:58 -0500
 Subject: [PATCH 02/19] shiftbrite: dt overlay tweaks
@@ -61,5 +61,5 @@ index 1e27e2ede3d4..f21777bec661 100644
                  status = "okay";
              };
 -- 
-2.19.1
+2.23.0
 

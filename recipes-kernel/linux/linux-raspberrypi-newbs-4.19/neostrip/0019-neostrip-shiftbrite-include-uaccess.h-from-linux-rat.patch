@@ -1,4 +1,4 @@
-From d62476a74923f83055c184df7d63bab533ce6a0f Mon Sep 17 00:00:00 2001
+From bb07d640a13dec4e1f1a0fa6baba59574a1b967e Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 13 Aug 2017 13:37:01 -0400
 Subject: [PATCH 19/19] neostrip, shiftbrite: include uaccess.h from linux/
@@ -37,5 +37,5 @@ index 1f7afaed5477..0410c113d9be 100644
  #include <uapi/spi/shiftbrite.h>
  
 -- 
-2.19.1
+2.23.0
 

@@ -1,4 +1,4 @@
-From 971370394df5b499cab2156af07c05c78687c235 Mon Sep 17 00:00:00 2001
+From 78d12a8f3758263454c8978188e5b8825620f1e9 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 18:17:38 -0500
 Subject: [PATCH 09/19] shiftbrite: implement read/write cdev and ioctls
@@ -150,5 +150,5 @@ index 717b2c5bc627..b3e93ffa5c5a 100644
  
  #endif // _SHIFTBRITE_H_
 -- 
-2.19.1
+2.23.0
 

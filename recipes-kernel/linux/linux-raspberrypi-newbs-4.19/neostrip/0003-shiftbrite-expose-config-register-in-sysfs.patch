@@ -1,4 +1,4 @@
-From 155cd512ed3f256569ae8124918a89958127321a Mon Sep 17 00:00:00 2001
+From 437b12276ff414c9b119f19c8f93dee412f4a936 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Mon, 20 Feb 2017 21:45:17 -0500
 Subject: [PATCH 03/19] shiftbrite: expose config register in sysfs
@@ -273,5 +273,5 @@ index 1a84d552ca67..df4717f485f6 100644
      spi_set_drvdata(spi, NULL);
  
 -- 
-2.19.1
+2.23.0
 

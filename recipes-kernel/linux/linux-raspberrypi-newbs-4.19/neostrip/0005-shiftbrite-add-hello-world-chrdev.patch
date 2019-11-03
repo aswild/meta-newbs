@@ -1,4 +1,4 @@
-From 4d5a9a6c9f3f5076a841aeccabcb9c4df3651530 Mon Sep 17 00:00:00 2001
+From 3a1699f1539391a2fadc4747f645783934ee5720 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 10 Mar 2017 00:25:35 -0500
 Subject: [PATCH 05/19] shiftbrite: add hello-world chrdev
@@ -189,5 +189,5 @@ index 54db711cb818..600c8d81f3ea 100644
          device_remove_file(&spi->dev, shiftbrite_sysfs_attrs[i]);
  
 -- 
-2.19.1
+2.23.0
 

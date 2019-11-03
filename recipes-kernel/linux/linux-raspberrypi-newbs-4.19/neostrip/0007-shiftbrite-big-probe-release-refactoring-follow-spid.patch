@@ -1,4 +1,4 @@
-From 23310b709fc45d3d7934b8db429276c5b45e3c13 Mon Sep 17 00:00:00 2001
+From ff59c9d47c66ba873c09f8eba988f9ce85f9ddef Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 11 Mar 2017 15:22:12 -0500
 Subject: [PATCH 07/19] shiftbrite: big probe/release refactoring - follow
@@ -403,5 +403,5 @@ index d309f73383bd..717b2c5bc627 100644
  
  #endif // _SHIFTBRITE_H_
 -- 
-2.19.1
+2.23.0
 

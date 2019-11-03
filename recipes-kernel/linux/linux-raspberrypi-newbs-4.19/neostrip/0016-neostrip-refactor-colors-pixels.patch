@@ -1,4 +1,4 @@
-From 78cae23e088ee2d163fe8917ca3f40947dac96e5 Mon Sep 17 00:00:00 2001
+From c9c3460ff5fc53004c2e8718d8d9024870356cf6 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Thu, 23 Mar 2017 21:56:26 -0400
 Subject: [PATCH 16/19] neostrip: refactor colors -> pixels
@@ -189,5 +189,5 @@ index 60a0c0532a46..30fa7a1df359 100644
      kfree(chip);
      dev_info(&spi->dev, "neostrip driver unloaded\n");
 -- 
-2.19.1
+2.23.0
 

@@ -1,4 +1,4 @@
-From 7ed00b8be33205fa22ff0ab0a13b439cf01a4a3f Mon Sep 17 00:00:00 2001
+From 75e88ce99f3a7f0410d830fc4e65a6f5f34fa4a7 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 23:33:07 -0400
 Subject: [PATCH 13/19] neostrip: tweak to workaround SPI hardware resetting
@@ -120,5 +120,5 @@ index 000000000000..2e62aa565a1e
 +
 +#endif // _NEOSTRIP_H_
 -- 
-2.19.1
+2.23.0
 

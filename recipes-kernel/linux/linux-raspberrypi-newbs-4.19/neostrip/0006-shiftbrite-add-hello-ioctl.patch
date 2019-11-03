@@ -1,4 +1,4 @@
-From b0bed1b71b41851b483c68afb4678657f4df4e54 Mon Sep 17 00:00:00 2001
+From 348b29ca1b98a508a2837677441c5a9da5cdeddd Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Fri, 10 Mar 2017 00:57:42 -0500
 Subject: [PATCH 06/19] shiftbrite: add hello ioctl
@@ -91,5 +91,5 @@ index 000000000000..d309f73383bd
 +
 +#endif // _SHIFTBRITE_H_
 -- 
-2.19.1
+2.23.0
 

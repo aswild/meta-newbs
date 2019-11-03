@@ -1,4 +1,4 @@
-From adc50fe18ec65476f5c71af5bc891b9d0bba8ab9 Mon Sep 17 00:00:00 2001
+From f489fd0014464afb6868c719599fe1feea79e905 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sun, 29 Jan 2017 04:30:13 -0500
 Subject: [PATCH 01/19] shiftbrite RGB LED driver
@@ -17,17 +17,17 @@ will kernel panic some arbitrary time afterwards.
  create mode 100644 drivers/spi/shiftbrite.c
 
 diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
-index 80bf98cc7237..4bcaff12b7d5 100644
+index e9cd9722bb94..e7bf84965b7b 100644
 --- a/arch/arm/boot/dts/overlays/Makefile
 +++ b/arch/arm/boot/dts/overlays/Makefile
-@@ -81,6 +81,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+@@ -110,6 +110,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
  	pi3-disable-bt.dtbo \
  	pi3-disable-wifi.dtbo \
  	pi3-miniuart-bt.dtbo \
 +	pi3-spi-shiftbrite.dtbo \
  	pibell.dtbo \
+ 	piglow.dtbo \
  	piscreen.dtbo \
- 	piscreen2r.dtbo \
 diff --git a/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts b/arch/arm/boot/dts/overlays/pi3-spi-shiftbrite-overlay.dts
 new file mode 100644
 index 000000000000..1e27e2ede3d4
@@ -291,5 +291,5 @@ index 000000000000..1a84d552ca67
 +MODULE_DESCRIPTION("ShiftBrite SPI LED driver");
 +MODULE_LICENSE("GPL");
 -- 
-2.19.1
+2.23.0
 

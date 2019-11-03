@@ -1,4 +1,4 @@
-From d201d736352fa35c23afa66fbecd37fa793bde30 Mon Sep 17 00:00:00 2001
+From e0a6506f6e846a88c2393afd8514d943d8dde9bc Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Mon, 20 Feb 2017 22:56:12 -0500
 Subject: [PATCH 04/19] shiftbrite: use spinlock instead of mutex
@@ -195,5 +195,5 @@ index df4717f485f6..54db711cb818 100644
      return 0;
  }
 -- 
-2.19.1
+2.23.0
 

@@ -1,4 +1,4 @@
-From 19d13e0339f33d6192acacf32eb4bd0b947ac7d2 Mon Sep 17 00:00:00 2001
+From 5c132e9e1f65b98af3824b648ea37e65215ac430 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Tue, 14 Mar 2017 01:02:48 -0400
 Subject: [PATCH 12/19] neostrip: add initial ws2812 driver
@@ -17,10 +17,10 @@ It has some output, but is incorrect. Timing is probably wacky
  create mode 100644 drivers/spi/neostrip.c
 
 diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
-index 4eb467845fa9..18ba599e840a 100644
+index 4df26a9a6fd1..81490ddf53a3 100644
 --- a/arch/arm/boot/dts/overlays/Makefile
 +++ b/arch/arm/boot/dts/overlays/Makefile
-@@ -119,10 +119,12 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+@@ -149,10 +149,12 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
  	spi-rtc.dtbo \
  	spi0-cs.dtbo \
  	spi0-hw-cs.dtbo \
@@ -726,5 +726,5 @@ index 000000000000..e6882e3292a0
 +MODULE_LICENSE("GPL");
 +MODULE_ALIAS("spi:neostrip");
 -- 
-2.19.1
+2.23.0
 
