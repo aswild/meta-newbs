@@ -8,7 +8,7 @@ BBMASK .= "|meta-raspberrypi/recipes-multimedia/gstreamer/.*"
 BBMASK .= "|meta-raspberrypi/recipes-bsp/u-boot/.*"
 
 # DISTRO_FEATURES_DEFAULT, minus some things
-DISTRO_FEATURES = "acl argp ext2 largefile usbhost xattr ${DISTRO_FEATURES_LIBC}"
+DISTRO_FEATURES = "acl argp ext2 largefile pci usbhost xattr ${DISTRO_FEATURES_LIBC}"
 
 # extra features
 DISTRO_FEATURES += "ld-is-gold pam usrmerge"
