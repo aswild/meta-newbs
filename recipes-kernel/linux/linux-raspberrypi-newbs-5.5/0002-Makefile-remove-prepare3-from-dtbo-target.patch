@@ -1,7 +1,7 @@
-From 90da0255d9bc598ef29c0b9e7e313ef1d8a99dcd Mon Sep 17 00:00:00 2001
+From 7da49e9814db7de301d0ee8238c2d68108b88bd4 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 1 Feb 2020 03:38:21 -0500
-Subject: [PATCH 2/2] Makefile: remove prepare3 from dtbo target
+Subject: [PATCH] Makefile: remove prepare3 from dtbo target
 
 RPi commit a08645cf4481aef68c3d2e23ce43c53052aab972 added a %.dtbo rule,
 but it depends on the prepare3 target which was removed in upstream
