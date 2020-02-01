@@ -1,7 +1,7 @@
-From c7738efc081df2beee819a6f8c594d7760a831ae Mon Sep 17 00:00:00 2001
+From 456f5771ea95b39a6240a45eb9434cd7ae1456a3 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 1 Feb 2020 02:53:03 -0500
-Subject: [PATCH] arm: dts: change bcm2711 cma pool to 64MB
+Subject: [PATCH 1/2] arm: dts: change bcm2711 cma pool to 64MB
 
 Fixes cma_alloc error during PCIe initialization,
 see https://github.com/raspberrypi/linux/issues/3443
