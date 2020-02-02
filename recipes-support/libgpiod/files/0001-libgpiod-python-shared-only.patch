@@ -1,0 +1,17 @@
+Don't build the Python bindings as a static library. Python modules are always
+shared libraries, and it causes a "non -staticdev package contains static .a library"
+package QA warning.
+
+Index: libgpiod-1.5/bindings/python/Makefile.am
+===================================================================
+--- libgpiod-1.5.orig/bindings/python/Makefile.am
++++ libgpiod-1.5/bindings/python/Makefile.am
+@@ -14,7 +14,7 @@ gpiod_la_SOURCES = gpiodmodule.c
+ 
+ gpiod_la_CFLAGS = -I$(top_srcdir)/include/
+ gpiod_la_CFLAGS += -Wall -Wextra -g $(PYTHON_CPPFLAGS)
+-gpiod_la_LDFLAGS = -module -avoid-version
++gpiod_la_LDFLAGS = -module -avoid-version -shared
+ gpiod_la_LIBADD = $(top_builddir)/lib/libgpiod.la $(PYTHON_LIBS)
+ 
+ if WITH_TESTS
