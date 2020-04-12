@@ -1,7 +1,7 @@
 # NEWBS Linux 5.5 kernel
 
-LINUX_VERSION = "5.5.11"
-SRCREV = "c91e7a4e8d55c2f30db308cae066a6cc7a284f03"
+LINUX_VERSION = "5.5.15"
+SRCREV = "33040662f568580e609c5eda9446c5f663fbf632"
 SRC_URI = "git://github.com/raspberrypi/linux.git;protocol=git;branch=rpi-5.5.y"
 
 require linux-raspberrypi-newbs.inc

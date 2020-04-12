@@ -1,7 +1,7 @@
 # NEWBS Linux 4.19 kernel
 
-LINUX_VERSION = "4.19.108"
-SRCREV = "06606627043f72d22881563d485268fec2acd56d"
+LINUX_VERSION = "4.19.114"
+SRCREV = "2e79fd01b4b9a7eea5acb234ad4e4cdca8449d5a"
 SRC_URI = "git://github.com/raspberrypi/linux.git;protocol=git;branch=rpi-4.19.y"
 
 require linux-raspberrypi-newbs.inc
