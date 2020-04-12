@@ -36,7 +36,7 @@ done
 
 # defaults, if not set above
 : ${DISTRO:=newbs}
-: ${MACHINE:=raspberrypi3-64}
+: ${MACHINE:=raspberrypi4-64}
 : ${BUILD_DIR:=build-${MACHINE}}
 
 echo "Using MACHINE $MACHINE"
@@ -72,5 +72,5 @@ if [[ $DISTRO != "newbs-unifi" ]]; then
 fi
 
 # unset unused variables
-unset BB_CONF LOCAL_CONF NEWBSROOT MACHINE DISTRO
+unset BUILD_DIR BB_CONF LOCAL_CONF NEWBSROOT MACHINE DISTRO
 _wild_yocto_unset_functions
