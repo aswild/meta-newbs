@@ -4,8 +4,11 @@
 require conf/distro/wild-generic.conf
 
 # mask dangling appends in meta-raspberrypi
-BBMASK .= "|meta-raspberrypi/recipes-multimedia/gstreamer/.*"
-BBMASK .= "|meta-raspberrypi/recipes-bsp/u-boot/.*"
+BBMASK += " \
+    meta-raspberrypi/recipes-multimedia/gstreamer/.* \
+    meta-raspberrypi/recipes-bsp/u-boot/.* \
+    meta-raspberrypi/dynamic-layers/meta-python/recipes-connectivity/lirc/.* \
+"
 
 # DISTRO_FEATURES_DEFAULT, minus some things
 DISTRO_FEATURES = "acl argp ext2 largefile pci usbhost xattr ${DISTRO_FEATURES_LIBC}"
