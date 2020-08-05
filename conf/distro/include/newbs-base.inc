@@ -28,6 +28,9 @@ BAD_RECOMMENDATIONS = "vim-tutor"
 # with a bind mount to /home/log (if it exists) or /var/volatile/log (which we'll make)
 VOLATILE_LOG_DIR = "no"
 
+# disable tcmalloc on mongodb, it causes segfaults in dunfell for reasons I don't care to debug
+PACKAGECONFIG_remove_pn-mongodb = "tcmalloc"
+
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
 PREFERRED_VERSION_linux-raspberrypi-newbs ?= "4.19%"
