@@ -45,7 +45,7 @@ def volume_id(d):
     h.update(d.getVar('IMAGE_NAME').encode('UTF-8'))
     return h.hexdigest().upper()[:8]
 
-IMAGE_BOOTLOADER ?= "bcm2835-bootfiles"
+IMAGE_BOOTLOADER ?= "bootfiles"
 
 BOOTIMG_INITRAMFS ?= ""
 BOOTIMG_INITRAMFS_FILE = "${@get_initramfs_file(d)}"

@@ -30,8 +30,8 @@ SRC_URI_append_raspberrypi4-64 = " file://rpi4-64.cfg"
 
 do_deploy_append() {
     # deploy cmdline.txt
-    install -d ${DEPLOYDIR}/bcm2835-bootfiles
-    echo "${CMDLINE}" >${DEPLOYDIR}/bcm2835-bootfiles/cmdline.txt
+    install -d ${DEPLOYDIR}/${BOOTFILES_DIR_NAME}
+    echo "${CMDLINE}" >${DEPLOYDIR}/${BOOTFILES_DIR_NAME}/cmdline.txt
 
     # default Linux recipes copy dtb blobs to DEPLOYDIR, which clutters it
     # archive them all to a subdirectory named DTB_DEPLOYDIR

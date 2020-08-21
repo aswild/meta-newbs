@@ -3,7 +3,7 @@
 EXTRA_CONFIG_TXT ??= ""
 
 do_deploy_append_raspberrypi3() {
-    CONFIG=${DEPLOYDIR}/bcm2835-bootfiles/config.txt
+    CONFIG=${DEPLOYDIR}/${BOOTFILES_DIR_NAME}/config.txt
 
     tee $CONFIG <<EOF
 #### NEWBS CONFIG ####
@@ -15,7 +15,7 @@ EOF
 }
 
 do_deploy_append_raspberrypi4-64() {
-    tee ${DEPLOYDIR}/bcm2835-bootfiles/config.txt <<EOF
+    tee ${DEPLOYDIR}/${BOOTFILES_DIR_NAME}/config.txt <<EOF
 #### NEWBS CONFIG ####
 dtoverlay=disable-bt
 arm_64bit=1

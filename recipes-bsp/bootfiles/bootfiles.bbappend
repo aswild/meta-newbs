@@ -11,5 +11,5 @@ do_deploy_append() {
         *) _not='' ;;
     esac
     find ${DEPLOYDIR}/${PN} \( -name 'fixup*.dat' -o -name '*start*.elf' \) $_not -name '*4*' \
-            -exec rm -v {} \;
+            -exec rm -v {} \+
 }
