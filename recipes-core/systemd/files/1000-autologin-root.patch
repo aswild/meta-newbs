@@ -1,6 +1,8 @@
---- a/serial-getty@.service
-+++ b/serial-getty@.service
-@@ -21,7 +21,7 @@
+Index: 1.0-r5/serial-getty@.service
+===================================================================
+--- 1.0-r5.orig/serial-getty@.service
++++ 1.0-r5/serial-getty@.service
+@@ -30,7 +30,7 @@ Before=rescue.service
  
  [Service]
  Environment="TERM=xterm"
@@ -8,4 +10,4 @@
 +ExecStart=-/sbin/agetty -8 -L --autologin root %I @BAUDRATE@ $TERM
  Type=idle
  Restart=always
- RestartSec=0
+ UtmpIdentifier=%I
