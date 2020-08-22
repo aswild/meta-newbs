@@ -5,28 +5,26 @@ require recipes-kernel/linux/linux-yocto.inc
 DESCRIPTION = "Linux Kernel for Raspberry Pi"
 SECTION = "kernel"
 LICENSE = "GPLv2"
-LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
+LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
-SRCPV := "${@d.getVar('SRCREV')[:10]}"
+SRCPV := "${@d.getVar('SRCREV')[:12]}"
 PV = "${LINUX_VERSION}+git${SRCPV}"
 
-COMPATIBLE_MACHINE = "^raspberrypi[234]$"
+COMPATIBLE_MACHINE = "^raspberrypi[234]-64$"
 KCONFIG_MODE ?= "allnoconfig"
 LINUX_VERSION_EXTENSION = "-newbs"
 DTB_DEPLOYDIR ?= ""
 
 # Configs must be named 'defconfig' or '*.cfg', or be wrapped in an scc
-NEWBS_DEFCONFIG_arm = "defconfig.cfg"
-NEWBS_DEFCONFIG_aarch64 = "defconfig-arm64.cfg"
-
 # have to manually expand ${PN} because immediate expansion when parsing the inc file will yield 'defaultpkgname'
 # LINUX_VERSION must be set before including this file
-FILESEXTRAPATHS_prepend := "${THISDIR}/linux-raspberrypi-newbs-${@'.'.join(d.getVar('LINUX_VERSION').split('.')[:2])}:"
+LINUX_VERSION_SHORT = "${@'.'.join(d.getVar('LINUX_VERSION').split('.')[:2])}"
+FILESEXTRAPATHS_prepend := "${THISDIR}/linux-raspberrypi-newbs-${LINUX_VERSION_SHORT}:"
 SRC_URI += " \
-    file://${NEWBS_DEFCONFIG} \
+    file://defconfig-pi4-64.cfg \
+    ${@('file://rpi3-64.cfg', '')['raspberrypi4' in d.getVar('MACHINE')]} \
     ${@bb.utils.contains('DISTRO', 'newbs-mce', 'file://media-drivers.cfg', '', d)} \
 "
-SRC_URI_append_raspberrypi4-64 = " file://rpi4-64.cfg"
 
 do_deploy_append() {
     # deploy cmdline.txt
