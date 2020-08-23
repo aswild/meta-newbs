@@ -1,0 +1,36 @@
+From 9c2673634633f96300e2890a7142348609b494ee Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Sat, 1 Feb 2020 13:20:37 -0500
+Subject: [PATCH] Revert "kbuild: Fail if gold linker is detected"
+
+It's true that the gold linker can't link the kernel, but Yocto scripts
+run "make" a bunch of times during configure and dtb steps and don't
+always override LD, resulting in these steps (sometimes silently)
+failing.
+
+Yocto does make sure the BFD linker is used when actually building
+vmlinux and modules itself, so revert this error to allow all those
+other tasks to succeed.
+
+This reverts commit 75959d44f9dc8e44410667009724e4e238515502.
+---
+ scripts/Kconfig.include | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/scripts/Kconfig.include b/scripts/Kconfig.include
+index 77a69ba9cd19..e9551628ca6c 100644
+--- a/scripts/Kconfig.include
++++ b/scripts/Kconfig.include
+@@ -35,9 +35,6 @@ ld-option = $(success,$(LD) -v $(1))
+ $(error-if,$(failure,command -v $(CC)),compiler '$(CC)' not found)
+ $(error-if,$(failure,command -v $(LD)),linker '$(LD)' not found)
+ 
+-# Fail if the linker is gold as it's not capable of linking the kernel proper
+-$(error-if,$(success, $(LD) -v | grep -q gold), gold linker '$(LD)' not supported)
+-
+ # gcc version including patch level
+ gcc-version := $(shell,$(srctree)/scripts/gcc-version.sh $(CC))
+ 
+-- 
+2.28.0
+

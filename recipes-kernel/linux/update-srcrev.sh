@@ -6,7 +6,7 @@ if [[ $1 == -c || $1 == --commit ]]; then
     shift
 fi
 
-kvers=${1:-4.19}
+kvers=${1:-4.19 5.4}
 commitmsg='kernel: bump to '
 bbfiles_commit=()
 

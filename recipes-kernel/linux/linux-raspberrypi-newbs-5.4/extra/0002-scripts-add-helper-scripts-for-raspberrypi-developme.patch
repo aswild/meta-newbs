@@ -1,0 +1,165 @@
+From 330014a099a7e68db08cf3abf0abb67e54d4d7b3 Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Tue, 14 Mar 2017 21:15:00 -0400
+Subject: [PATCH] scripts: add helper scripts for raspberrypi development
+
+Update 2018-10-22: make rsync-to-pi.sh handle arm64 too
+Update 2019-05-26: respect KBUILD_OUTPU in rsync-to-pi.sh to handle
+separate build directories
+Update 2019-07-12: make the Pi host/user configurable
+Update 2020-08-21: drop unused scripts, use pi4 as default rsync host
+---
+ scripts/install-to-sdcard.sh | 76 ++++++++++++++++++++++++++++++++++++
+ scripts/rsync-to-pi.sh       | 57 +++++++++++++++++++++++++++
+ 2 files changed, 133 insertions(+)
+ create mode 100755 scripts/install-to-sdcard.sh
+ create mode 100755 scripts/rsync-to-pi.sh
+
+diff --git a/scripts/install-to-sdcard.sh b/scripts/install-to-sdcard.sh
+new file mode 100755
+index 000000000000..c757ab892c5e
+--- /dev/null
++++ b/scripts/install-to-sdcard.sh
+@@ -0,0 +1,76 @@
++#!/bin/bash
++
++[[ $EUID == 0 ]] || exec sudo -E "$0" "$@"
++
++[[ -n $CROSS_COMPILE ]] || CROSS_COMPILE=arm-linux-gnueabihf
++[[ -n $ARCH ]] || ARCH=arm
++
++export CROSS_COMPILE ARCH
++
++if [[ $ARCH == arm64 ]]; then
++    kernel_imgtype=Image
++    kernelimg=kernel8.img
++    dtbdir=arch/$ARCH/boot/dts/broadcom
++else
++    kernel_imgtype=zImage
++    kernelimg=kernel7.img
++    dtbdir=arch/$ARCH/boot/dts
++fi
++
++dtbodir=arch/$ARCH/boot/dts/overlays
++dev=/dev/sdd
++
++while [[ $#  > 0 ]]; do
++    case $1 in
++        sd*) dev=/dev/$1 ;;
++    esac
++    shift
++done
++
++maybe_mount() {
++    local _mp="$(awk "/${1//\//\\/}/{print \$2}" /proc/mounts)"
++    if [[ -n "$_mp" ]]; then
++        echo "$_mp"
++    else
++        _mp="$PWD/$(basename $1)-mount"
++        mkdir -p "$_mp"
++        mount $1 "$_mp"
++        if [[ $? == 0 ]]; then
++            echo "$_mp"
++        fi
++    fi
++}
++
++die() {
++    echo "die: $*"
++    umount $boot_mount
++    umount $root_mount
++    exit 1
++}
++
++boot_mount=$(maybe_mount ${dev}1)
++root_mount=$(maybe_mount ${dev}2)
++
++if [[ -d $boot_mount ]]; then
++    rm -vf $boot_mount/kernel*.img
++    rm -vf $boot_mount/*.dtb
++    cp -v arch/$ARCH/boot/$kernel_imgtype $boot_mount/$kernelimg
++    cp -v $dtbdir/*.dtb $boot_mount
++
++    mkdir -p $boot_mount/overlays
++    cp -v $dtbodir/*.dtbo $boot_mount/overlays
++fi
++
++rm -rf MODULES_INSTALL
++make INSTALL_MOD_PATH=MODULES_INSTALL modules_install
++[[ $? == 0 ]] || die "modules_install failed"
++
++if [[ -d $root_mount ]]; then
++    rm -rf $root_mount/lib/modules/*
++    cp -rv MODULES_INSTALL/lib/modules/* $root_mount/lib/modules
++fi
++
++umount $boot_mount
++umount $root_mount
++sync
++sync
+diff --git a/scripts/rsync-to-pi.sh b/scripts/rsync-to-pi.sh
+new file mode 100755
+index 000000000000..f378343ab9b6
+--- /dev/null
++++ b/scripts/rsync-to-pi.sh
+@@ -0,0 +1,57 @@
++#!/bin/bash -e
++
++: ${ARCH:=arm64}
++: ${CROSS_COMPILE:=aarch64-linux-gnu-}
++: ${KBUILD_OUTPUT:=.}
++export KBUILD_OUTPUT
++
++case $ARCH in
++    arm)
++        KERNELNAME=kernel7.img
++        KERNELTYPE=zImage
++        DTSDIR=arch/$ARCH/boot/dts
++        ;;
++    arm64)
++        KERNELNAME=kernel8.img
++        KERNELTYPE=Image
++        DTSDIR=arch/$ARCH/boot/dts/broadcom
++        ;;
++    *)
++        echo "unknown ARCH '$ARCH'"
++        exit 1
++        ;;
++esac
++
++export ARCH CROSS_COMPILE
++
++: ${RPI_USER:=root}
++: ${RPI_HOST:=pi4}
++
++RSYNC_OPTS=-tlKv
++
++if [[ $# > 0 ]]; then
++    while [[ -n $1 ]]; do
++        case $1 in
++            sb|shiftbrite)
++                kernelname=$(ssh $RPI_USER@$RPI_HOST 'uname -r')
++                rsync $RSYNC_OPTS $KBUILD_OUTPUT/drivers/spi/shiftbrite.ko \
++                      $RPI_USER@$RPI_HOST:/lib/modules/$kernelname/kernel/drivers/spi/shiftbrite.ko
++            ;;
++            ns|neostrip)
++                kernelname=$(ssh $RPI_USER@$RPI_HOST 'uname -r')
++                rsync $RSYNC_OPTS $KBUILD_OUTPUT/drivers/spi/neostrip.ko \
++                      $RPI_USER@$RPI_HOST:/lib/modules/$kernelname/kernel/drivers/spi/neostrip.ko
++            ;;
++            dto)
++                rsync $RSYNC_OPTS $KBUILD_OUTPUT/arch/$ARCH/boot/dts/overlays/pi3-spi-shiftbrite.dtbo \
++                      $RPI_USER@$RPI_HOST:/boot/overlays/pi3-spi-shiftbrite.dtbo
++        esac
++        shift
++    done
++else
++    make O=$KBUILD_OUTPUT INSTALL_MOD_PATH=MODULES_INSTALL modules_install
++    rsync $RSYNC_OPTS $KBUILD_OUTPUT/arch/$ARCH/boot/$KERNELTYPE $RPI_USER@$RPI_HOST:/boot/$KERNELNAME
++    rsync $RSYNC_OPTS $KBUILD_OUTPUT/$DTSDIR/*.dtb $RPI_USER@$RPI_HOST:/boot/
++    rsync $RSYNC_OPTS $KBUILD_OUTPUT/arch/$ARCH/boot/dts/overlays/*.dtb* $RPI_USER@$RPI_HOST:/boot/overlays/
++    rsync $RSYNC_OPTS -ru $KBUILD_OUTPUT/MODULES_INSTALL/ $RPI_USER@$RPI_HOST:/
++fi
+-- 
+2.28.0
+
