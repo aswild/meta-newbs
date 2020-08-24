@@ -1,0 +1,24 @@
+Index: 1.1-r0/mount.blacklist
+===================================================================
+--- 1.1-r0.orig/mount.blacklist
++++ 1.1-r0/mount.blacklist
+@@ -1,5 +1,6 @@
+ /dev/loop
+ /dev/ram
++/dev/mmcblk
+ /dev/mtdblock
+ /dev/md
+ /dev/dm-*
+Index: 1.1-r0/mount.sh
+===================================================================
+--- 1.1-r0.orig/mount.sh
++++ 1.1-r0/mount.sh
+@@ -14,7 +14,7 @@ if [ "x$BASE_INIT" = "x$INIT_SYSTEMD" ];
+ 
+     if [ -x $MOUNT ] && [ -x $UMOUNT ];
+     then
+-        logger "Using systemd-mount to finish mount"
++        :
+     else
+         logger "Linux init is using systemd, so please install systemd-mount to finish mount"
+         exit 1
