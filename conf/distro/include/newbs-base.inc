@@ -33,7 +33,7 @@ PACKAGECONFIG_remove_pn-mongodb = "tcmalloc"
 
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
-PREFERRED_VERSION_linux-raspberrypi-newbs ?= "4.19%"
+PREFERRED_VERSION_linux-raspberrypi-newbs ?= "5.4%"
 KERNEL_IMAGETYPE_arm = "zImage"
 KERNEL_IMAGETYPE_aarch64 = "Image"
 DTB_DEPLOYDIR = "dtb"
