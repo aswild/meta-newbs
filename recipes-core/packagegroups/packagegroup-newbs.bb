@@ -20,6 +20,8 @@ RDEPENDS_${PN}-full-cmdline = " \
     ${PN}-core \
     packagegroup-wild-utils \
     packagegroup-wild-network-utils \
+    exfat-utils \
+    fuse-exfat \
     i2c-tools \
     minicom \
     squashfs-tools \
