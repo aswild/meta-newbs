@@ -12,6 +12,7 @@ PV = "${LINUX_VERSION}+git${SRCPV}"
 
 COMPATIBLE_MACHINE = "^raspberrypi[234]-64$"
 KCONFIG_MODE ?= "allnoconfig"
+# note: this needs to match newbs-localversion.cfg or do_kernel_configcheck will complain
 LINUX_VERSION_EXTENSION = "-newbs"
 DTB_DEPLOYDIR ?= ""
 
@@ -24,6 +25,7 @@ SRC_URI += " \
     file://defconfig-pi4-64.cfg \
     ${@('file://rpi3-64.cfg', '')['raspberrypi4' in d.getVar('MACHINE')]} \
     ${@bb.utils.contains('DISTRO', 'newbs-mce', 'file://media-drivers.cfg', '', d)} \
+    file://newbs-localversion.cfg \
 "
 
 do_deploy_append() {
