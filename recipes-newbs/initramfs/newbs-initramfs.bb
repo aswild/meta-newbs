@@ -39,13 +39,13 @@ inherit systemd
 SYSTEMD_PACKAGES = "newbs-lastboot-timestamp"
 SYSTEMD_SERVICE_newbs-lastboot-timestamp = "lastboot-timestamp.service"
 
-inherit deploy
+inherit deploy image-artifact-names
 do_deploy() {
-    rm -rf ${DEPLOYDIR}
-    install -d ${DEPLOYDIR}
+    # sanity check - these should be set in image-artifact-names.bbclass
+    [ -n "${IMAGE_NAME}" ] || bbfatal "IMAGE_NAME is unset or empty"
+    [ -n "${IMAGE_LINK_NAME}" ] || bbfatal "IMAGE_LINK_NAME is unset or empty"
 
-    # IMAGE_BASENAME, IMAGE_NAME, and IMAGE_LINK_NAME are all set sanely in bitbake.conf
-    install -Dm644 ${S}/init.cpio.gz ${DEPLOYDIR}/${IMAGE_NAME}.cpio.gz
+    install -Dm644 ${B}/init.cpio.gz ${DEPLOYDIR}/${IMAGE_NAME}.cpio.gz
     ln -sfv ${IMAGE_NAME}.cpio.gz ${DEPLOYDIR}/${IMAGE_LINK_NAME}.cpio.gz
 }
 addtask deploy after do_compile
