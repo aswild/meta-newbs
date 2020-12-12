@@ -45,8 +45,6 @@ def volume_id(d):
     h.update(d.getVar('IMAGE_NAME').encode('UTF-8'))
     return h.hexdigest().upper()[:8]
 
-IMAGE_BOOTLOADER ?= "bootfiles"
-
 BOOTIMG_INITRAMFS ?= ""
 BOOTIMG_INITRAMFS_FILE = "${@get_initramfs_file(d)}"
 
@@ -64,7 +62,7 @@ do_image_newbs_bootimg[depends] += " \
     dosfstools-native:do_populate_sysroot \
     zstd-native:do_populate_sysroot \
     virtual/kernel:do_deploy \
-    ${IMAGE_BOOTLOADER}:do_deploy \
+    rpi-bootfiles:do_deploy \
     rpi-config:do_deploy \
     ${@bb.utils.contains('RPI_USE_U_BOOT', '1', 'u-boot:do_deploy', '',d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'armstub', 'armstubs:do_deploy', '' ,d)} \
@@ -85,7 +83,7 @@ IMAGE_CMD_newbs-bootimg() {
     install -d $BOOT_DIR
 
     # copy bootloader files
-    cp -av ${DEPLOY_DIR_IMAGE}/${IMAGE_BOOTLOADER}/* $BOOT_DIR
+    cp -av ${DEPLOY_DIR_IMAGE}/${BOOTFILES_DIR_NAME}/* $BOOT_DIR
     rm -vf $BOOT_DIR/*.stamp
 
     # copy device tree files

@@ -6,10 +6,10 @@ do_deploy_append() {
         raspberrypi4*)
             _not='-not'
             # bootcode.bin is not used on Pi4
-            rm -v ${DEPLOYDIR}/${PN}/bootcode.bin
+            rm -v ${DEPLOYDIR}/${BOOTFILES_DIR_NAME}/bootcode.bin
             ;;
         *) _not='' ;;
     esac
-    find ${DEPLOYDIR}/${PN} \( -name 'fixup*.dat' -o -name '*start*.elf' \) $_not -name '*4*' \
+    find ${DEPLOYDIR}/${BOOTFILES_DIR_NAME} \( -name 'fixup*.dat' -o -name '*start*.elf' \) $_not -name '*4*' \
             -exec rm -v {} \+
 }
