@@ -42,8 +42,8 @@ DTB_DEPLOYDIR = "dtb"
 NEWBS_ROOT ?= "/dev/mmcblk0p2"
 # FIXME systemd breaks and kernel panics if console=tty1 and no HDMI connected
 #CMDLINE = "dwc_otg.lpm_enable=0 console=tty1 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk"
-CMDLINE = "dwc_otg.lpm_enable=0 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk"
-CMDLINE_append_debug = " debug"
+NEWBS_CMDLINE = "dwc_otg.lpm_enable=0 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk"
+NEWBS_CMDLINE_append_debug = " debug"
 SERIAL_CONSOLES = "115200;ttyAMA0"
 
 # kernel device tree

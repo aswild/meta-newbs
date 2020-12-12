@@ -29,10 +29,6 @@ SRC_URI += " \
 "
 
 do_deploy_append() {
-    # deploy cmdline.txt
-    install -d ${DEPLOYDIR}/${BOOTFILES_DIR_NAME}
-    echo "${CMDLINE}" >${DEPLOYDIR}/${BOOTFILES_DIR_NAME}/cmdline.txt
-
     # default Linux recipes copy dtb blobs to DEPLOYDIR, which clutters it
     # archive them all to a subdirectory named DTB_DEPLOYDIR
     # do nothing unless DTB_DEPLOYDIR is set (in a distro conf)
