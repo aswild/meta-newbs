@@ -1,0 +1,916 @@
+From 92ad603df8c240522761902ea6ff988b79ce06c9 Mon Sep 17 00:00:00 2001
+From: Allen Wild <allenwild93@gmail.com>
+Date: Sun, 29 Jan 2017 04:30:13 -0500
+Subject: [PATCH] shiftbrite RGB LED driver
+
+TODO: figure out DT overlay! I think the fragments moved around or
+something.
+
+[12 patches squashed]
+
+Holy shit, I wrote a kernel driver from scratch and it actually works.
+Well, mostly at least. If I remove and re-insert this module, the system
+will kernel panic some arbitrary time afterwards.
+
+shiftbrite: dt overlay tweaks
+
+shiftbrite: expose config register in sysfs
+
+shiftbrite: use spinlock instead of mutex
+
+shiftbrite: add hello-world chrdev
+
+shiftbrite: add hello ioctl
+
+shiftbrite: big probe/release refactoring - follow spidev paradigm
+
+shiftbrite: move sysfs files to the shiftbrite device instead of spi device
+
+shiftbrite: implement read/write cdev and ioctls
+
+shiftbrite: use GPIO for latch instead of SPI CS
+
+Apparently the SPI APIs like to toggle CS in between transfers, which
+causes crazy things to happen on the shiftbrite (despite working most of
+the time). Better to use a dedicated GPIO touched only by the shiftbrite
+driver itself.
+
+Since it doesn't really make sense to have other SPI devices on the same
+bus as a shiftbrite chain, we can re-purpose the SPI MISO pin, which is
+GPIO 9 and conveneniently right between clock and data.
+
+Set "dtparam=shiftbrite0_latch=xx" to use gpio xx for the latch pin.
+(todo: could use a module param or dynamic attribute to change without
+needing a reboot)
+
+shiftbrite: rename overlay to spi0-shiftbrite.dtbo, add spi1 overlay
+
+spi1 might not work though
+
+neostrip, shiftbrite: include uaccess.h from linux/ rather than asm/
+
+The definitions for copy_(to|from)_user moved
+
+squash! shiftbrite RGB LED driver
+---
+ arch/arm/boot/dts/overlays/Makefile           |   2 +
+ .../dts/overlays/spi0-shiftbrite-overlay.dts  |  65 ++
+ .../dts/overlays/spi1-shiftbrite-overlay.dts  |  63 ++
+ drivers/spi/Kconfig                           |   7 +
+ drivers/spi/Makefile                          |   1 +
+ drivers/spi/shiftbrite.c                      | 622 ++++++++++++++++++
+ include/uapi/spi/shiftbrite.h                 |  25 +
+ 7 files changed, 785 insertions(+)
+ create mode 100644 arch/arm/boot/dts/overlays/spi0-shiftbrite-overlay.dts
+ create mode 100644 arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts
+ create mode 100644 drivers/spi/shiftbrite.c
+ create mode 100644 include/uapi/spi/shiftbrite.h
+
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index ff269e097688..720eab169259 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -170,9 +170,11 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	spi-rtc.dtbo \
+ 	spi0-1cs.dtbo \
+ 	spi0-2cs.dtbo \
++	spi0-shiftbrite.dtbo \
+ 	spi1-1cs.dtbo \
+ 	spi1-2cs.dtbo \
+ 	spi1-3cs.dtbo \
++	spi1-shiftbrite.dtbo \
+ 	spi2-1cs.dtbo \
+ 	spi2-2cs.dtbo \
+ 	spi2-3cs.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/spi0-shiftbrite-overlay.dts b/arch/arm/boot/dts/overlays/spi0-shiftbrite-overlay.dts
+new file mode 100644
+index 000000000000..e1abac6ddbc1
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/spi0-shiftbrite-overlay.dts
+@@ -0,0 +1,65 @@
++/*
++ * Device Tree overlay for the Shiftbrite module
++ *
++ */
++
++/dts-v1/;
++/plugin/;
++
++/ {
++    compatible = "brcm,bcm2835", "brcm,bcm2708", "brcm,bcm2709";
++
++    fragment@0 {
++        target = <&gpio>;
++        __overlay__ {
++            spi0_pins: spi0_pins {
++                /*
++                 * shiftbrite needs 3 pins - latch, data, clock
++                 * Can't use SPI chip-select because it will toggle in the
++                 * middle of transfers, so use a separate GPIO for latch.
++                 *
++                 * Because shiftbrite doesn't respond to a chip-select, it doesn't
++                 * make sense to have other devices on the same SPI bus, therefore
++                 * we can re-purpose the SPI MISO pin (9) as the latch output GPIO
++                 */
++                brcm,pins = <9 10 11>;
++                brcm,function = <1 4 4>; /* output (latch), alt0 (spi) */
++            };
++        };
++    };
++
++    fragment@1 {
++        target = <&spi0>;
++        __overlay__ {
++            status = "okay";
++            spidev@0 {
++                status = "disabled";
++            };
++        };
++    };
++
++    fragment@2 {
++        target = <&spi0>;
++        __overlay__ {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            status = "okay";
++            pinctrl-names = "default";
++            pinctrl-0 = <&spi0_pins>;
++
++            shiftbrite0: shiftbrite@0 {
++                compatible = "shiftbrite";
++                reg = <0>;      /* CE0 */
++                spi-max-frequency = <500000>;
++                latch-gpio = <9>;
++                status = "okay";
++            };
++        };
++    };
++
++    __overrides__ {
++        shiftbrite0_latch = <&spi0_pins>,"brcm,pins:0",
++                            <&shiftbrite0>,"latch-gpio:0";
++    };
++};
+diff --git a/arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts b/arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts
+new file mode 100644
+index 000000000000..b22f6de69a95
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/spi1-shiftbrite-overlay.dts
+@@ -0,0 +1,63 @@
++/*
++ * Device Tree overlay for the Shiftbrite module
++ *
++ */
++
++/dts-v1/;
++/plugin/;
++
++/ {
++    compatible = "brcm,bcm2835", "brcm,bcm2708", "brcm,bcm2709";
++
++    fragment@0 {
++        target = <&gpio>;
++        __overlay__ {
++            spi1_pins: spi1_pins {
++                /*
++                 * shiftbrite needs 3 pins - latch, data, clock
++                 * Can't use SPI chip-select because it will toggle in the
++                 * middle of transfers, so use a separate GPIO for latch.
++                 *
++                 * Because shiftbrite doesn't respond to a chip-select, it doesn't
++                 * make sense to have other devices on the same SPI bus, therefore
++                 * we can re-purpose the SPI MISO pin (9) as the latch output GPIO
++                 */
++                brcm,pins = <9 10 11>;
++                brcm,function = <1 4 4>; /* output (latch), alt0 (spi) */
++            };
++        };
++    };
++
++    fragment@1 {
++        target = <&spi1>;
++        __overlay__ {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            status = "okay";
++            pinctrl-names = "default";
++            pinctrl-0 = <&spi1_pins>;
++
++            /* disable spi-dev for spi1.0 & spi1.1 */
++            spidev@0 {
++                status = "disabled";
++            };
++            spidev@1 {
++                status = "disabled";
++            };
++
++            shiftbrite0: shiftbrite@0 {
++                compatible = "shiftbrite";
++                reg = <0>;      /* CE0 */
++                spi-max-frequency = <500000>;
++                latch-gpio = <9>;
++                status = "okay";
++            };
++        };
++    };
++
++    __overrides__ {
++        shiftbrite0_latch = <&spi1_pins>,"brcm,pins:0",
++                            <&shiftbrite0>,"latch-gpio:0";
++    };
++};
+diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+index 5bf754208777..5afc242abc77 100644
+--- a/drivers/spi/Kconfig
++++ b/drivers/spi/Kconfig
+@@ -903,6 +903,13 @@ config SPI_LOOPBACK_TEST
+ 	  primarily used for development of spi_master drivers
+ 	  and to detect regressions
+ 
++config SPI_SHIFTBRITE
++	tristate "ShiftBrite SPI-controlled RGB LED"
++	default n
++	help
++	    Driver to control ShiftBrite LEDs with a SPI bus, using the chip
++	    select GPIO to toggle the latch pin.
++
+ config SPI_TLE62X0
+ 	tristate "Infineon TLE62X0 (for power switching)"
+ 	depends on SYSFS
+diff --git a/drivers/spi/Makefile b/drivers/spi/Makefile
+index bb49c9e6d0a0..25bc0181d2ad 100644
+--- a/drivers/spi/Makefile
++++ b/drivers/spi/Makefile
+@@ -96,6 +96,7 @@ obj-$(CONFIG_SPI_SH)			+= spi-sh.o
+ obj-$(CONFIG_SPI_SH_HSPI)		+= spi-sh-hspi.o
+ obj-$(CONFIG_SPI_SH_MSIOF)		+= spi-sh-msiof.o
+ obj-$(CONFIG_SPI_SH_SCI)		+= spi-sh-sci.o
++obj-$(CONFIG_SPI_SHIFTBRITE)		+= shiftbrite.o
+ obj-$(CONFIG_SPI_SIFIVE)		+= spi-sifive.o
+ obj-$(CONFIG_SPI_SIRF)		+= spi-sirf.o
+ obj-$(CONFIG_SPI_SLAVE_MT27XX)          += spi-slave-mt27xx.o
+diff --git a/drivers/spi/shiftbrite.c b/drivers/spi/shiftbrite.c
+new file mode 100644
+index 000000000000..0410c113d9be
+--- /dev/null
++++ b/drivers/spi/shiftbrite.c
+@@ -0,0 +1,622 @@
++/***********************************************************************
++ * Shiftbrite SPI RGB LED Driver
++ *
++ * Copyright (C) 2017 Allen Wild <allenwild93@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, version 2.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ ***********************************************************************/
++
++#include <linux/kernel.h>
++#include <linux/init.h>
++#include <linux/cdev.h>
++#include <linux/delay.h>
++#include <linux/fs.h>
++#include <linux/ioctl.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/of_gpio.h>
++#include <linux/spinlock.h>
++#include <linux/spi/spi.h>
++#include <linux/uaccess.h>
++
++#include <uapi/spi/shiftbrite.h>
++
++#define RED24(value)    ((value & 0x00FF0000) >> 16)
++#define GREEN24(value)  ((value & 0x0000FF00) >> 8)
++#define BLUE24(value)    (value & 0x000000FF)
++
++// When setting PWM values:
++//      bits 31-30 = 0
++//      bits 29-20 = blue
++//      bits 19-10 = red
++//      bits 09-00 = green
++//
++// When setting the config register (7-bit correction offsets)
++//      bit     31 = don't care
++//      bit     30 = 1
++//      bits 29-27 = reserved
++//      bits 26-20 = blue offset
++//      bits 19-17 = don't care
++//      bits 16-10 = red offset
++//      bit     09 = don't care
++//      bits 08-07 = clock mode (0 for shiftbrite chip)
++//      bits 06-00 = green offset
++
++#define COLOR_MASK      0x3FFFFFFF
++#define CONFIG_MASK     0x07F1FC7F
++
++#define RGB24_TO_RGB32(value)   ((BLUE24(value) << 20) | \
++                                 (RED24(value) << 10) | \
++                                 (GREEN24(value)))
++
++#define RGB24_TO_COLOR(value)   (RGB24_TO_RGB32(value) & COLOR_MASK)
++#define RGB24_TO_CONFIG(value)  (0x40000000 | (RGB24_TO_RGB32(value) & CONFIG_MASK))
++
++struct shiftbrite_chip {
++    dev_t               devt;
++    struct device       *dev;
++    struct spi_device   *spi;
++    struct list_head    device_entry;
++    int                 latch_gpio;
++
++    int                 in_use;
++    struct mutex        in_use_lock;
++
++    spinlock_t          lock;
++    u32                 value24;    // 24-bit 0xRRGGBB value
++    u32                 config24;   // Control register which holds scaling values
++};
++
++// static globals
++
++#define N_SHIFTBRITE_MINORS 8
++
++static DECLARE_BITMAP(minors, N_SHIFTBRITE_MINORS);
++static LIST_HEAD(device_list);
++static DEFINE_MUTEX(device_list_lock);
++
++static int              shiftbrite_major; // dynamically allocated major number
++static struct class     *shiftbrite_class;
++
++
++// Internal Core Functions
++
++static inline void shiftbrite_set_latch(struct shiftbrite_chip *chip, int value)
++{
++    gpio_set_value(chip->latch_gpio, value);
++}
++
++static int shiftbrite_write_u32(struct shiftbrite_chip *chip, u32 value)
++{
++    struct spi_device *spi = chip->spi;
++    u8 buf[4];
++    struct spi_transfer xfer = {
++        .tx_buf     = buf,
++        .len        = 4,
++        .cs_change  = 0,
++    };
++    struct spi_message msg;
++    int ret = 0;
++
++    dev_dbg(chip->dev, "writing 0x%08x\n", value);
++
++    buf[0] = value >> 24;
++    buf[1] = (value & 0x00FF0000) >> 16;
++    buf[2] = (value & 0x0000FF00) >> 8;
++    buf[3] = (value & 0x000000FF);
++
++    spi_message_init(&msg);
++    spi_message_add_tail(&xfer, &msg);
++
++    ret = spi_sync(spi, &msg);
++    if (ret)
++    {
++        dev_err(chip->dev, "spi_sync failed\n");
++        return ret;
++    }
++
++    udelay(15);
++    shiftbrite_set_latch(chip, 1);
++    udelay(15);
++    shiftbrite_set_latch(chip, 0);
++    udelay(15);
++
++    return ret;
++}
++
++static inline int shiftbrite_write(struct shiftbrite_chip *chip)
++{
++    return shiftbrite_write_u32(chip, RGB24_TO_COLOR(chip->value24));
++}
++
++static inline int shiftbrite_write_config(struct shiftbrite_chip *chip)
++{
++    return shiftbrite_write_u32(chip, RGB24_TO_CONFIG(chip->config24));
++}
++
++static int shiftbrite_set_color_from_str(struct shiftbrite_chip *chip, const char *buf)
++{
++    unsigned long value;
++    int err;
++
++    if (strncmp(buf, "refresh", 7))
++    {
++        err = kstrtoul(buf, 16, &value);
++        if (err)
++            return err;
++        err = 1;
++    }
++    else
++    {
++        err = 0;
++    }
++
++    dev_dbg(chip->dev, "set color from string '%s'\n", buf);
++
++    spin_lock(&chip->lock);
++    // err=1 means to update the value, otherwise just refresh it
++    if (err)
++        chip->value24 = value;
++    err = shiftbrite_write(chip);
++    spin_unlock(&chip->lock);
++
++    return err;
++}
++
++// sysfs functions
++
++static ssize_t shiftbrite_sysfs_show_color(struct device *dev,
++                                           struct device_attribute *attr,
++                                           char *buf)
++{
++    struct shiftbrite_chip *chip = dev_get_drvdata(dev);
++    unsigned long value;
++
++    spin_lock(&chip->lock);
++    value = chip->value24;
++    spin_unlock(&chip->lock);
++
++    return sprintf(buf, "0x%06lx\n", value);
++}
++
++static ssize_t shiftbrite_sysfs_set_color(struct device *dev,
++                                          struct device_attribute *attr,
++                                          const char *buf, size_t count)
++{
++    struct shiftbrite_chip *chip = dev_get_drvdata(dev);
++    int err;
++
++    err = shiftbrite_set_color_from_str(chip, buf);
++    if (err)
++        return err;
++
++    return count;
++}
++static DEVICE_ATTR(color, 0644, shiftbrite_sysfs_show_color, shiftbrite_sysfs_set_color);
++
++static ssize_t shiftbrite_sysfs_show_config(struct device *dev,
++                                            struct device_attribute *attr,
++                                            char *buf)
++{
++    struct shiftbrite_chip *chip = dev_get_drvdata(dev);
++    unsigned long value;
++
++    spin_lock(&chip->lock);
++    value = chip->config24;
++    spin_unlock(&chip->lock);
++
++    return sprintf(buf, "0x%06lx\n", value);
++}
++
++static ssize_t shiftbrite_sysfs_set_config(struct device *dev,
++                                           struct device_attribute *attr,
++                                           const char *buf, size_t count)
++{
++    struct shiftbrite_chip *chip = dev_get_drvdata(dev);
++    unsigned long value;
++    int err;
++
++    if (strncmp(buf, "refresh", 7))
++    {
++        err = kstrtoul(buf, 16, &value);
++        if (err)
++            return err;
++        err = 1;
++    }
++    else
++    {
++        err = 0;
++    }
++
++    spin_lock(&chip->lock);
++    // err=1 means to update the value, otherwise just refresh it
++    if (err)
++        chip->config24 = value;
++    shiftbrite_write_config(chip);
++    spin_unlock(&chip->lock);
++
++    return count;
++}
++static DEVICE_ATTR(config, 0644, shiftbrite_sysfs_show_config, shiftbrite_sysfs_set_config);
++
++// Array of sysfs attributes to be automatically created/removed
++static const struct device_attribute *shiftbrite_sysfs_attrs[] = {
++    &dev_attr_color,
++    &dev_attr_config
++};
++
++// device node
++
++static int shiftbrite_cdev_open(struct inode *inode, struct file *fp)
++{
++    struct shiftbrite_chip  *chip;
++    int                     ret = -ENXIO;
++
++    // find the driver data
++    list_for_each_entry(chip, &device_list, device_entry)
++    {
++        if (chip->devt == inode->i_rdev)
++        {
++            ret = 0;
++            break;
++        }
++    }
++    if (ret)
++    {
++        pr_err("shiftbrite: device not found\n");
++        return ret;
++    }
++
++    mutex_lock(&chip->in_use_lock);
++    if (chip->in_use)
++    {
++        ret = -EBUSY;
++        goto out;
++    }
++
++    chip->in_use = 1;
++    fp->private_data = chip;
++    nonseekable_open(inode, fp);
++
++out:
++    mutex_unlock(&chip->in_use_lock);
++    return ret;
++}
++
++static int shiftbrite_cdev_release(struct inode *inode, struct file *fp)
++{
++    struct shiftbrite_chip  *chip;
++
++    chip = fp->private_data;
++    fp->private_data = NULL;
++    mutex_lock(&chip->in_use_lock);
++    chip->in_use = 0;
++    mutex_unlock(&chip->in_use_lock);
++
++    return 0;
++}
++
++static ssize_t shiftbrite_cdev_read(struct file *fp, char *buf, size_t count, loff_t *offset)
++{
++    struct shiftbrite_chip  *chip;
++    u32                     value;
++    size_t                  len;
++    char                    tbuf[16];
++
++    chip = fp->private_data;
++
++    spin_lock(&chip->lock);
++    value = chip->value24;
++    spin_unlock(&chip->lock);
++
++    len = snprintf(tbuf, sizeof(tbuf), "0x%06x\n", value);
++
++    if (*offset >= len)
++        return 0;
++    if (*offset + count > len)
++        count = len - *offset;
++
++    if (copy_to_user(buf, tbuf + *offset, count))
++        return -EFAULT;
++
++    *offset += count;
++    return count;
++}
++
++static ssize_t shiftbrite_cdev_write(struct file *fp, const char *buf, size_t size, loff_t *offset)
++{
++    struct shiftbrite_chip  *chip;
++    int                     ret;
++    char                    *tbuf;
++
++    chip = fp->private_data;
++
++    // copy to a temporary buffer so we can null-terminate the string
++    tbuf = kzalloc(size + 1, GFP_KERNEL);
++    if (tbuf == NULL)
++        return -ENOMEM;
++
++    ret = copy_from_user(tbuf, buf, size);
++    if (ret)
++    {
++        ret = -EFAULT;
++        goto out;
++    }
++    tbuf[size] = '\0';
++
++    ret = shiftbrite_set_color_from_str(chip, tbuf);
++
++out:
++    kfree(tbuf);
++    return (ret < 0) ? ret : size;
++}
++
++long shiftbrite_cdev_ioctl(struct file *fp, unsigned int cmd, unsigned long arg)
++{
++    struct shiftbrite_chip  *chip;
++    long                    ret = 0;
++    u32                     value;
++
++    chip = fp->private_data;
++
++    switch (cmd)
++    {
++        case SHIFTBRITE_IOC_HELLO:
++            pr_info("shiftbrite: ioctl hello with arg 0x%lX\n", arg);
++            break;
++
++        case SHIFTBRITE_IOC_RCOLOR24:
++            ret = __put_user(chip->value24, (__u32 __user *)arg);
++            break;
++
++        case SHIFTBRITE_IOC_WCOLOR24:
++            ret = __get_user(value, (u32 __user *)arg);
++            if (!ret)
++            {
++                spin_lock(&chip->lock);
++                chip->value24 = value;
++                ret = shiftbrite_write(chip);
++                spin_unlock(&chip->lock);
++            }
++            break;
++
++        default:
++            pr_err("shiftbrite: unknown ioctl\n");
++            ret = -ENOTTY;
++            break;
++    }
++    return ret;
++}
++
++static struct file_operations shiftbrite_cdev_fops = {
++    .open           = shiftbrite_cdev_open,
++    .release        = shiftbrite_cdev_release,
++    .read           = shiftbrite_cdev_read,
++    .write          = shiftbrite_cdev_write,
++    .unlocked_ioctl = shiftbrite_cdev_ioctl,
++};
++
++// Init/Exit Functions
++
++static const struct of_device_id shiftbrite_dt_ids[] = {
++    { .compatible = "shiftbrite" },
++    {},
++};
++MODULE_DEVICE_TABLE(of, shiftbrite_dt_ids);
++
++static int shiftbrite_probe(struct spi_device *spi)
++{
++    struct shiftbrite_chip  *chip;
++    struct device           *dev;
++    unsigned long           minor;
++    int                     sysfs_i, ret;
++    struct property         *latch_gpio_prop;
++
++    // verify DT compatible string
++    if (spi->dev.of_node && !of_match_device(shiftbrite_dt_ids, &spi->dev))
++    {
++        dev_err(&spi->dev, "buggy DT!\n");
++        WARN_ON(spi->dev.of_node && !of_match_device(shiftbrite_dt_ids, &spi->dev));
++    }
++
++    // allocate shiftbrite data
++    chip = kzalloc(sizeof(*chip), GFP_KERNEL);
++    if (!chip)
++    {
++        dev_err(&spi->dev, "kzalloc failed\n");
++        ret = -ENOMEM;
++        goto fail;
++    }
++
++    // initialize  data
++    spi_set_drvdata(spi, chip);
++    chip->spi = spi;
++    chip->value24 = 0;
++    spin_lock_init(&chip->lock);
++    mutex_init(&chip->in_use_lock);
++    INIT_LIST_HEAD(&chip->device_entry);
++
++    // get the latch GPIO number from the device tree
++    latch_gpio_prop = of_find_property(spi->dev.of_node, "latch-gpio", NULL);
++    if (latch_gpio_prop == NULL)
++    {
++        dev_err(&spi->dev, "couldn't find latch-gpio DT property\n");
++        ret = -EINVAL;
++        goto fail_dealloc;
++    }
++
++    // value is big-endian 32 bit
++    chip->latch_gpio = be32_to_cpu(*(__be32 *)latch_gpio_prop->value);
++    if (!gpio_is_valid(chip->latch_gpio))
++    {
++        dev_err(&spi->dev, "Latch GPIO is invalid\n");
++        ret = -EINVAL;
++        goto fail_dealloc;
++    }
++    gpio_direction_output(chip->latch_gpio, 0);
++
++
++    // get a minor device number
++    mutex_lock(&device_list_lock);
++    minor = find_first_zero_bit(minors, N_SHIFTBRITE_MINORS);
++    if (minor >= N_SHIFTBRITE_MINORS)
++    {
++        dev_err(&spi->dev, "unable to get minor device number\n");
++        ret = -ENODEV;
++        mutex_unlock(&device_list_lock);
++        goto fail_dealloc;
++    }
++
++    // create device node
++    chip->devt = MKDEV(shiftbrite_major, minor);
++    chip->dev = device_create(shiftbrite_class, &spi->dev, chip->devt, chip, "shiftbrite%lu", minor);
++    if (IS_ERR(chip->dev))
++    {
++        dev_err(&spi->dev, "device_create() failed\n");
++        ret = PTR_ERR_OR_ZERO(dev);
++        mutex_unlock(&device_list_lock);
++        goto fail_dealloc;
++    }
++
++    // add device to the list
++    set_bit(minor, minors);
++    list_add(&chip->device_entry, &device_list);
++
++    mutex_unlock(&device_list_lock);
++
++    // create sysfs files
++    for (sysfs_i = 0; sysfs_i < sizeof(shiftbrite_sysfs_attrs)/sizeof(shiftbrite_sysfs_attrs[0]); sysfs_i++)
++    {
++        ret = device_create_file(chip->dev, shiftbrite_sysfs_attrs[sysfs_i]);
++        if (ret)
++        {
++            dev_err(chip->dev, "Failed to create sysfs file %s\n", shiftbrite_sysfs_attrs[sysfs_i]->attr.name);
++            ret = -EFAULT;
++            goto fail_destroy_sysfs;
++        }
++    }
++
++    // Set up SPI
++    spi->bits_per_word = 8;
++    spi->mode = SPI_MODE_0 | SPI_CS_HIGH;
++
++    ret = spi_setup(spi);
++    if (ret < 0)
++    {
++        dev_err(chip->dev, "spi_setup failed\n");
++        goto fail_destroy_sysfs;
++    }
++
++    // Done!
++    dev_info(chip->dev, "Shiftbrite driver initialized (latch gpio %d)\n", chip->latch_gpio);
++    return 0;
++
++fail_destroy_sysfs:
++    for (sysfs_i--; sysfs_i >= 0; sysfs_i--)
++        device_remove_file(chip->dev, shiftbrite_sysfs_attrs[sysfs_i]);
++
++//fail_device_destroy:
++    mutex_lock(&device_list_lock);
++    list_del(&chip->device_entry);
++    device_destroy(shiftbrite_class, chip->devt);
++    clear_bit(MINOR(chip->devt), minors);
++    mutex_unlock(&device_list_lock);
++
++fail_dealloc:
++    spi_set_drvdata(spi, NULL);
++    kfree(chip);
++
++fail:
++    dev_err(&spi->dev, "Shiftbrite initialization failed (%d)\n", ret);
++    return ret;
++}
++
++static int shiftbrite_remove(struct spi_device *spi)
++{
++    struct shiftbrite_chip *chip = spi_get_drvdata(spi);
++    int i;
++
++    for (i = 0; i < sizeof(shiftbrite_sysfs_attrs)/sizeof(shiftbrite_sysfs_attrs[0]); i++)
++        device_remove_file(chip->dev, shiftbrite_sysfs_attrs[i]);
++
++    spin_lock_irq(&chip->lock);
++    chip->spi = NULL;
++    spin_unlock_irq(&chip->lock);
++
++    mutex_lock(&device_list_lock);
++    list_del(&chip->device_entry);
++    device_destroy(shiftbrite_class, chip->devt);
++    clear_bit(MINOR(chip->devt), minors);
++    mutex_unlock(&device_list_lock);
++
++    spi_set_drvdata(spi, NULL);
++    kfree(chip);
++    dev_info(&spi->dev, "Shiftbrite driver unloaded\n");
++    return 0;
++}
++
++static struct spi_driver shiftbrite_spi_driver = {
++    .driver = {
++        .name = "shiftbrite",
++        .owner = THIS_MODULE,
++        .of_match_table = of_match_ptr(shiftbrite_dt_ids),
++    },
++    .probe  = shiftbrite_probe,
++    .remove = shiftbrite_remove,
++};
++
++static int __init shiftbrite_init(void)
++{
++    int ret;
++
++    // get a major device number
++    shiftbrite_major = register_chrdev(0, "shiftbrite", &shiftbrite_cdev_fops);
++    if (shiftbrite_major < 0)
++        return shiftbrite_major;
++
++    // create shiftbrite class
++    shiftbrite_class = class_create(THIS_MODULE, "shiftbrite");
++    if (IS_ERR(shiftbrite_class))
++    {
++        pr_err("%s: class_create() failed\n", __func__);
++        ret = -1;
++        goto fail_unregister;
++    }
++
++    // register the SPI protocol driver
++    ret = spi_register_driver(&shiftbrite_spi_driver);
++    if (ret < 0)
++    {
++        pr_err("%s: spi_register_driver() failed\n", __func__);
++        goto fail_class_destroy;
++    }
++
++    return 0;
++
++fail_class_destroy:
++    class_destroy(shiftbrite_class);
++fail_unregister:
++    unregister_chrdev(shiftbrite_major, "shiftbrite");
++    return ret;
++}
++module_init(shiftbrite_init);
++
++static void __exit shiftbrite_exit(void)
++{
++    spi_unregister_driver(&shiftbrite_spi_driver);
++    class_destroy(shiftbrite_class);
++    unregister_chrdev(shiftbrite_major, "shiftbrite");
++}
++module_exit(shiftbrite_exit);
++
++MODULE_AUTHOR("Allen Wild <allenwild93@gmail.com>");
++MODULE_DESCRIPTION("ShiftBrite SPI LED driver");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("spi:shiftbrite");
+diff --git a/include/uapi/spi/shiftbrite.h b/include/uapi/spi/shiftbrite.h
+new file mode 100644
+index 000000000000..b3e93ffa5c5a
+--- /dev/null
++++ b/include/uapi/spi/shiftbrite.h
+@@ -0,0 +1,25 @@
++/***********************************************************************
++ * Shiftbrite SPI RGB LED Driver
++ *
++ * Copyright (C) 2017 Allen Wild <allenwild93@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, version 2.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ ***********************************************************************/
++
++#ifndef _SHIFTBRITE_H_
++#define _SHIFTBRITE_H_
++
++#include <linux/ioctl.h>
++
++#define SHIFTBRITE_IOC_HELLO    _IO('S', 1)
++#define SHIFTBRITE_IOC_RCOLOR24 _IOR('S', 2, unsigned long)
++#define SHIFTBRITE_IOC_WCOLOR24 _IOW('S', 3, unsigned long)
++
++#endif // _SHIFTBRITE_H_
+-- 
+2.30.0
+
