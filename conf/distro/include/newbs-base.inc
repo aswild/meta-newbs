@@ -31,6 +31,9 @@ VOLATILE_LOG_DIR = "no"
 # disable tcmalloc on mongodb, it causes segfaults in dunfell for reasons I don't care to debug
 PACKAGECONFIG_remove_pn-mongodb = "tcmalloc"
 
+# prefer the prebuilt borg rather than compiling from source and installing python
+PREFERRED_PROVIDER_borgbackup ?= "borgbackup-bin"
+
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
 PREFERRED_VERSION_linux-raspberrypi-newbs ?= "5.4%"

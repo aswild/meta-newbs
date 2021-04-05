@@ -20,6 +20,7 @@ RDEPENDS_${PN}-full-cmdline = " \
     ${PN}-core \
     packagegroup-wild-utils \
     packagegroup-wild-network-utils \
+    borgbackup \
     exfat-utils \
     fuse-exfat \
     i2c-tools \
