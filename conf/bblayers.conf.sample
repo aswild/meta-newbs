@@ -20,6 +20,7 @@ BBLAYERS =+ "${NEWBSROOT}/meta-openembedded/meta-python"
 BBLAYERS =+ "${NEWBSROOT}/meta-java"
 BBLAYERS =+ "${NEWBSROOT}/meta-kodi"
 BBLAYERS =+ "${NEWBSROOT}/meta-raspberrypi"
+BBLAYERS =+ "${NEWBSROOT}/meta-rust-bin"
 
 BBLAYERS =+ "${NEWBSROOT}/meta-wild-common"
 BBLAYERS =+ "${NEWBSROOT}/meta-newbs"
