@@ -1,5 +1,5 @@
 diff --git a/src/core/machine-id-setup.c b/src/core/machine-id-setup.c
-index 11528f83c4..dc95312c3d 100644
+index 6d15f9cd09..0025c9c949 100644
 --- a/src/core/machine-id-setup.c
 +++ b/src/core/machine-id-setup.c
 @@ -3,6 +3,7 @@
@@ -10,15 +10,15 @@ index 11528f83c4..dc95312c3d 100644
  #include <unistd.h>
  
  #include "sd-id128.h"
-@@ -11,6 +12,7 @@
- #include "fd-util.h"
+@@ -12,6 +13,7 @@
  #include "fs-util.h"
  #include "id128-util.h"
+ #include "io-util.h"
 +#include "khash.h"
  #include "log.h"
  #include "machine-id-setup.h"
  #include "macro.h"
-@@ -24,6 +26,105 @@
+@@ -27,6 +29,105 @@
  #include "util.h"
  #include "virt.h"
  
@@ -124,7 +124,7 @@ index 11528f83c4..dc95312c3d 100644
  static int generate_machine_id(const char *root, sd_id128_t *ret) {
          const char *dbus_machine_id;
          _cleanup_close_ int fd = -1;
-@@ -70,6 +171,10 @@ static int generate_machine_id(const char *root, sd_id128_t *ret) {
+@@ -78,6 +179,10 @@ static int generate_machine_id(const char *root, sd_id128_t *ret) {
                  }
          }
  
