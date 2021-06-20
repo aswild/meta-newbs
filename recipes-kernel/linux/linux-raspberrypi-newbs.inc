@@ -5,7 +5,6 @@ require recipes-kernel/linux/linux-yocto.inc
 DESCRIPTION = "Linux Kernel for Raspberry Pi"
 SECTION = "kernel"
 LICENSE = "GPLv2"
-LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 SRCPV := "${@d.getVar('SRCREV')[:12]}"
 PV = "${LINUX_VERSION}+git${SRCPV}"
