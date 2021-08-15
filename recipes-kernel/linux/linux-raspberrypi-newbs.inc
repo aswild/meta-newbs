@@ -1,10 +1,13 @@
 # NEWBS kernel customizations
 
-require recipes-kernel/linux/linux-yocto.inc
+inherit kernel
+inherit kernel-yocto
 
+SUMMARY = "Linux kernel"
 DESCRIPTION = "Linux Kernel for Raspberry Pi"
 SECTION = "kernel"
 LICENSE = "GPLv2"
+HOMEPAGE = "https://github.com/raspberrypi/linux"
 
 SRCPV := "${@d.getVar('SRCREV')[:12]}"
 PV = "${LINUX_VERSION}+git${SRCPV}"
@@ -14,6 +17,11 @@ KCONFIG_MODE ?= "allnoconfig"
 # note: this needs to match newbs-localversion.cfg or do_kernel_configcheck will complain
 LINUX_VERSION_EXTENSION = "-newbs"
 DTB_DEPLOYDIR ?= ""
+
+# extra dependencies and compiler args added by linux-yocto.inc for aarch64
+DEPENDS += "xz-native bc-native libgcc"
+KERNEL_CC += "${TOOLCHAIN_OPTIONS}"
+KERNEL_LD += "${TOOLCHAIN_OPTIONS}"
 
 # Configs must be named 'defconfig' or '*.cfg', or be wrapped in an scc
 # have to manually expand ${PN} because immediate expansion when parsing the inc file will yield 'defaultpkgname'
