@@ -18,6 +18,7 @@ RDEPENDS_${PN}-core = " \
 PACKAGES += "${PN}-full-cmdline"
 RDEPENDS_${PN}-full-cmdline = " \
     ${PN}-core \
+    ${PN}-zfs \
     packagegroup-wild-utils \
     packagegroup-wild-network-utils \
     borgbackup \
@@ -26,4 +27,11 @@ RDEPENDS_${PN}-full-cmdline = " \
     i2c-tools \
     minicom \
     squashfs-tools \
+"
+
+PACKAGES += "${PN}-zfs"
+RDEPENDS_${PN}-zfs = " \
+    zfs-module \
+    zfs-tools \
+    zfs-newbs \
 "
