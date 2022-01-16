@@ -31,6 +31,10 @@ VOLATILE_LOG_DIR = "no"
 # disable tcmalloc on mongodb, it causes segfaults in dunfell for reasons I don't care to debug
 PACKAGECONFIG_remove_pn-mongodb = "tcmalloc"
 
+# disable lmsensors sensord, it pulls in heavy GUI libraries
+PACKAGECONFIG_remove_pn-lmsensors = "sensord"
+PACKAGECONFIG_remove_pn-lmsensors-config = "sensord"
+
 # prefer the prebuilt borg rather than compiling from source and installing python
 PREFERRED_PROVIDER_borgbackup ?= "borgbackup-bin"
 
