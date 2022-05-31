@@ -1,7 +1,7 @@
 # NEWBS Linux 5.4 kernel
 
-LINUX_VERSION = "5.10.85"
-SRCREV = "3ec9b52daa865f1253caf56f243f699c5a796ff7"
+LINUX_VERSION = "5.10.110"
+SRCREV = "e6f88767eac66b211361c85b5803fe71a4053959"
 SRC_URI = "git://github.com/raspberrypi/linux.git;protocol=https;branch=rpi-5.10.y"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
