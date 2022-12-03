@@ -10,6 +10,9 @@ BBMASK += " \
     meta-raspberrypi/dynamic-layers/meta-python/recipes-connectivity/lirc/.* \
 "
 
+# enable licenses
+LICENSE_FLAGS_ACCEPTED += "synaptics-killswitch"
+
 # DISTRO_FEATURES_DEFAULT, minus some things
 DISTRO_FEATURES = "acl argp ext2 largefile pci usbhost xattr ${DISTRO_FEATURES_LIBC}"
 
@@ -57,6 +60,10 @@ SERIAL_CONSOLES = "115200;ttyAMA0"
 # KERNEL_DEVICETREE is populated from RPI_KERNEL_DEVICETREE and RPI_KERNEL_DEVICETREE_OVERLAYS
 # in meta-raspberrypi. KERNEL_DEVICETREE should be populated by the machine config, but customize
 # included overlays for newbs here.
+
+# Use only the RPi 4 B dtb, not RPi 400 and CM4
+RPI_KERNEL_DEVICETREE:raspberrypi4-64 = "broadcom/bcm2711-rpi-4-b.dtb"
+
 NEOSTRIP_OVERLAYS = " \
     overlays/spi0-shiftbrite.dtbo \
     overlays/spi1-shiftbrite.dtbo \
