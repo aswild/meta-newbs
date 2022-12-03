@@ -1,7 +1,7 @@
-diff --git a/src/core/machine-id-setup.c b/src/core/machine-id-setup.c
-index 6d15f9cd09..0025c9c949 100644
---- a/src/core/machine-id-setup.c
-+++ b/src/core/machine-id-setup.c
+Index: git/src/shared/machine-id-setup.c
+===================================================================
+--- git.orig/src/shared/machine-id-setup.c
++++ git/src/shared/machine-id-setup.c
 @@ -3,6 +3,7 @@
  #include <fcntl.h>
  #include <sched.h>
@@ -10,15 +10,15 @@ index 6d15f9cd09..0025c9c949 100644
  #include <unistd.h>
  
  #include "sd-id128.h"
-@@ -12,6 +13,7 @@
- #include "fs-util.h"
- #include "id128-util.h"
- #include "io-util.h"
-+#include "khash.h"
- #include "log.h"
- #include "machine-id-setup.h"
- #include "macro.h"
-@@ -27,6 +29,105 @@
+@@ -20,6 +21,7 @@
+ #include "namespace-util.h"
+ #include "path-util.h"
+ #include "process-util.h"
++#include "sha256.h"
+ #include "stat-util.h"
+ #include "string-util.h"
+ #include "sync-util.h"
+@@ -27,6 +29,91 @@
  #include "util.h"
  #include "virt.h"
  
@@ -73,8 +73,8 @@ index 6d15f9cd09..0025c9c949 100644
 +         * Useful for keeping persistent machine-id (journal) on a read-only rootfs
 +         * without an initramfs pre-mounting /etc/machine-id */
 +        _cleanup_free_ char *buf = NULL;
-+        _cleanup_(khash_unrefp) khash *hash = NULL;
-+        const void *hbuf = NULL;
++        struct sha256_ctx hctx;
++        uint8_t hbuf[SHA256_DIGEST_SIZE];
 +        size_t buf_size = 0;
 +        int r;
 +
@@ -92,23 +92,9 @@ index 6d15f9cd09..0025c9c949 100644
 +        if (r < 0)
 +                return -1;
 +
-+#if 0
-+        if (khash_supported() <= 0) {
-+                log_info("khash not supported, skipping RPi machine-id generation");
-+                return -1;
-+        }
-+#endif
-+
-+        if (khash_new(&hash, "sha256") < 0) {
-+                log_error("failed to initialize sha256 khash");
-+                return -1;
-+        }
-+
-+        if (khash_put(hash, buf, buf_size) < 0)
-+                return log_error_errno(-1, "failed to send data to khash");
-+
-+        if (khash_digest_data(hash, &hbuf) < 0)
-+                return log_error_errno(-1, "failed to retrieve digest from khash");
++        sha256_init_ctx(&hctx);
++        sha256_process_bytes(buf, buf_size, &hctx);
++        sha256_finish_ctx(&hctx, hbuf);
 +
 +        /* sha256 is twice as big as we need for a machine-id, just use the first half */
 +        memcpy(ret, hbuf, sizeof(*ret));
@@ -124,7 +110,7 @@ index 6d15f9cd09..0025c9c949 100644
  static int generate_machine_id(const char *root, sd_id128_t *ret) {
          const char *dbus_machine_id;
          _cleanup_close_ int fd = -1;
-@@ -78,6 +179,10 @@ static int generate_machine_id(const char *root, sd_id128_t *ret) {
+@@ -73,6 +160,10 @@ static int generate_machine_id(const cha
                  }
          }
  
