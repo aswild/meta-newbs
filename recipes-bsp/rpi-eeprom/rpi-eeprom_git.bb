@@ -9,7 +9,7 @@ COMPATIBLE_MACHINE = "^raspberrypi4$"
 SRCREV = "3129546271da09dde04da5c9715db909b8e1e417"
 PV = "0.1+git${SRCPV}"
 
-SRC_URI = "git://github.com/raspberrypi/rpi-eeprom;protocol=https"
+SRC_URI = "git://github.com/raspberrypi/rpi-eeprom;protocol=https;branch=master"
 S = "${WORKDIR}/git"
 
 FIRMWARE_DIR = "${base_libdir}/firmware/raspberrypi/bootloader"
