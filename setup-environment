@@ -51,7 +51,7 @@ fi
 _wild_yocto_symlink_cache_dir downloads
 _wild_yocto_symlink_cache_dir sstate-cache
 
-export TEMPLATECONF="$NEWBSROOT/meta-newbs/conf"
+export TEMPLATECONF="$NEWBSROOT/meta-newbs/conf/templates/newbs"
 echo $TEMPLATECONF
 source openembedded-core/oe-init-build-env $BUILD_DIR
 unset TEMPLATECONF
