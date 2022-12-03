@@ -12,7 +12,7 @@ EXTRA_OEMAKE = " \
  HOSTCFLAGS='${BUILD_CFLAGS}' \
  HOSTLDFLAGS='${BUILD_LDFLAGS}'"
 
-do_compile_prepend() {
+do_compile:prepend() {
     oe_runmake clean || bbwarn "oe_runmake clean failed"
 }
 
@@ -31,13 +31,13 @@ do_install() {
     fi
 }
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"
 PACKAGES =+ "newbs-lastboot-timestamp"
-FILES_newbs-lastboot-timestamp = "${systemd_unitdir}/system/*"
+FILES:newbs-lastboot-timestamp = "${systemd_unitdir}/system/*"
 
 inherit systemd
 SYSTEMD_PACKAGES = "newbs-lastboot-timestamp"
-SYSTEMD_SERVICE_newbs-lastboot-timestamp = "lastboot-timestamp.service"
+SYSTEMD_SERVICE:newbs-lastboot-timestamp = "lastboot-timestamp.service"
 
 inherit deploy image-artifact-names
 do_deploy() {

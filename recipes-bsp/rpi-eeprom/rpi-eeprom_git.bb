@@ -13,8 +13,8 @@ SRC_URI = "git://github.com/raspberrypi/rpi-eeprom;protocol=https"
 S = "${WORKDIR}/git"
 
 FIRMWARE_DIR = "${base_libdir}/firmware/raspberrypi/bootloader"
-FILES_${PN} += "${FIRMWARE_DIR}"
-RDEPENDS_${PN} = "python3-core python3-modules"
+FILES:${PN} += "${FIRMWARE_DIR}"
+RDEPENDS:${PN} = "python3-core python3-modules"
 
 do_configure() {
     # set shebang line to system python3

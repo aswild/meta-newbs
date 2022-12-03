@@ -20,7 +20,7 @@
  * IN THE SOFTWARE
  *
  * pi-serial-number: a sample program to read a Pi's serial number by quering VCHI.
- * Link with -lvcos -lvchiq_arm -lvhcostif
+ * Link with -lvcos -lvchiq:arm -lvhcostif
  */
 
 #include <stdio.h>

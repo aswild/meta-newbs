@@ -22,4 +22,4 @@ do_install() {
     install -m 644 ${B}/include/spi/shiftbrite.h ${D}${includedir}/spi
 }
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"

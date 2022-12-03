@@ -5,7 +5,7 @@ IMAGE_INSTALL += " \
     packagegroup-wild-devtools \
 "
 
-IMAGE_INSTALL_append_raspberrypi4 = " rpi-eeprom"
+IMAGE_INSTALL:append_raspberrypi4 = " rpi-eeprom"
 
 symlink_pyth() {
     if [ ! -e ${IMAGE_ROOTFS}${bindir}/python ] && [ -e ${IMAGE_ROOTFS}${bindir}/python3 ]; then

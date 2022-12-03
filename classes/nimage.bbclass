@@ -31,7 +31,7 @@ rootfs_ptype() {
     echo $ptype
 }
 
-IMAGE_CMD_nimage() {
+IMAGE_CMD:nimage() {
     bootimg_name="$(basename ${DEPLOY_BOOTIMG_SYMLINK})"
 
     set -x

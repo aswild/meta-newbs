@@ -2,7 +2,7 @@ SUMMARY = "Kodi Media Center Packagegroup"
 
 inherit packagegroup
 
-RDEPENDS_${PN} = " \
+RDEPENDS:${PN} = " \
     kodi \
     kodi-autostart \
     libkodiplatform \

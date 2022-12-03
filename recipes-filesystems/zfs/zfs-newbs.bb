@@ -14,9 +14,9 @@ do_install() {
 }
 
 inherit systemd
-SYSTEMD_SERVICE_${PN} = "zfs-import-zpi.service"
+SYSTEMD_SERVICE:${PN} = "zfs-import-zpi.service"
 
-pkg_postinst_${PN}() {
+pkg_postinst:${PN}() {
     cat >>$D${sysconfdir}/fstab <<EOF
 zpi/home    /home       zfs rw,nofail,x-systemd.requires=zfs-import.target  0 0
 zpi/log     /var/log    zfs rw,nofail,x-systemd.requires=zfs-import.target  0 0

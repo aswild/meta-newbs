@@ -3,6 +3,6 @@
 # can continue configuring in distro configs rather than just this recipe.
 NEWBS_CMDLINE ??= "${CMDLINE}"
 
-do_compile_append() {
+do_compile:append() {
     echo '${NEWBS_CMDLINE}' >${WORKDIR}/cmdline.txt
 }

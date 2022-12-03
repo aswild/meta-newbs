@@ -3,8 +3,8 @@
 inherit wild-image
 
 # BCJ filters for squashfs
-EXTRA_IMAGECMD_squashfs-xz_append_arm = "-Xbcj arm"
-EXTRA_IMAGECMD_squashfs-xz_append_aarch64 = "-Xbcj arm"
+EXTRA_IMAGECMD:squashfs-xz:append:arm = "-Xbcj arm"
+EXTRA_IMAGECMD:squashfs-xz:append:aarch64 = "-Xbcj arm"
 
 # whether to enable wpa_supplicant@wlan0.service
 RPI_WIFI_AUTOSTART ?= "0"
@@ -31,11 +31,11 @@ newbs_rootfs_postprocess() {
     bbnote "Removing /etc/network"
     rm -rf ${IMAGE_ROOTFS}${sysconfdir}/network
 }
-ROOTFS_POSTPROCESS_COMMAND_append = " newbs_rootfs_postprocess;"
+ROOTFS_POSTPROCESS_COMMAND:append = " newbs_rootfs_postprocess;"
 
 symlink_dd_to_sdcard() {
     if [ ! -e "${DEPLOY_DIR_IMAGE}/dd-to-sdcard.sh" ]; then
         ln -sv "${NEWBSROOT}/meta-newbs/dd-to-sdcard.sh" ${DEPLOY_DIR_IMAGE}
     fi
 }
-IMAGE_POSTPROCESS_COMMAND_append = " symlink_dd_to_sdcard;"
+IMAGE_POSTPROCESS_COMMAND:append = " symlink_dd_to_sdcard;"

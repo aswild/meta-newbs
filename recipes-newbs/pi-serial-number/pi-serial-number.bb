@@ -9,7 +9,7 @@ SRC_URI = "file://pi-serial-number.c"
 S = "${WORKDIR}"
 
 do_compile() {
-    ${CCLD} ${CFLAGS} -Wall -Werror ${LDFLAGS} -o pi-serial-number pi-serial-number.c -lvcos -lvchiq_arm -lvchostif
+    ${CCLD} ${CFLAGS} -Wall -Werror ${LDFLAGS} -o pi-serial-number pi-serial-number.c -lvcos -lvchiq:arm -lvchostif
 }
 
 do_install() {

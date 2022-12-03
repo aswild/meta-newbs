@@ -2,7 +2,7 @@
 
 EXTRA_CONFIG_TXT ??= ""
 
-do_deploy_append_raspberrypi3() {
+do_deploy:append_raspberrypi3() {
     CONFIG=${DEPLOYDIR}/${BOOTFILES_DIR_NAME}/config.txt
 
     tee $CONFIG <<EOF
@@ -14,7 +14,7 @@ EOF
 
 }
 
-do_deploy_append_raspberrypi4-64() {
+do_deploy:append_raspberrypi4-64() {
     tee ${DEPLOYDIR}/${BOOTFILES_DIR_NAME}/config.txt <<EOF
 #### NEWBS CONFIG ####
 dtoverlay=disable-bt

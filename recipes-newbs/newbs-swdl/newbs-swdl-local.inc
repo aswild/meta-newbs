@@ -3,7 +3,7 @@
 NEWBS_SRCNAME = "swdl"
 inherit newbs-localsrc
 
-do_configure_prepend() {
+do_configure:prepend() {
     # clean source directory before building in case I had build objects
     # in there from local development
     if [ -f ${S}/Makefile ]; then

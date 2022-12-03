@@ -49,7 +49,7 @@ BOOTIMG_INITRAMFS ?= ""
 BOOTIMG_INITRAMFS_FILE = "${@get_initramfs_file(d)}"
 
 KERNEL_NAME = "kernel7.img"
-KERNEL_NAME_aarch64 = "kernel8.img"
+KERNEL_NAME:aarch64 = "kernel8.img"
 
 # 48 MB default boot partition (in 1K blocks)
 DEFAULT_BOOTIMG_SIZE = "32768"
@@ -77,7 +77,7 @@ DEPLOY_BOOTTAR_NAME    = "${IMAGE_NAME}.boot.tar.zst"
 DEPLOY_BOOTTAR         = "${IMGDEPLOYDIR}/${DEPLOY_BOOTTAR_NAME}"
 DEPLOY_BOOTTAR_SYMLINK = "${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.boot.tar.zst"
 
-IMAGE_CMD_newbs-bootimg() {
+IMAGE_CMD:newbs-bootimg() {
     BOOT_DIR=${WORKDIR}/boot
     rm -rf ${BOOT_DIR}
     install -d $BOOT_DIR

@@ -4,7 +4,7 @@ LICENSE = "MIT"
 inherit packagegroup
 
 PACKAGES += "${PN}-core"
-RDEPENDS_${PN}-core = " \
+RDEPENDS:${PN}-core = " \
     packagegroup-base \
     packagegroup-wild-core \
     newbs-lastboot-timestamp \
@@ -16,7 +16,7 @@ RDEPENDS_${PN}-core = " \
 "
 
 PACKAGES += "${PN}-full-cmdline"
-RDEPENDS_${PN}-full-cmdline = " \
+RDEPENDS:${PN}-full-cmdline = " \
     ${PN}-core \
     ${PN}-zfs \
     packagegroup-wild-utils \
@@ -30,7 +30,7 @@ RDEPENDS_${PN}-full-cmdline = " \
 "
 
 PACKAGES += "${PN}-zfs"
-RDEPENDS_${PN}-zfs = " \
+RDEPENDS:${PN}-zfs = " \
     zfs-module \
     zfs-tools \
     zfs-newbs \

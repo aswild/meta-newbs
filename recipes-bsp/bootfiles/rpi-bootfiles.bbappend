@@ -1,6 +1,6 @@
 # remove unnecessary firmware
 
-do_deploy_append() {
+do_deploy:append() {
     local _not
     case "${MACHINE}" in
         raspberrypi4*)

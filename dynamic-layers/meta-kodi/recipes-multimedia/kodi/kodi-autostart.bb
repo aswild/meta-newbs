@@ -11,19 +11,19 @@ SRC_URI = " \
 
 S = "${WORKDIR}"
 
-RDEPENDS_${PN} = "kodi"
+RDEPENDS:${PN} = "kodi"
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${systemd_unitdir}/system/kodi.service \
     ${sysconfdir}/udev/rules.d/80-kodi.rules \
 "
 
 inherit useradd systemd
-SYSTEMD_SERVICE_${PN} = "kodi.service"
+SYSTEMD_SERVICE:${PN} = "kodi.service"
 GROUPADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = "--gid 1500 kodi"
+GROUPADD_PARAM:${PN} = "--gid 1500 kodi"
 USERADD_PACKAGES = "${PN}"
-USERADD_PARAM_${PN} = "--home-dir /home/kodi --uid 1500 --gid 1500 -G input,tty,video,disk kodi"
+USERADD_PARAM:${PN} = "--home-dir /home/kodi --uid 1500 --gid 1500 -G input,tty,video,disk kodi"
 
 do_install() {
     install -m644 -D ${WORKDIR}/kodi.service ${D}${systemd_unitdir}/system/kodi.service

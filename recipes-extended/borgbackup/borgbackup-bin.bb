@@ -5,10 +5,10 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=a8e043b87e94a013793baa08b364c941"
 
 PROVIDES = "borgbackup"
-RPROVIDES_${PN} = "borgbackup"
+RPROVIDES:${PN} = "borgbackup"
 
 BORG_ARCH = "unsupported_arch"
-BORG_ARCH_aarch64 = "arm64"
+BORG_ARCH:aarch64 = "arm64"
 SRCNAME = "borg-${PV}-${BORG_ARCH}"
 
 PV = "1.1.16"
@@ -25,5 +25,5 @@ do_install() {
     install -Dm755 ${SRCNAME} ${D}${bindir}/borg
 }
 
-INSANE_SKIP_${PN} += "already-stripped"
-RDEPENDS_${PN} = "libxcrypt-compat zlib"
+INSANE_SKIP:${PN} += "already-stripped"
+RDEPENDS:${PN} = "libxcrypt-compat zlib"
