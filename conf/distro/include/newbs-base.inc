@@ -14,7 +14,7 @@ BBMASK += " \
 LICENSE_FLAGS_ACCEPTED += "synaptics-killswitch"
 
 # DISTRO_FEATURES_DEFAULT, minus some things
-DISTRO_FEATURES = "acl argp ext2 largefile pci usbhost xattr ${DISTRO_FEATURES_LIBC}"
+DISTRO_FEATURES = "acl argp ext2 ipv4 ipv6 largefile pci usbhost wifi xattr"
 
 # extra features
 DISTRO_FEATURES += "ld-is-gold pam usrmerge"
@@ -50,9 +50,9 @@ DTB_DEPLOYDIR = "dtb"
 
 # kernel commandline
 NEWBS_ROOT ?= "/dev/mmcblk0p2"
-# FIXME systemd breaks and kernel panics if console=tty1 and no HDMI connected
-#CMDLINE = "dwc_otg.lpm_enable=0 console=tty1 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk"
-NEWBS_CMDLINE = "dwc_otg.lpm_enable=0 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk"
+
+# use systemd net naming scheme v251 to avoid renaming "eth0" into "end0". See systemd.net-naming-scheme(7)
+NEWBS_CMDLINE = "console=tty1 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk net.naming-scheme=v251"
 NEWBS_CMDLINE:append_debug = " debug"
 SERIAL_CONSOLES = "115200;ttyAMA0"
 
