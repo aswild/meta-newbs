@@ -82,8 +82,9 @@ EXTRA_CONFIG_TXT:append = "${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', \
 
 
 ##### Image stuff #####
-IMAGE_CLASSES = "newbs-bootimg nimage squashfs-zstd"
-IMAGE_FSTYPES = "ext4 squashfs-zstd newbs-bootimg nimage"
-IMAGE_FEATURES += " \
-    read-only-rootfs \
-"
+IMAGE_CLASSES = "newbs-bootimg nimage"
+IMAGE_FSTYPES = "ext4 squashfs-zst newbs-bootimg nimage"
+IMAGE_FEATURES += "read-only-rootfs"
+
+# remove IMAGE_NAME_SUFFIX (".rootfs") from symlink names
+IMAGE_LINK_NAME ?= "${IMAGE_BASENAME}${IMAGE_MACHINE_SUFFIX}"

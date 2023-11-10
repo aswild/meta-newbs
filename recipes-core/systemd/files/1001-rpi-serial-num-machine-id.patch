@@ -10,7 +10,7 @@ Index: git/src/shared/machine-id-setup.c
  #include <unistd.h>
  
  #include "sd-id128.h"
-@@ -20,6 +21,7 @@
+@@ -22,6 +23,7 @@
  #include "namespace-util.h"
  #include "path-util.h"
  #include "process-util.h"
@@ -18,9 +18,9 @@ Index: git/src/shared/machine-id-setup.c
  #include "stat-util.h"
  #include "string-util.h"
  #include "sync-util.h"
-@@ -27,6 +29,91 @@
- #include "util.h"
- #include "virt.h"
+@@ -46,6 +48,91 @@ static int acquire_machine_id_from_crede
+         return 0;
+ }
  
 +static int read_file_contents(const char *path, char **buf_out, size_t *size_out) {
 +        int r;
@@ -108,9 +108,9 @@ Index: git/src/shared/machine-id-setup.c
 +}
 +
  static int generate_machine_id(const char *root, sd_id128_t *ret) {
-         const char *dbus_machine_id;
-         _cleanup_close_ int fd = -1;
-@@ -73,6 +160,10 @@ static int generate_machine_id(const cha
+         _cleanup_close_ int fd = -EBADF;
+         int r;
+@@ -91,6 +178,10 @@ static int generate_machine_id(const cha
                  }
          }
  
