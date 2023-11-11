@@ -21,9 +21,6 @@ while (($#)); do
         build-*)
             BUILD_DIR="$1"
             ;;
-        mce)
-            DISTRO="newbs-mce"
-            ;;
         unifi)
             DISTRO="newbs-unifi"
             ;;
@@ -62,14 +59,6 @@ LOCAL_CONF="conf/local.conf"
 
 # post-process conf files
 _wild_yocto_subst_confvars $BB_CONF $LOCAL_CONF -- NEWBSROOT MACHINE DISTRO
-
-# remove meta-kodi unless we're using the mce distro
-if [[ $DISTRO != "newbs-mce" ]]; then
-    sed -i 's/^BBLAYERS.*meta-kodi.*/#\0/' $BB_CONF
-fi
-if [[ $DISTRO != "newbs-unifi" ]]; then
-    sed -i 's/^BBLAYERS.*meta-java.*/#\0/' $BB_CONF
-fi
 
 # unset unused variables
 unset BUILD_DIR BB_CONF LOCAL_CONF NEWBSROOT MACHINE DISTRO

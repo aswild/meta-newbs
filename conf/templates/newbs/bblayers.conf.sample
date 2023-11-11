@@ -15,7 +15,6 @@ BBLAYERS =+ "${NEWBSROOT}/meta-openembedded/meta-multimedia"
 BBLAYERS =+ "${NEWBSROOT}/meta-openembedded/meta-networking"
 BBLAYERS =+ "${NEWBSROOT}/meta-openembedded/meta-webserver"
 BBLAYERS =+ "${NEWBSROOT}/meta-openembedded/meta-python"
-BBLAYERS =+ "${NEWBSROOT}/meta-kodi"
 BBLAYERS =+ "${NEWBSROOT}/meta-raspberrypi"
 
 BBLAYERS =+ "${NEWBSROOT}/meta-wild-common"

@@ -31,7 +31,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/linux-raspberrypi-newbs-${LINUX_VERSION_S
 SRC_URI += " \
     file://defconfig-pi4-64.cfg \
     ${@('file://rpi3-64.cfg', '')['raspberrypi4' in d.getVar('MACHINE')]} \
-    ${@bb.utils.contains('DISTRO', 'newbs-mce', 'file://media-drivers.cfg', '', d)} \
     file://newbs-localversion.cfg \
 "
 

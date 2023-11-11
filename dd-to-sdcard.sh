@@ -33,9 +33,6 @@ while (($#)); do
         sd*)
             disk=/dev/$1
             ;;
-        mce)
-            image=newbs-mce-image
-            ;;
         mini)
             image=newbs-mini-image
             ;;
