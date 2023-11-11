@@ -18,8 +18,6 @@ DISTRO_FEATURES = "acl argp ext2 ipv4 ipv6 largefile pci usbhost wifi xattr"
 
 # extra features
 DISTRO_FEATURES += "ld-is-gold pam usrmerge"
-DISTRO_FEATURES:append_raspberrypi3 = " wifi"
-DISTRO_FEATURES:append_raspberrypi4 = " wifi"
 
 # remove unwanted machine features from meta-raspberrypi
 MACHINE_FEATURES:remove = "apm touchscreen alsa bluetooth"
@@ -53,7 +51,7 @@ NEWBS_ROOT ?= "/dev/mmcblk0p2"
 
 # use systemd net naming scheme v251 to avoid renaming "eth0" into "end0". See systemd.net-naming-scheme(7)
 NEWBS_CMDLINE = "console=tty1 console=serial0,115200 root=${NEWBS_ROOT} rootwait earlyprintk net.naming-scheme=v251"
-NEWBS_CMDLINE:append_debug = " debug"
+NEWBS_CMDLINE:append:debug = " debug"
 SERIAL_CONSOLES = "115200;ttyAMA0"
 
 # kernel device tree
