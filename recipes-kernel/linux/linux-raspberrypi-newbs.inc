@@ -6,7 +6,7 @@ inherit kernel-yocto
 SUMMARY = "Linux kernel"
 DESCRIPTION = "Linux Kernel for Raspberry Pi"
 SECTION = "kernel"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 HOMEPAGE = "https://github.com/raspberrypi/linux"
 
 SRCPV := "${@d.getVar('SRCREV')[:12]}"
