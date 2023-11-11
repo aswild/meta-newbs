@@ -17,7 +17,7 @@ LICENSE_FLAGS_ACCEPTED += "synaptics-killswitch"
 DISTRO_FEATURES = "acl argp ext2 ipv4 ipv6 largefile pci usbhost wifi xattr"
 
 # extra features
-DISTRO_FEATURES += "ld-is-gold pam usrmerge"
+DISTRO_FEATURES += "pam usrmerge"
 
 # remove unwanted machine features from meta-raspberrypi
 MACHINE_FEATURES:remove = "apm touchscreen alsa bluetooth"
