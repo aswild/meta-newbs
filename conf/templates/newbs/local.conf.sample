@@ -122,7 +122,8 @@ PACKAGE_CLASSES ?= "package_ipk"
 #  "debug-tweaks"   - make an image suitable for development
 #                     e.g. ssh root access has a blank password
 # There are other application targets that can be used here too, see
-# meta/classes/image.bbclass and meta/classes/core-image.bbclass for more details.
+# meta/classes-recipe/image.bbclass and
+# meta/classes-recipe/core-image.bbclass for more details.
 # We default to enabling the debugging tweaks.
 EXTRA_IMAGE_FEATURES ?= "debug-tweaks"
 
@@ -142,7 +143,7 @@ USER_CLASSES ?= "buildstats"
 # The build system can test booting virtual machine images under qemu (an emulator)
 # after any root filesystems are created and run tests against those images. It can also
 # run tests against any SDK that are built. To enable this uncomment these lines.
-# See classes/test{image,sdk}.bbclass for further details.
+# See meta/classes-recipe/test{image,sdk}.bbclass for further details.
 #IMAGE_CLASSES += "testimage testsdk"
 #TESTIMAGE_AUTO:qemuall = "1"
 
@@ -207,13 +208,16 @@ BB_DISKMON_DIRS ??= "\
 #
 # Qemu configuration
 #
-# By default qemu will build with a builtin VNC server where graphical output can be
-# seen. The two lines below enable the SDL backend too. By default libsdl2-native will
-# be built, if you want to use your host's libSDL instead of the minimal libsdl built
-# by libsdl2-native then uncomment the ASSUME_PROVIDED line below.
+# By default native qemu will build with a builtin VNC server where graphical output can be
+# seen. The line below enables the SDL UI frontend too.
 PACKAGECONFIG:append:pn-qemu-system-native = " sdl"
-PACKAGECONFIG:append:pn-nativesdk-qemu = " sdl"
+# By default libsdl2-native will be built, if you want to use your host's libSDL instead of
+# the minimal libsdl built by libsdl2-native then uncomment the ASSUME_PROVIDED line below.
 #ASSUME_PROVIDED += "libsdl2-native"
+
+# You can also enable the Gtk UI frontend, which takes somewhat longer to build, but adds
+# a handy set of menus for controlling the emulator.
+#PACKAGECONFIG:append:pn-qemu-system-native = " gtk+"
 
 #
 # Hash Equivalence
