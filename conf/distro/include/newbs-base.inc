@@ -41,7 +41,7 @@ PREFERRED_PROVIDER_borgbackup ?= "borgbackup-bin"
 
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
-PREFERRED_VERSION_linux-raspberrypi-newbs ?= "5.10%"
+PREFERRED_VERSION_linux-raspberrypi-newbs ?= "6.1%"
 KERNEL_IMAGETYPE:arm = "zImage"
 KERNEL_IMAGETYPE:aarch64 = "Image"
 DTB_DEPLOYDIR = "dtb"
