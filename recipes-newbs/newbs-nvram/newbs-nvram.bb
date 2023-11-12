@@ -3,7 +3,7 @@
 # nvram directory on the target
 NEWBS_NVRAM_DIR ?= "/home/newbs-nvram"
 
-LICENSE = "GPL-2.0"
+LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=3263e5b0ff3ce562fdbd8938623c5508"
 
 PV = "1.0"
