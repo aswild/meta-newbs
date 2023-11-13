@@ -2,6 +2,9 @@
 
 inherit wild-image
 
+# remove the '.rootfs' from image names
+IMAGE_NAME_SUFFIX = ""
+
 # BCJ filters for squashfs
 EXTRA_IMAGECMD:squashfs-xz:append:arm = "-Xbcj arm"
 EXTRA_IMAGECMD:squashfs-xz:append:aarch64 = "-Xbcj arm"

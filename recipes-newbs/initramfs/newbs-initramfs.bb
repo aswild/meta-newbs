@@ -39,7 +39,10 @@ inherit systemd
 SYSTEMD_PACKAGES = "newbs-lastboot-timestamp"
 SYSTEMD_SERVICE:newbs-lastboot-timestamp = "lastboot-timestamp.service"
 
-inherit deploy image-artifact-names
+inherit image-artifact-names
+IMAGE_NAME_SUFFIX = ""
+
+inherit deploy
 do_deploy() {
     # sanity check - these should be set in image-artifact-names.bbclass
     [ -n "${IMAGE_NAME}" ] || bbfatal "IMAGE_NAME is unset or empty"
