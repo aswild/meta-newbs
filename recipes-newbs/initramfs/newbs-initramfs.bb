@@ -2,10 +2,13 @@ SUMMARY = "Basic single-file initramfs"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
+COMPATIBLE_MACHINE = "^rpi$"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 inherit newbs-localsrc
 NEWBS_SRCNAME = "init"
 
-DEPENDS = "gzip-native"
+DEPENDS = "zstd-native"
 
 EXTRA_OEMAKE = " \
  HOSTCC='${BUILD_CC}' \
@@ -48,7 +51,7 @@ do_deploy() {
     [ -n "${IMAGE_NAME}" ] || bbfatal "IMAGE_NAME is unset or empty"
     [ -n "${IMAGE_LINK_NAME}" ] || bbfatal "IMAGE_LINK_NAME is unset or empty"
 
-    install -Dm644 ${B}/init.cpio.gz ${DEPLOYDIR}/${IMAGE_NAME}.cpio.gz
-    ln -sfv ${IMAGE_NAME}.cpio.gz ${DEPLOYDIR}/${IMAGE_LINK_NAME}.cpio.gz
+    install -Dm644 ${B}/init.cpio.zst ${DEPLOYDIR}/${IMAGE_NAME}.cpio.zst
+    ln -sfv ${IMAGE_NAME}.cpio.zst ${DEPLOYDIR}/${IMAGE_LINK_NAME}.cpio.zst
 }
 addtask deploy after do_compile
