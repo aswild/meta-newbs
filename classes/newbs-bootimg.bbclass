@@ -28,7 +28,7 @@ def get_initramfs_file(d):
     if initramfs_name:
         dd = d.createCopy()
         dd.setVar('IMAGE_BASENAME', initramfs_name)
-        initramfs_link_name = dd.getVar('IMAGE_LINK_NAME') + '.cpio.gz'
+        initramfs_link_name = dd.getVar('IMAGE_LINK_NAME') + '.cpio.zst'
         return os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), initramfs_link_name)
     return ''
 
@@ -133,8 +133,8 @@ IMAGE_CMD:newbs-bootimg() {
         fi
 
         bbnote "Installing ${BOOTIMG_INITRAMFS_FILE} as initramfs"
-        install -m644 ${BOOTIMG_INITRAMFS_FILE} $BOOT_DIR/initramfs.cpio.gz
-        echo "initramfs initramfs.cpio.gz followkernel" >>$BOOT_DIR/config.txt
+        install -m644 ${BOOTIMG_INITRAMFS_FILE} $BOOT_DIR/initramfs.cpio.zst
+        echo "initramfs initramfs.cpio.zst followkernel" >>$BOOT_DIR/config.txt
     fi
 
     rm -f ${DEPLOY_BOOTIMG}
