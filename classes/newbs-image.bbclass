@@ -33,6 +33,12 @@ newbs_rootfs_postprocess() {
     # we use systemd-networkd, not ifupdown
     bbnote "Removing /etc/network"
     rm -rf ${IMAGE_ROOTFS}${sysconfdir}/network
+
+    if [ "${ROOT_HOME}" != "/root" ] && [ ! -e ${IMAGE_ROOTFS}/root ]; then
+        bbnote "symlinking /root to ${ROOT_HOME}"
+        local root_home="${ROOT_HOME}" # bitbake variable to shell variable
+        ln -s ${root_home#/} ${IMAGE_ROOTFS}/root
+    fi
 }
 ROOTFS_POSTPROCESS_COMMAND:append = " newbs_rootfs_postprocess;"
 
