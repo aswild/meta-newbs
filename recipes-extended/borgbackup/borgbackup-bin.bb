@@ -11,10 +11,10 @@ BORG_ARCH = "unsupported_arch"
 BORG_ARCH:aarch64 = "arm64"
 SRCNAME = "borg-${PV}-${BORG_ARCH}"
 
-PV = "1.2.6"
+PV = "1.4.0"
 SRC_URI = "https://borg.bauerj.eu/bin/${SRCNAME};name=${BORG_ARCH} \
            file://LICENSE"
-SRC_URI[arm64.sha256sum] = "127e24e4e41a27db5305cad86fef0ff43bb869b76b23afad0521fcdf4076efa5"
+SRC_URI[arm64.sha256sum] = "a274e27f8c26a3319caed9276c7170a415690f560b0bb16006208e5190924d84"
 
 S = "${WORKDIR}"
 
