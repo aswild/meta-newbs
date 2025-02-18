@@ -71,6 +71,7 @@ NEOSTRIP_OVERLAYS = " \
 
 RPI_KERNEL_DEVICETREE_OVERLAYS = " \
     overlays/disable-bt.dtbo \
+    overlays/i2c1.dtbo \
     overlays/miniuart-bt.dtbo \
     ${@bb.utils.contains('KERNEL_FEATURES', 'neostrip', '${NEOSTRIP_OVERLAYS}', '', d)} \
 "
