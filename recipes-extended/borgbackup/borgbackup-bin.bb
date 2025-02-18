@@ -16,7 +16,8 @@ SRC_URI = "https://borg.bauerj.eu/bin/${SRCNAME};name=${BORG_ARCH} \
            file://LICENSE"
 SRC_URI[arm64.sha256sum] = "a274e27f8c26a3319caed9276c7170a415690f560b0bb16006208e5190924d84"
 
-S = "${WORKDIR}"
+S = "${WORKDIR}/sources"
+UNPACKDIR = "${S}"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"

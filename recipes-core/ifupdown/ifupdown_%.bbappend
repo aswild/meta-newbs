@@ -20,6 +20,6 @@ do_install:append() {
                ${D}${sysconfdir}/network/if-post-down.d \
                ${D}${systemd_unitdir}/system
 
-    install -m 0644 ${WORKDIR}/interfaces ${D}${sysconfdir}/network/interfaces
-    install -m 0644 ${WORKDIR}/ifup.service ${D}${systemd_unitdir}/system
+    install -m 0644 ${UNPACKDIR}/interfaces ${D}${sysconfdir}/network/interfaces
+    install -m 0644 ${UNPACKDIR}/ifup.service ${D}${systemd_unitdir}/system
 }

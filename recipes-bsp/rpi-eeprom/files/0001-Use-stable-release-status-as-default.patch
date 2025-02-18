@@ -10,18 +10,15 @@ Upstream-Status: Inappropriate
  rpi-eeprom-update-default | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/rpi-eeprom-update-default b/rpi-eeprom-update-default
-index ef02791..7e6fbcf 100644
---- a/rpi-eeprom-update-default
-+++ b/rpi-eeprom-update-default
+Index: git/rpi-eeprom-update-default
+===================================================================
+--- git.orig/rpi-eeprom-update-default
++++ git/rpi-eeprom-update-default
 @@ -1,6 +1,5 @@
 -
  FIRMWARE_ROOT=/lib/firmware/raspberrypi/bootloader
 -FIRMWARE_RELEASE_STATUS="default"
 +FIRMWARE_RELEASE_STATUS="stable"
  FIRMWARE_BACKUP_DIR="/var/lib/raspberrypi/bootloader/backup"
- USE_FLASHROM=0
  EEPROM_CONFIG_HOOK=
--- 
-2.43.0
-
+ 

@@ -27,7 +27,7 @@ BAD_RECOMMENDATIONS = "vim-tutor"
 
 # don't make /var/log a symlink to /var/volatile/log, we'll handle it manually
 # with a bind mount to /home/log (if it exists) or /var/volatile/log (which we'll make)
-VOLATILE_LOG_DIR = "no"
+FILESYSTEM_PERMS_TABLES:remove = "files/fs-perms-volatile-log.txt"
 
 # disable tcmalloc on mongodb, it causes segfaults in dunfell for reasons I don't care to debug
 PACKAGECONFIG:remove:pn-mongodb = "tcmalloc"

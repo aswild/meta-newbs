@@ -9,8 +9,8 @@ Index: git/src/shared/machine-id-setup.c
 +#include <sys/stat.h>
  #include <unistd.h>
  
- #include "sd-id128.h"
-@@ -22,6 +23,7 @@
+ #include "sd-daemon.h"
+@@ -24,6 +25,7 @@
  #include "namespace-util.h"
  #include "path-util.h"
  #include "process-util.h"
@@ -18,7 +18,7 @@ Index: git/src/shared/machine-id-setup.c
  #include "stat-util.h"
  #include "string-util.h"
  #include "sync-util.h"
-@@ -46,6 +48,91 @@ static int acquire_machine_id_from_crede
+@@ -48,6 +50,91 @@ static int acquire_machine_id_from_crede
          return 0;
  }
  
@@ -67,8 +67,8 @@ Index: git/src/shared/machine-id-setup.c
 +        return 0;
 +}
 +
-+static int generate_rpi_machine_id(sd_id128_t *ret) {
-+        /* Generate a machine ID based on hmac(md5) of the RPi's serial
++static int acquire_rpi_machine_id(sd_id128_t *ret) {
++        /* Generate a machine ID based on SHA256 of the RPi's serial
 +         * number in /proc/device-tree/serial-number.
 +         * Useful for keeping persistent machine-id (journal) on a read-only rootfs
 +         * without an initramfs pre-mounting /etc/machine-id */
@@ -107,15 +107,15 @@ Index: git/src/shared/machine-id-setup.c
 +        return 0;
 +}
 +
- static int generate_machine_id(const char *root, sd_id128_t *ret) {
+ static int acquire_machine_id(const char *root, sd_id128_t *ret) {
          _cleanup_close_ int fd = -EBADF;
          int r;
-@@ -91,6 +178,10 @@ static int generate_machine_id(const cha
+@@ -101,6 +188,10 @@ static int acquire_machine_id(const char
                  }
          }
  
 +        /* If that didn't work, check if we're a Raspberry Pi and use its serial number */
-+        if (generate_rpi_machine_id(ret) == 0)
++        if (acquire_rpi_machine_id(ret) == 0)
 +                return 0;
 +
          /* If that didn't work, generate a random machine id */
