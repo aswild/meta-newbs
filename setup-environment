@@ -1,4 +1,4 @@
-#!/hint/bash
+#!/bin/bash
 
 thisdir=$(pwd)
 
