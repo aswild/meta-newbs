@@ -48,9 +48,6 @@ def volume_id(d):
 BOOTIMG_INITRAMFS ?= ""
 BOOTIMG_INITRAMFS_FILE = "${@get_initramfs_file(d)}"
 
-KERNEL_NAME = "kernel7.img"
-KERNEL_NAME:aarch64 = "kernel8.img"
-
 # 48 MB default boot partition (in 1K blocks)
 DEFAULT_BOOTIMG_SIZE = "32768"
 BOOTIMG_SIZE ?= "${DEFAULT_BOOTIMG_SIZE}"
@@ -106,7 +103,7 @@ IMAGE_CMD:newbs-bootimg() {
     # copy U-boot files and kernel
     if [ "${RPI_USE_U_BOOT}" = "1" ]; then
         # install u-boot as kernel*.img
-        install -m 644 ${DEPLOY_DIR_IMAGE}/u-boot.bin $BOOT_DIR/${KERNEL_NAME}
+        install -m 644 ${DEPLOY_DIR_IMAGE}/u-boot.bin $BOOT_DIR/${SDIMG_KERNELIMAGE}
         # install kernel as *Image
         install -m 644 ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}${@kernel_initramfs_extension(d)}-${MACHINE}.bin \
                        $BOOT_DIR/${KERNEL_IMAGETYPE}
@@ -115,7 +112,7 @@ IMAGE_CMD:newbs-bootimg() {
     else
         # install kernel as kernel*.img
         install -m 644 ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}${@kernel_initramfs_extension(d)}-${MACHINE}.bin \
-                       $BOOT_DIR/${KERNEL_NAME}
+                       $BOOT_DIR/${SDIMG_KERNELIMAGE}
     fi
 
     # copy armstub

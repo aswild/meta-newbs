@@ -12,7 +12,7 @@ HOMEPAGE = "https://github.com/raspberrypi/linux"
 SRCPV := "${@d.getVar('SRCREV')[:12]}"
 PV = "${LINUX_VERSION}+git${SRCPV}"
 
-COMPATIBLE_MACHINE = "^raspberrypi[234]-64$"
+COMPATIBLE_MACHINE = "^raspberrypi(4-64|5)$"
 KCONFIG_MODE ?= "allnoconfig"
 # note: this needs to match newbs-localversion.cfg or do_kernel_configcheck will complain
 LINUX_VERSION_EXTENSION = "-newbs"
@@ -28,9 +28,13 @@ KERNEL_LD += "${TOOLCHAIN_OPTIONS}"
 # LINUX_VERSION must be set before including this file
 LINUX_VERSION_SHORT = "${@'.'.join(d.getVar('LINUX_VERSION').split('.')[:2])}"
 FILESEXTRAPATHS:prepend := "${THISDIR}/linux-raspberrypi-newbs-${LINUX_VERSION_SHORT}:"
+
+NEWBS_KERNEL_DEFCONFIG = ""
+NEWBS_KERNEL_DEFCONFIG:raspberrypi4-64 = "defconfig-pi4-64.cfg"
+NEWBS_KERNEL_DEFCONFIG:raspberrypi5 = "defconfig-pi5.cfg"
+
 SRC_URI += " \
-    file://defconfig-pi4-64.cfg \
-    ${@('file://rpi3-64.cfg', '')['raspberrypi4' in d.getVar('MACHINE')]} \
+    file://${NEWBS_KERNEL_DEFCONFIG} \
     file://newbs-localversion.cfg \
 "
 

@@ -18,6 +18,9 @@ while (($#)); do
         64)
             MACHINE=raspberrypi3-64
             ;;
+        pi5)
+            MACHINE=raspberrypi5
+            ;;
         build-*)
             BUILD_DIR="$1"
             ;;

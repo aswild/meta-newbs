@@ -61,6 +61,8 @@ SERIAL_CONSOLES = "115200;ttyAMA0"
 
 # Use only the RPi 4 B dtb, not RPi 400 and CM4
 RPI_KERNEL_DEVICETREE:raspberrypi4-64 = "broadcom/bcm2711-rpi-4-b.dtb"
+# Same for RPi 5
+RPI_KERNEL_DEVICETREE:raspberrypi5 = "broadcom/bcm2712-rpi-5-b.dtb"
 
 NEOSTRIP_OVERLAYS = " \
     overlays/spi0-shiftbrite.dtbo \
