@@ -29,7 +29,7 @@ do_install() {
         # when shutting down both units.
         bbnote "UniFi distro, moving unifi.service after lastboot-timestamp.service"
         install -d ${D}${systemd_unitdir}/system/unifi.service.d
-        echo -e '[Unit]\nAfter=lastboot-timestamp.service' \
+        printf '[Unit]\nAfter=lastboot-timestamp.service\n' \
             >${D}${systemd_unitdir}/system/unifi.service.d/after-lastboot-timestamp.conf
     fi
 }
