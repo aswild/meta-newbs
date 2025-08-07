@@ -10,7 +10,7 @@ Index: git/src/shared/machine-id-setup.c
  #include <unistd.h>
  
  #include "sd-daemon.h"
-@@ -24,6 +25,7 @@
+@@ -24,12 +25,98 @@
  #include "namespace-util.h"
  #include "path-util.h"
  #include "process-util.h"
@@ -18,9 +18,8 @@ Index: git/src/shared/machine-id-setup.c
  #include "stat-util.h"
  #include "string-util.h"
  #include "sync-util.h"
-@@ -48,6 +50,91 @@ static int acquire_machine_id_from_crede
-         return 0;
- }
+ #include "umask-util.h"
+ #include "virt.h"
  
 +static int read_file_contents(const char *path, char **buf_out, size_t *size_out) {
 +        int r;
@@ -107,17 +106,17 @@ Index: git/src/shared/machine-id-setup.c
 +        return 0;
 +}
 +
- static int acquire_machine_id(const char *root, sd_id128_t *ret) {
-         _cleanup_close_ int fd = -EBADF;
+ static int acquire_machine_id_from_credential(sd_id128_t *ret_machine_id) {
+         _cleanup_free_ char *buf = NULL;
          int r;
-@@ -101,6 +188,10 @@ static int acquire_machine_id(const char
+@@ -121,6 +208,10 @@ static int acquire_machine_id(const char
                  }
          }
  
 +        /* If that didn't work, check if we're a Raspberry Pi and use its serial number */
 +        if (acquire_rpi_machine_id(ret) == 0)
-+                return 0;
++            return 0;
 +
-         /* If that didn't work, generate a random machine id */
+         /* If that didn't work, generate a random machine ID */
          r = sd_id128_randomize(ret);
          if (r < 0)

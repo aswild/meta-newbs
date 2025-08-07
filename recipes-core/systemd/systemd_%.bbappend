@@ -1,6 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += " \
     file://after-local-fs.conf \
+    file://1000-autologin-root.patch \
     file://1001-rpi-serial-num-machine-id.patch \
 "
 

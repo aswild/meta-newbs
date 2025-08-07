@@ -1,4 +1,4 @@
-From c0a55364bf956c973bc1e130f63c271b8f2ff0a1 Mon Sep 17 00:00:00 2001
+From 4fd739f1deba7f85b19194c1d9fc1384195a26d4 Mon Sep 17 00:00:00 2001
 From: Allen Wild <allenwild93@gmail.com>
 Date: Sat, 9 Dec 2023 12:02:25 -0500
 Subject: [PATCH] Use stable release status as default
@@ -7,18 +7,21 @@ make "stable" the default release channel instead of "critical".
 
 Upstream-Status: Inappropriate
 ---
- rpi-eeprom-update-default | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ rpi-eeprom-update-default | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Index: git/rpi-eeprom-update-default
-===================================================================
---- git.orig/rpi-eeprom-update-default
-+++ git/rpi-eeprom-update-default
-@@ -1,6 +1,5 @@
--
- FIRMWARE_ROOT=/lib/firmware/raspberrypi/bootloader
+diff --git a/rpi-eeprom-update-default b/rpi-eeprom-update-default
+index 1727048..4126b6a 100644
+--- a/rpi-eeprom-update-default
++++ b/rpi-eeprom-update-default
+@@ -1,6 +1,6 @@
+ 
+ FIRMWARE_ROOT=/usr/lib/firmware/raspberrypi/bootloader
 -FIRMWARE_RELEASE_STATUS="default"
 +FIRMWARE_RELEASE_STATUS="stable"
  FIRMWARE_BACKUP_DIR="/var/lib/raspberrypi/bootloader/backup"
  EEPROM_CONFIG_HOOK=
  
+-- 
+2.50.1
+

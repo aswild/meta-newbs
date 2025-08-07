@@ -1,13 +1,13 @@
-Index: 1.0-r5/serial-getty@.service
+Index: git/units/serial-getty@.service.in
 ===================================================================
---- 1.0-r5.orig/serial-getty@.service
-+++ 1.0-r5/serial-getty@.service
-@@ -30,7 +30,7 @@ Before=rescue.service
- 
+--- git.orig/units/serial-getty@.service.in
++++ git/units/serial-getty@.service.in
+@@ -32,7 +32,7 @@ Before=rescue.service
  [Service]
- Environment="TERM=@TERM@"
--ExecStart=-/sbin/agetty -8 -L %I @BAUDRATE@ $TERM
-+ExecStart=-/sbin/agetty -8 -L --autologin root %I @BAUDRATE@ $TERM
+ # The '-o' option value tells agetty to replace 'login' arguments with '--' for
+ # safety, and then the entered username.
+-ExecStart=-/sbin/agetty -o '-- \\u' --noreset --noclear --keep-baud 115200,57600,38400,9600 - ${TERM}
++ExecStart=-/sbin/agetty -a root -o '-- \\u' --noreset --noclear --keep-baud 115200,57600,38400,9600 - ${TERM}
  Type=idle
  Restart=always
  UtmpIdentifier=%I
