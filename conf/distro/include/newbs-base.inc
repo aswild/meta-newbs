@@ -36,9 +36,6 @@ PACKAGECONFIG:remove:pn-mongodb = "tcmalloc"
 PACKAGECONFIG:remove:pn-lmsensors = "sensord"
 PACKAGECONFIG:remove:pn-lmsensors-config = "sensord"
 
-# prefer the prebuilt borg rather than compiling from source and installing python
-PREFERRED_PROVIDER_borgbackup ?= "borgbackup-bin"
-
 ##### Kernel stuff #####
 PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi-newbs"
 PREFERRED_VERSION_linux-raspberrypi-newbs ?= "6.6%"
