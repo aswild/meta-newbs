@@ -5,8 +5,7 @@ LICENSE = "CLOSED"
 
 SRC_URI = "file://zfs-import-zpi.service"
 
-S = "${WORKDIR}/sources"
-UNPACKDIR = "${S}"
+S = "${UNPACKDIR}"
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 

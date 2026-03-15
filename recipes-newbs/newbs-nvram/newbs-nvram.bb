@@ -14,8 +14,7 @@ SRC_URI = " \
     file://newbs-nvram.service.in \
 "
 
-S = "${WORKDIR}/sources"
-UNPACKDIR = "${S}"
+S = "${UNPACKDIR}"
 
 do_configure[noexec] = "1"
 do_compille[noexec] = "1"

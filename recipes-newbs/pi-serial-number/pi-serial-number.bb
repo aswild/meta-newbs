@@ -6,8 +6,7 @@ COMPATIBLE_MACHINE = "^rpi$"
 DEPENDS = "userland"
 
 SRC_URI = "file://pi-serial-number.c"
-S = "${WORKDIR}/sources"
-UNPACKDIR = "${S}"
+S = "${UNPACKDIR}"
 
 do_compile() {
     ${CCLD} ${CFLAGS} -Wall -Werror ${LDFLAGS} -o pi-serial-number pi-serial-number.c -lvcos -lvchiq:arm -lvchostif
