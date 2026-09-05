@@ -1,23 +1,24 @@
-Index: git/src/shared/machine-id-setup.c
+Index: systemd-259.5/src/shared/machine-id-setup.c
 ===================================================================
---- git.orig/src/shared/machine-id-setup.c
-+++ git/src/shared/machine-id-setup.c
-@@ -3,6 +3,7 @@
+--- systemd-259.5.orig/src/shared/machine-id-setup.c
++++ systemd-259.5/src/shared/machine-id-setup.c
+@@ -2,6 +2,7 @@
+ 
  #include <fcntl.h>
- #include <sched.h>
  #include <sys/mount.h>
 +#include <sys/stat.h>
  #include <unistd.h>
  
  #include "sd-daemon.h"
-@@ -24,12 +25,98 @@
+@@ -22,6 +23,7 @@
  #include "namespace-util.h"
  #include "path-util.h"
  #include "process-util.h"
 +#include "sha256.h"
  #include "stat-util.h"
  #include "string-util.h"
- #include "sync-util.h"
+ #include "strv.h"
+@@ -29,6 +31,91 @@
  #include "umask-util.h"
  #include "virt.h"
  
@@ -109,7 +110,7 @@ Index: git/src/shared/machine-id-setup.c
  static int acquire_machine_id_from_credential(sd_id128_t *ret_machine_id) {
          _cleanup_free_ char *buf = NULL;
          int r;
-@@ -121,6 +208,10 @@ static int acquire_machine_id(const char
+@@ -120,6 +207,10 @@ static int acquire_machine_id(const char
                  }
          }
  

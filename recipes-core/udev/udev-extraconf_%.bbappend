@@ -3,7 +3,4 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://newbs-udev.patch"
 
-do_install:append() {
-    rm -f ${D}${sysconfdir}/udev/rules.d/autonet.rules
-    rm -f ${D}${sysconfdir}/udev/scripts/network.sh
-}
+RDEPENDS:${PN}:remove = "${PN}-autonet"

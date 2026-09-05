@@ -639,6 +639,7 @@ PACKAGE_DEBUG_SPLIT_STYLE = '.debug'
 ### NEWBS ###
 DL_DIR     = "${NEWBSROOT}/downloads"
 SSTATE_DIR = "${NEWBSROOT}/sstate-cache"
+BB_HASHSERVE_DB_DIR = "${SSTATE_DIR}"
 BB_NUMBER_THREADS  = "${@oe.utils.cpu_count()}"
 PARALLEL_MAKE      = "-j${@oe.utils.cpu_count()}"
 BB_NICE_LEVEL      = "10"
